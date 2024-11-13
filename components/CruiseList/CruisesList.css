@@ -1,0 +1,148 @@
+/* CruisesList.css */
+
+.container {
+    background-color: #003366;
+    padding: 2rem;
+    color: #ff6347;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #ff6347;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.cards-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    background: linear-gradient(145deg, #ffffff, #f3f3f3);
+    color: #003366;
+    border-radius: 15px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cruise-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #ff6347;
+}
+
+.detail {
+    font-size: 1rem;
+    margin: 0.3rem 0;
+    color: #333;
+}
+
+.buy-button {
+    background-color: #ff6347;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.buy-button:hover {
+    background-color: #ff4500;
+    transform: scale(1.05);
+}
+
+.buy-button:active {
+    background-color: #e44b00;
+    transform: scale(0.98);
+}
+
+/* Адаптивные стили */
+
+@media (max-width: 320px) {
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        max-width: 280px;
+        padding: 1rem;
+    }
+
+    .cruise-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (min-width: 360px) and (max-width: 768px) {
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .card {
+        max-width: 300px;
+        padding: 1.2rem;
+    }
+
+    .cruise-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .card {
+        max-width: 350px;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+    .card {
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .card {
+        max-width: 300px;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+}
