@@ -1,0 +1,50 @@
+.main {
+    margin-top: 80px;
+}
+
+.hero {
+    width: 100%;
+    height: 100vh;
+    background: url("/images/mainscreen.jpg") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 64px;
+    font-weight: bold;
+    color: #023047;
+    margin-bottom: 400px;
+}
+
+.ctaButton {
+    width: 350px;
+    height: 60px;
+    border-radius: 45px;
+    background-color: #8FA4B5;
+    opacity: 0.8;
+    color: #fff;
+    font-size: 1.5rem;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.ctaButton:hover {
+    background-color: #D3E3F1;
+
+}

@@ -1,21 +1,21 @@
-'use client';
-
 import React from 'react';
-import './MainScreen.css';
+import styles from './MainScreen.module.css';
+import Header from '../Header/Header';
 
-const MainScreen = () => {
+const Home = () => {
     return (
-        <div className="main-screen">
-            <div className="text-content">
-                <h1>Круиз по рекам России</h1>
-                <p>
-                    Откройте для себя незабываемое путешествие по самым красивым и живописным рекам России.
-                    Насладитесь прекрасными видами, роскошным отдыхом на борту, а также уникальной культурой каждого региона.
-                </p>
-                <button className="booking-button">Забронировать билет</button>
-            </div>
-        </div>
+        <>
+            <Header />
+            <main className={styles.main}>
+                <section className={styles.hero}>
+                    <div className={styles.overlay}>
+                        <h1 className={styles.title}>КРУИЗ ПО РЕКАМ РОССИИ</h1>
+                        <button className={styles.ctaButton}>Забронировать круиз</button>
+                    </div>
+                </section>
+            </main>
+        </>
     );
 };
 
-export default MainScreen;
+export default Home;
