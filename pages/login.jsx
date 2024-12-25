@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from './login.module.css';
+import { useRouter } from 'next/router';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -12,13 +13,13 @@ const LoginPage = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
-        setError(null); // Сброс ошибок при переключении форм
+        setError(null); 
     };
 
-    // Обработка изменения полей
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -26,24 +27,24 @@ const LoginPage = () => {
         });
     };
 
-    // Функция отправки формы
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        // Проверка на совпадение паролей
         if (!isLogin && formData.password !== formData.password_confirmation) {
             setError('Пароли не совпадают');
             setLoading(false);
             return;
         }
 
-        const url = isLogin ? 'http://localhost:8000/api/auth/login' : 'http://localhost:8000/api/auth/register';
+        const url = isLogin
+            ? 'http://localhost:8000/api/auth/login'
+            : 'http://localhost:8000/api/auth/register';
 
         const body = JSON.stringify({
             email: formData.email,
             password: formData.password,
-            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation })
+            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation }),
         });
 
         try {
@@ -58,26 +59,24 @@ const LoginPage = () => {
             const data = await res.json();
 
             if (res.ok) {
-                // Успех — можете обработать токен или редирект
-                console.log(data);
+                console.log('Успешный ответ:', data);
+
                 if (isLogin) {
-                    // Здесь можно сохранить JWT токен или редиректить пользователя
+                    localStorage.setItem('token', data.access_token);
+                    router.push('/profile');
                 } else {
-                    // После успешной регистрации, можно редиректить на страницу логина
                     setIsLogin(true);
                 }
             } else {
-                // Если ошибка — показываем ее пользователю
                 setError(data.message || 'Произошла ошибка');
             }
         } catch (err) {
-            console.error(err);
+            console.error('Ошибка запроса:', err);
             setError('Произошла ошибка при отправке запроса');
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
