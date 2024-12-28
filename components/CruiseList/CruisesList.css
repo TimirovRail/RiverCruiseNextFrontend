@@ -3,7 +3,7 @@
     display: grid;
     grid-auto-flow: row dense;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    grid-template-rows: repeat(6, 300px); 
+    grid-template-rows: repeat(4, 300px); 
     grid-gap: 20px;
 }
 
@@ -50,19 +50,19 @@
 .card__type {
     color: #3B4055;
     padding-bottom: 0.5em;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 22px;
 }
 
 .card__title {
-    font-size: 22px;
+    font-size: 24px;
     padding-bottom: 0.5em;
+    font-weight: bold;
 }
 
 .card__date {
     font-size: 16px;
     padding-bottom: 0.5em;
-    opacity: 0.3;
+    opacity: 0.5;
 }
 
 .card__excerpt {
