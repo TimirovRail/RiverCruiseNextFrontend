@@ -4,10 +4,9 @@ import { FaAnchor, FaCompass, FaCocktail, FaLeaf } from 'react-icons/fa';
 
 const Advantages = () => {
     return (
-        <div>
-            <div className={styles['title']}>
-                <img src="/images/title.png" alt="" />
-                <h2 className={styles['h1-title']}>Наши преимущества</h2>
+        <div className='layout'>
+            <div className='title'>
+                <h2 className='h1-title'>НАШИ ПРЕИМУЩЕСТВА</h2>
             </div>
             <div className={styles['advantages']}>
                 <div className={styles['advantages-cards']}>

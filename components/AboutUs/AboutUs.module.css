@@ -4,71 +4,50 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
-    padding: 60px 20px;
     box-sizing: border-box;
-    gap: 40px;
-    background-color: #ffffff; 
-    border-radius: 45px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    position: relative;
 }
 
 .about-content {
     flex: 1;
     padding: 20px;
-    color: #000000; 
+    color: #000000;
     text-align: left;
 }
 
-.title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; 
-    text-align: center; 
-    padding: 5px;
-} 
-.h1-title {
-    font-size: 3em; 
-    color: #237385;
-    font-family: "Montserrat", sans-serif;
-    font-weight: bold;
-}
-
-
 .about-description {
-    font-size: 1.4em;
+    font-size: 24px;
     line-height: 1.8;
     margin-bottom: 30px;
     font-family: "Mulish", sans-serif;
 }
 
-.learn-more-button {
-    font-size: 1.2em;
-    padding: 15px 30px;
-    color: #ffffff;
-    background-color: #8FA4B5; 
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.learn-more-button:hover {
-    background-color: #7b91a2; 
-}
-
-.about-image {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.about-description p:not(:last-child) {
+    margin-bottom: 30px;
 }
 
 .about-image img {
     max-width: 100%;
     height: auto;
+}
+
+.about-icon {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.about-icon1,
+.about-icon2,
+.about-icon3 {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.about-icon-text{
+    font-size: 24px;
+    color: #3B4055;
+    font-weight: bold;
 }

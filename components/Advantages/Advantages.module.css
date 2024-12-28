@@ -1,24 +1,3 @@
-.advantages {
-    text-align: center;
-    padding: 10px 50px;
-}
-
-.title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 5px;
-}
-
-.h1-title {
-    font-size: 3em;
-    color: #237385;
-    font-family: "Montserrat", sans-serif;
-    font-weight: bold;
-}
-
 .advantages-cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -27,18 +6,15 @@
 }
 
 .advantage-card {
-    background-color: #ffffff; /* Сделать карточки белыми */
-    border-radius: 15px;
+    background-color: #ffffff;
     padding: 20px 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Легкая тень для контраста */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     animation: cardFadeIn 0.5s ease forwards;
 }
-
-
 .advantage-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
@@ -46,20 +22,20 @@
 
 .advantage-icon {
     font-size: 2.5em;
-    color: #ff6347;
+    color: #3B4055;
     margin-bottom: 15px;
 }
 
 .advantage-card-title {
-    font-size: 1.5em;
+    font-size: 24px;
     margin-bottom: 10px;
-    color: #000000; /* Черный цвет для заголовков */
+    color: #000000; 
 }
 
 .advantage-card-description {
-    font-size: 0.9em;
+    font-size: 18px;
     line-height: 1.5;
-    color: #000000; /* Черный цвет для описания */
+    color: #000000; 
 }
 
 @media (max-width: 1024px) {
