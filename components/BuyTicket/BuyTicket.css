@@ -1,0 +1,29 @@
+.ticket-block {
+    background-color: #2A376D;
+    padding: 20px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+}
+
+.ticket-text {
+    width: 70%;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 20px; 
+}
+
+.ticket-btn {
+    padding: 10px 20px;
+    background-color: white;
+    color: #2A376D;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.ticket-btn:hover {
+    background-color: #f0f0f0; 
+}
