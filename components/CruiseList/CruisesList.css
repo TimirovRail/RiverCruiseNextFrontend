@@ -1,148 +1,98 @@
-/* CruisesList.css */
-
-.container {
-    background-color: #003366;
-    padding: 2rem;
-    color: #ff6347;
-    min-height: 100vh;
-    text-align: center;
-}
-
-.title {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    color: #ff6347;
-    animation: fadeIn 1.5s ease-in-out;
-}
-
-.cards-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.cards {
+    margin: 0 auto;
+    display: grid;
+    grid-auto-flow: row dense;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-rows: repeat(6, 300px); 
+    grid-gap: 20px;
 }
 
 .card {
-    background: linear-gradient(145deg, #ffffff, #f3f3f3);
-    color: #003366;
-    border-radius: 15px;
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 300px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
-    overflow: hidden;
-    animation: fadeIn 0.8s ease forwards;
+    display: flex;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.25s ease;
 }
 
 .card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-}
-
-.cruise-title {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: #ff6347;
-}
-
-.detail {
-    font-size: 1rem;
-    margin: 0.3rem 0;
-    color: #333;
-}
-
-.buy-button {
-    background-color: #ff6347;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.8rem 1.2rem;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    margin-top: 1rem;
-}
-
-.buy-button:hover {
-    background-color: #ff4500;
     transform: scale(1.05);
 }
 
-.buy-button:active {
-    background-color: #e44b00;
-    transform: scale(0.98);
+.vertical {
+    flex-direction: column;
+    grid-row: span 2;
+    grid-column: span 1;
 }
 
-/* Адаптивные стили */
-
-@media (max-width: 320px) {
-    .title {
-        font-size: 1.5rem;
-    }
-
-    .card {
-        max-width: 280px;
-        padding: 1rem;
-    }
-
-    .cruise-title {
-        font-size: 1.2rem;
-    }
+.horizontal {
+    flex-direction: row;
+    grid-row: span 1;
+    grid-column: span 2;
 }
 
-@media (min-width: 360px) and (max-width: 768px) {
-    .title {
-        font-size: 1.8rem;
-    }
-
-    .card {
-        max-width: 300px;
-        padding: 1.2rem;
-    }
-
-    .cruise-title {
-        font-size: 1.5rem;
-    }
+.reverse-horizontal {
+    flex-direction: row-reverse;
+    grid-row: span 1;
+    grid-column: span 2;
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-    .title {
-        font-size: 2rem;
-    }
-
-    .card {
-        max-width: 350px;
-    }
+.horizontal .card__img, .reverse-horizontal .card__img {
+    height: 100%;
 }
 
-@media (min-width: 1024px) and (max-width: 1280px) {
-    .card {
-        max-width: 400px;
-    }
+.vertical .card__img {
+    width: 100%;
 }
 
-@media (min-width: 1280px) {
-    .card {
-        max-width: 300px;
-    }
+.card__content {
+    padding: 16px;
+}
 
-    .title {
-        font-size: 2.5rem;
-    }
+.card__type {
+    color: #3B4055;
+    padding-bottom: 0.5em;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card__title {
+    font-size: 22px;
+    padding-bottom: 0.5em;
+}
+
+.card__date {
+    font-size: 16px;
+    padding-bottom: 0.5em;
+    opacity: 0.3;
+}
+
+.card__excerpt {
+    font-size: 18px;
+    padding-bottom: 0.5em;
+}
+
+.card__tags {
+    margin-top: auto;
+}
+
+.tag {
+    display: inline;
+    background: papayawhip;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    font-size: 12px;
+    color: palevioletred;
+    user-select: none;
+    cursor: pointer;
+}
+
+.tag:hover {
+    background: darken(papayawhip, 5%);
+}
+
+.tag:active {
+    background: darken(papayawhip, 10%);
+}
+
+.tag i {
+    margin-right: 4px;
 }
