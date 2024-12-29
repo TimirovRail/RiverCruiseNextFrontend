@@ -1,0 +1,99 @@
+.card_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    width: calc(50% - 1rem);
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    background: #fff;
+    overflow: hidden;
+    margin-bottom: 1.6%;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.meta {
+    position: relative;
+    height: 200px;
+}
+
+.photo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.description {
+    padding: 1rem;
+}
+
+.description h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #2A376D;
+    font-weight: bold;
+}
+
+.description p {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.readMore a {
+    color: #29376D;
+    text-decoration: none;
+}
+
+@media (min-width: 640px) {
+    .card {
+        width: calc(50% - 1rem);
+    }
+}
+
+/* Анимация появления */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cardAnimation {
+    animation-delay: 0.2s; /* Задержка анимации */
+}
+
+.card:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.card:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.card:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+.card:nth-child(5) {
+    animation-delay: 1s;
+}
+
+.card:nth-child(6) {
+    animation-delay: 1.2s;
+}
