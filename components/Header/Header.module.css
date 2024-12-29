@@ -4,13 +4,12 @@
     width: 100%;
     z-index: 3;
     background-color: #3B4055;
-    opacity: 0.7;
+    opacity: 0.9;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 60px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
 }
 
 .logo img {
