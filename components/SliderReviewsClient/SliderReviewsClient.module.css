@@ -1,0 +1,64 @@
+.slider {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.testimonialWrapper {
+    display: flex;
+    gap: 30px;
+    overflow: hidden;
+    transition: transform 0.5s ease-in-out;
+    height: auto;
+}
+
+.testimonial {
+    min-width: 300px;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+    margin: 20px 20px;
+    height: auto;
+}
+
+.testimonial:hover {
+    transform: scale(1.05);
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    object-fit: cover;
+}
+
+.quote {
+    font-size: 16px;
+    font-style: italic;
+    color: #000000;
+    margin: 10px 0;
+}
+
+.author {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.prev,
+.next {
+    background-color: #3B4055;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.prev:hover,
+.next:hover {
+    background-color: #3b4051;
+}
