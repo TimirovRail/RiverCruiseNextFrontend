@@ -7,31 +7,28 @@ export default function LeaveFeedback() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [feedback, setFeedback] = useState('');
-    const [cruise, setCruise] = useState('');  // Стейт для круиза
+    const [cruise, setCruise] = useState(''); 
     const [submitted, setSubmitted] = useState(false);
-    const [feedbacks, setFeedbacks] = useState([]); // Инициализация feedbacks
+    const [feedbacks, setFeedbacks] = useState([]); 
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // Простой валидация
         if (!name || !email || !feedback || !cruise) {
             alert('Пожалуйста, заполните все поля');
             return;
         }
 
-        // Добавление нового отзыва в список
         setFeedbacks([
             ...feedbacks,
             {
                 name,
                 email,
                 feedback,
-                cruise,  // Добавляем выбранный круиз
+                cruise, 
             },
         ]);
 
-        // Сброс формы
         setName('');
         setEmail('');
         setFeedback('');
@@ -111,7 +108,7 @@ export default function LeaveFeedback() {
                                 <div key={index} className={styles.feedbackItem}>
                                     <p className={styles.feedbackText}>{item.feedback}</p>
                                     <p className={styles.author}>- {item.name} ({item.email})</p>
-                                    <p className={styles.cruise}>Круиз: {item.cruise}</p> {/* Отображаем круиз */}
+                                    <p className={styles.cruise}>Круиз: {item.cruise}</p>
                                 </div>
                             ))
                         ) : (
