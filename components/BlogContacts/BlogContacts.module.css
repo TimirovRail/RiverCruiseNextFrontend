@@ -1,0 +1,101 @@
+.contactInfo {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.contactInfo h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.contactInfo p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.socials {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.socialLink {
+    color: #3B4055;
+    transition: transform 0.3s ease;
+}
+
+.socialLink:hover {
+    transform: scale(1.1);
+}
+
+.bookingForm {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.bookingForm h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.inputGroup {
+    margin-bottom: 15px;
+}
+
+.inputGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.inputGroup input,
+.inputGroup select,
+.inputGroup textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #2A376D;
+    outline: none;
+}
+
+.inputGroup textarea {
+    resize: none;
+    height: 80px;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #3B4055;
+    color: white;
+    font-size: 16px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #333645;
+}
+
+.checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.checkboxes input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    height: auto;
+}
