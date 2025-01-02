@@ -1,42 +1,26 @@
-.contactInfo {
-    flex: 1;
-    padding: 20px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.contactInfo h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.contactInfo p {
-    margin: 10px 0;
-    font-size: 16px;
-}
-
-.socials {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.socialLink {
-    color: #3B4055;
-    transition: transform 0.3s ease;
-}
-
-.socialLink:hover {
-    transform: scale(1.1);
-}
-
 .bookingForm {
-    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-
+.formContainer {
+    flex: 1;
+    margin-right: 20px;
+}
+.imageContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.imageContainer img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
 .bookingForm h2 {
     font-size: 24px;
     margin-bottom: 20px;
@@ -69,7 +53,7 @@
 .submitButton {
     width: 100%;
     padding: 10px;
-    background-color: #3B4055;
+    background-color: #2A376D;
     color: white;
     font-size: 16px;
     border: none;
