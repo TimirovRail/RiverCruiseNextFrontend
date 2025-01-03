@@ -13,7 +13,7 @@ const Header = () => {
             <nav className={styles.nav}>
                 <Link href="/">Главная</Link>
                 <Link href="/Cruises">Круизы</Link>
-                <Link href="/Restaurant">Ресторан</Link>
+                <Link href="/Restaurant">Услуги</Link>
                 <Link href="/Reviews">Отзывы</Link>
                 <Link href="/Contacts">Контакты</Link>
                 <Link href="/Blog">Блог</Link>
