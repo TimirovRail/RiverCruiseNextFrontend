@@ -29,7 +29,9 @@
     font-family: 'Mulish', sans-serif;
     font-optical-sizing: auto;
 }
-
+.nav a:hover{
+    color: rgb(0, 0, 0);
+}
 .profile button {
     background: none;
     border: none;
