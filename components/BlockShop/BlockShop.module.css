@@ -1,0 +1,195 @@
+.cardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    width: calc(50% - 20px);
+    max-width: auto;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    height: 100%;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cardContent {
+    flex: 1;
+    padding: 24px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cardContent h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: #2A376D;
+}
+
+.cardContent p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.price {
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-top: 8px;
+    color: red;
+    opacity: 0;
+    animation: fadeInPrice 1s forwards;
+}
+
+.fadeIn {
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInPrice {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.buyButton,
+.detailsButton {
+    padding: 12px 16px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 1rem;
+}
+
+.buyButton {
+    background-color: #2A376D;
+    color: #fff;
+}
+
+.buyButton:hover {
+    background-color: #333645;
+}
+
+.detailsButton {
+    border: 1px solid #2A376D;
+    color: #2A376D;
+}
+
+.cardImage {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+}
+
+.cardImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease-in-out;
+}
+
+.card:hover .cardImage img {
+    transform: scale(1.1);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeInOverlay 0.5s forwards;
+}
+
+.fadeInOverlay {
+    animation: fadeInOverlay 0.5s forwards;
+}
+
+@keyframes fadeInOverlay {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.modalContent {
+    background-color: #fff;
+    padding: 20px;
+    width: 500px;
+    text-align: center;
+    position: relative;
+}
+
+.modalContent h3 {
+    font-size: 1.6rem;
+    color: #2A376D;
+}
+
+.modalImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    margin: 20px 0;
+}
+
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2A376D;
+}
+
+.closeButton:hover {
+    color: #e74c3c;
+}
+
+.modalPrice {
+    color: #e74c3c;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
