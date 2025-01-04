@@ -9,7 +9,7 @@
 
 .card {
     display: flex;
-    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
     transition: all 0.25s ease;
 }
 

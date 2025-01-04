@@ -16,7 +16,7 @@
     min-width: 300px;
     background: #ffffff;
     padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
     margin: 20px 20px;
     height: auto;
