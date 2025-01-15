@@ -1,97 +1,121 @@
-/* Основной контейнер панели администратора */
-.dashboard-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.layout {
+    max-width: 1520px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
-/* Стиль для заголовков */
 .title {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .h1-title {
-    font-size: 2rem;
-    color: #333;
-    font-weight: 600;
-    text-align: left;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #ddd;
+    font-size: 48px;
+    color: #3B4055;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
 }
 
-/* Информация о пользователе */
-.user-info {
-    background-color: #f9f9f9;
-    padding: 15px;
+.user-info,
+.feedbacks-table,
+.bookings-table {
+    background: #fff;
+    padding: 20px;
     border-radius: 8px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    margin-top: 20px;
 }
 
 .user-info p {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #555;
-    margin: 8px 0;
+    margin: 10px 0;
 }
 
-/* Кнопка для выхода */
 button {
-    padding: 12px 25px;
-    background-color: #007bff;
+    background-color: #2A376D;
     color: white;
+    padding: 12px 20px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
     font-size: 1rem;
-    width: 100%;
-    max-width: 200px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    margin-top: 30px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #1e2a46;
+    transform: translateY(-2px);
 }
 
-/* Таблица отзывов */
-.feedbacks-table {
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 30px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
 
-.feedbacks-table th,
-.feedbacks-table td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
+table th,
+table td {
+    padding: 15px;
     text-align: left;
-    font-size: 1rem;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.feedbacks-table th {
-    background-color: #f1f1f1;
-    color: #333;
+table th {
+    background-color: #f4f4f4;
+    color: #2A376D;
     font-weight: 600;
 }
 
-.feedbacks-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.feedbacks-table tr:hover {
+table tbody tr:hover {
     background-color: #f1f1f1;
+    transform: scale(1.02);
 }
 
-.feedbacks-table td {
-    color: #555;
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.feedbacks-table td:last-child {
+.loading {
     text-align: center;
+    font-size: 1.5rem;
+    color: #888;
+}
+
+.fade {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    table th,
+    table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    button {
+        width: auto;
+        padding: 10px 15px;
+    }
 }

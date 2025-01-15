@@ -34,19 +34,37 @@ export default function BlogContacts() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert(`Спасибо за бронирование, ${formData.name}! Мы свяжемся с вами по почте.`);
-        setFormData({
-            name: '',
-            email: '',
-            cruise: '',
-            date: '',
-            seats: '',
-            cabinClass: '',
-            extras: [],
-            comment: '',
-        });
+        try {
+            const response = await fetch('http://localhost:8000/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Спасибо за бронирование, ${formData.name}!`);
+                setFormData({
+                    name: '',
+                    email: '',
+                    cruise: '',
+                    date: '',
+                    seats: '',
+                    cabinClass: '',
+                    extras: [],
+                    comment: '',
+                });
+            } else {
+                const errorData = await response.json();
+                alert(`Ошибка: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке:', error);
+        }
     };
 
     return (
