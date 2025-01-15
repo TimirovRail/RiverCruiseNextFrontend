@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
-        setError(null); 
+        setError(null);
     };
 
     const handleChange = (e) => {
@@ -63,7 +63,13 @@ const LoginPage = () => {
 
                 if (isLogin) {
                     localStorage.setItem('token', data.access_token);
-                    router.push('/profile');
+                    localStorage.setItem('role', data.role);
+
+                    if (data.role === 'admin') {
+                        router.push('/admin/dashboard');
+                    } else {
+                        router.push('/profile');
+                    }
                 } else {
                     setIsLogin(true);
                 }
@@ -77,6 +83,7 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
+
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
