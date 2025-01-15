@@ -1,0 +1,97 @@
+/* Основной контейнер панели администратора */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стиль для заголовков */
+.title {
+    margin-bottom: 20px;
+}
+
+.h1-title {
+    font-size: 2rem;
+    color: #333;
+    font-weight: 600;
+    text-align: left;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Информация о пользователе */
+.user-info {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-info p {
+    font-size: 1rem;
+    color: #555;
+    margin: 8px 0;
+}
+
+/* Кнопка для выхода */
+button {
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 200px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Таблица отзывов */
+.feedbacks-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.feedbacks-table th,
+.feedbacks-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 1rem;
+}
+
+.feedbacks-table th {
+    background-color: #f1f1f1;
+    color: #333;
+    font-weight: 600;
+}
+
+.feedbacks-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.feedbacks-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.feedbacks-table td {
+    color: #555;
+}
+
+.feedbacks-table td:last-child {
+    text-align: center;
+}

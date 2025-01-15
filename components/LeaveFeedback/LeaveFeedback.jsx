@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import styles from './LeaveFeedback.module.css';
 
@@ -7,11 +6,11 @@ export default function LeaveFeedback() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [feedback, setFeedback] = useState('');
-    const [cruise, setCruise] = useState(''); 
+    const [cruise, setCruise] = useState('');
     const [submitted, setSubmitted] = useState(false);
-    const [feedbacks, setFeedbacks] = useState([]); 
+    const [feedbacks, setFeedbacks] = useState([]);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (!name || !email || !feedback || !cruise) {
@@ -19,27 +18,35 @@ export default function LeaveFeedback() {
             return;
         }
 
-        setFeedbacks([
-            ...feedbacks,
-            {
-                name,
-                email,
-                feedback,
-                cruise, 
-            },
-        ]);
+        try {
+            const response = await fetch('http://localhost:8000/api/feedbacks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, feedback, cruise }),
+            });
 
-        setName('');
-        setEmail('');
-        setFeedback('');
-        setCruise('');
-        setSubmitted(true);
+            if (!response.ok) {
+                throw new Error('Ошибка при отправке отзыва');
+            }
 
-        setTimeout(() => setSubmitted(false), 3000);
+            const newFeedback = await response.json();
+            setFeedbacks([newFeedback, ...feedbacks]);
+            setName('');
+            setEmail('');
+            setFeedback('');
+            setCruise('');
+            setSubmitted(true);
+
+            setTimeout(() => setSubmitted(false), 3000);
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     return (
-        <div className='layout'>
+        <div className="layout">
             <div className="title">
                 <h2 className="h1-title">ОСТАВЬ СВОЙ ОТЗЫВ</h2>
             </div>
