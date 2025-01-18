@@ -1,5 +1,7 @@
-import styles from './BlockRestaurant.module.css';
+'use client';
 
+import styles from './BlockRestaurant.module.css';
+import Link from 'next/link'; 
 const data = [
     {
         id: 1,
@@ -79,7 +81,9 @@ const BlockRestaurant = () => {
                                 <p>
                                     <span>{item.price}</span> руб.
                                 </p>
-                                <button type="button">Читать больше</button>
+                                <Link href={`/service/${item.id}`} passHref>
+                                    <button type="button">Читать больше</button>
+                                </Link>
                             </div>
                         </div>
                     </div>
