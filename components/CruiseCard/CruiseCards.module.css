@@ -55,9 +55,20 @@
     margin-top: 0.5rem;
 }
 
-.readMore a {
-    color: #29376D;
+.readMore {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    color: #fff;
+    background-color: #2A376D;
     text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.readMore:hover {
+    background-color: #1E2A4B;
 }
 
 @media (min-width: 640px) {
@@ -75,7 +86,8 @@
 }
 
 .cardAnimation {
-    animation-delay: 0.2s; /* Задержка анимации */
+    animation-delay: 0.2s;
+    /* Задержка анимации */
 }
 
 .card:nth-child(2) {

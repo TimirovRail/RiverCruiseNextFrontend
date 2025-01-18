@@ -1,0 +1,52 @@
+.serviceDetail {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f8f8;
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+}
+
+.serviceDetail h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #29376D; 
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.serviceImage {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.serviceDetail p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.serviceDetail .backButton {
+    width: 100%; 
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    color: #fff;
+    background-color: #2A376D;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+    cursor: pointer; 
+}
+
+.serviceDetail .backButton:hover {
+    background-color: #1E2A4B; 
+}
+
+.serviceDetail .description {
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
