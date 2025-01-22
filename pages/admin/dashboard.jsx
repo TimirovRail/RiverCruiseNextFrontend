@@ -10,7 +10,40 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
     const router = useRouter();
+    const [newCruise, setNewCruise] = useState({
+        name: '',
+        description: '',
+        river: '',
+        total_places: 0,
+        cabins: 0,
+        start_date: '',
+        end_date: '',
+        price_per_person: 0,
+        available_places: 0,
+    });
+    const handleCreateCruise = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/cruises', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify(newCruise),
+            });
 
+            if (!response.ok) {
+                throw new Error('Ошибка при создании круиза');
+            }
+
+            const data = await response.json();
+            setCruises([...cruises, data]);
+            alert('Круиз успешно добавлен!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось создать круиз');
+        }
+    };
     useEffect(() => {
         const fetchAllData = async () => {
             setLoading(true);
@@ -84,7 +117,7 @@ const Dashboard = () => {
                     <p>Ошибка при загрузке круизов</p>
                 ) : (
                     <>
-                        <h2>КРУИЗЫ</h2>
+                        <h2>СПИСОК КРУИЗОВ</h2>
                         <table>
                             <thead>
                                 <tr>
@@ -104,7 +137,7 @@ const Dashboard = () => {
                                         <td>{cruise.name}</td>
                                         <td>{cruise.description}</td>
                                         <td>{cruise.river}</td>
-                                        <td>{cruise.available_places}/{cruise.total_places}</td>
+                                        <td>{cruise.total_places}/{cruise.total_places}</td>
                                         <td>{cruise.cabins}</td>
                                         <td>{cruise.start_date}</td>
                                         <td>{cruise.end_date}</td>
@@ -114,13 +147,108 @@ const Dashboard = () => {
                             </tbody>
                         </table>
                     </>
+
                 )}
 
+                <h2>ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА</h2>
+
+                <form onSubmit={(e) => { e.preventDefault(); handleCreateCruise(); }} className="form-container">
+                    <div className="input-group">
+                        <p>Введите название круиза</p>
+                        <input
+                            type="text"
+                            value={newCruise.name}
+                            onChange={(e) => setNewCruise({ ...newCruise, name: e.target.value })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Описание круиза</p>
+                        <textarea
+                            value={newCruise.description}
+                            onChange={(e) => setNewCruise({ ...newCruise, description: e.target.value })}
+                            className="textarea-field"
+                        ></textarea>
+                    </div>
+
+                    <div className="input-group">
+                        <p>Название реки</p>
+                        <input
+                            type="text"
+                            value={newCruise.river}
+                            onChange={(e) => setNewCruise({ ...newCruise, river: e.target.value })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Общее количество мест</p>
+                        <input
+                            type="number"
+                            value={newCruise.total_places}
+                            onChange={(e) => setNewCruise({ ...newCruise, total_places: Number(e.target.value) })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Количество кают</p>
+                        <input
+                            type="number"
+                            value={newCruise.cabins}
+                            onChange={(e) => setNewCruise({ ...newCruise, cabins: Number(e.target.value) })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Начало круиза</p>
+                        <input
+                            type="date"
+                            value={newCruise.start_date}
+                            onChange={(e) => setNewCruise({ ...newCruise, start_date: e.target.value })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Конец круиза</p>
+                        <input
+                            type="date"
+                            value={newCruise.end_date}
+                            onChange={(e) => setNewCruise({ ...newCruise, end_date: e.target.value })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Цена за человека</p>
+                        <input
+                            type="number"
+                            value={newCruise.price_per_person}
+                            onChange={(e) => setNewCruise({ ...newCruise, price_per_person: Number(e.target.value) })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <p>Доступные места</p>
+                        <input
+                            type="number"
+                            value={newCruise.available_places}
+                            onChange={(e) => setNewCruise({ ...newCruise, available_places: Number(e.target.value) })}
+                            className="input-field"
+                        />
+                    </div>
+
+                    <button type="submit" className="button">Добавить круиз</button>
+                </form>
                 {errors['http://localhost:8000/api/feedbacks'] ? (
                     <p>Ошибка при загрузке отзывов</p>
                 ) : (
                     <>
-                        <h2>ОТЗЫВЫ</h2>
+                        <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
                         <table>
                             <thead>
                                 <tr>
@@ -148,7 +276,7 @@ const Dashboard = () => {
                     <p>Ошибка при загрузке бронирований</p>
                 ) : (
                     <>
-                        <h2>БРОНИРОВАНИЯ</h2>
+                        <h2>БРОНИРОВАННЫЕ БИЛЕТЫ</h2>
                         <table>
                             <thead>
                                 <tr>
