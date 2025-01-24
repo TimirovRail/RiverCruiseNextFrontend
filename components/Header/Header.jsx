@@ -1,10 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './Header.module.css';
+import ProfilePopup from '../ProfilePopup/ProfilePopup';
 
 const Header = () => {
+    const [user, setUser] = useState(null);
+    const [showPopup, setShowPopup] = useState(false); // Используем showPopup
+
+    const handleProfileClick = () => {
+        setShowPopup(true);  // Меняем isPopupVisible на showPopup
+    };
+
+    const handleClosePopup = () => {
+        setShowPopup(false); // Меняем isPopupVisible на showPopup
+    };
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        
+        if (storedUser && storedUser !== 'undefined') {
+            try {
+                setUser(JSON.parse(storedUser)); 
+            } catch (error) {
+                console.error('Ошибка парсинга данных пользователя:', error);
+            }
+        } else {
+            fetch('http://localhost:8000/api/auth/me', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Ошибка запроса: ' + res.statusText);
+                    }
+                    return res.json(); 
+                })
+                .then(data => {
+                    setUser(data);
+                    localStorage.setItem('user', JSON.stringify(data));
+                })
+                .catch(err => {
+                    console.error('Ошибка получения данных пользователя:', err);
+                });
+        }
+    }, []);
+
     return (
         <header className={styles.header}>
             <div className={styles.logo}>
@@ -20,12 +65,21 @@ const Header = () => {
                 <Link href="/Shop">Магазин</Link>
             </nav>
             <div className={styles.profile}>
-                <Link href="/login">
-                    <button>
-                        <img src="/images/profile.png" alt="Профиль" />
-                    </button>
-                </Link>
+                {user ? (
+                    <span onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
+                        {user.name}
+                    </span>
+                ) : (
+                    <Link href="/login">
+                        <button>
+                            <img src="/images/profile.png" alt="Профиль" />
+                        </button>
+                    </Link>
+                )}
             </div>
+
+            {/* Используем showPopup вместо isPopupVisible */}
+            {showPopup && <ProfilePopup user={user} onClose={handleClosePopup} />}
         </header>
     );
 };

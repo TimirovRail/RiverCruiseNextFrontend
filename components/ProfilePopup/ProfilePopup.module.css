@@ -1,0 +1,53 @@
+.overlay {
+    position: fixed;
+    top: 10px; 
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+.popup {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    text-align: center;
+}
+
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.closeButton {
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.popupBody {
+    margin-top: 20px;
+}
+
+.viewProfileButton, .logoutButton {
+    margin-top: 10px;
+    padding: 10px;
+    background: #3B4055;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.viewProfileButton:hover, .logoutButton:hover {
+    background: #495170;
+}
+.flexButtons{
+    display: flex;
+    gap: 20px;
+}
