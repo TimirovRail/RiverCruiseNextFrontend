@@ -19,7 +19,7 @@ export default function Home() {
             <CruiseList />
             <BuyTicket />
             <ServicesList />
-            <CruiseRoutes />
+            {/* <CruiseRoutes /> */}
             <Footer />
         </>
     );
