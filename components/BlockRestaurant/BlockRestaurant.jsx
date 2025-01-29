@@ -1,72 +1,43 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import styles from './BlockRestaurant.module.css';
-import Link from 'next/link'; 
-const data = [
-    {
-        id: 1,
-        title: 'Ресторан «Волжские Огни»',
-        subtitle: 'Изысканная кухня на борту',
-        description:
-            'Побалуйте себя блюдами русской и европейской кухни с видом на живописные берега Волги. Шеф-повар использует только свежие ингредиенты.',
-        price: 2500, 
-        img: './images/blockrestaurant1.jpg',
-    },
-    {
-        id: 2,
-        title: 'Гастрономический фестиваль',
-        subtitle: 'Дегустация местных деликатесов',
-        description:
-            'Попробуйте уникальные блюда из регионов, через которые проходит круиз: вологодское масло, казанский чак-чак и уха по-астрахански.',
-        price: 2000,
-        img: './images/blockrestaurant2.jpg',
-    },
-    {
-        id: 3,
-        title: 'Оздоровительный комплекс',
-        subtitle: 'Здоровье и отдых',
-        description:
-            'Финская сауна, кедровая бочка и бассейн помогут расслабиться и восстановить силы во время путешествия.',
-        price: 4000,
-        img: './images/blockrestaurant3.jpg', 
-    },
-    {
-        id: 4,
-        title: 'Массажный кабинет',
-        subtitle: 'Расслабляющий массаж',
-        description:
-            'Профессиональные массажисты предлагают классический, спортивный и антистрессовый массаж для полного расслабления.',
-        price: 2500,
-        img: './images/blockrestaurant4.jpg', 
-    },
-    {
-        id: 5,
-        title: 'Развлекательная программа',
-        subtitle: 'Шоу и живая музыка',
-        description:
-            'Вечера на борту наполнены живой музыкой, тематическими вечеринками и выступлениями артистов.',
-        price: 1500,
-        img: './images/blockrestaurant5.jpg', 
-    },
-    {
-        id: 6,
-        title: 'Кинозал на борту',
-        subtitle: 'Просмотр фильмов',
-        description:
-            'Насладитесь классическими и современными фильмами в уютном кинозале с комфортными креслами.',
-        price: 1750,
-        img: './images/blockrestaurant6.jpg',
-    },
-];
+import Link from 'next/link';
 
 const BlockRestaurant = () => {
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/services');
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке данных');
+                }
+                const data = await response.json();
+                setServices(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchServices();
+    }, []);
+
+    if (loading) return <p>Загрузка...</p>;
+    if (error) return <p>Ошибка: {error}</p>;
+
     return (
         <div className='layout'>
             <div className='title'>
                 <h2 className='h1-title'>УСЛУГИ</h2>
             </div>
             <div className={styles.wrapper}>
-                {data.map((item) => (
+                {services.map((item) => (
                     <div key={item.id} className={styles.card}>
                         <div className={styles.productImg}>
                             <img src={item.img} alt={item.title} />

@@ -1,36 +1,73 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import React from 'react';
 import styles from './CruiseDetail.module.css';
 
 const CruiseDetail = () => {
     const { query } = useRouter();
     const { id } = query;
+    const [cruise, setCruise] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const cruisePoints = [
-        { id: 1, name: 'Круиз по реке Волга', image: '../../images/cruiselistvolga.jpg', description: 'Этот круиз по реке Волга дарит уникальную возможность насладиться красивыми видами природы, историческими памятниками и культовыми местами.' },
-        { id: 2, name: 'Круиз по реке Лена', image: '../../images/cruiselistlena.jpg', description: 'Путешествие по реке Лена – это настоящее приключение среди природных ландшафтов, снежных вершин и вечных лесов.' },
-        { id: 3, name: 'Круиз по реке Енисей', image: '../../images/cruiselistenisey.jpg', description: 'Енисей открывает двери в мир тайги, уникальной флоры и фауны, а также захватывающих пейзажей Сибири.' },
-        { id: 4, name: 'Круиз по реке Амур', image: '../../images/cruiselistamur.jpg', description: 'Этот круиз позволит насладиться величием Амура, исследовать незабываемые виды на его побережье и встретить диких животных.' },
-        { id: 5, name: 'Круиз по реке Дон', image: '../../images/cruiselistdon.jpg', description: 'Дон влечет путешественников своим историческим значением и традиционным культурным наследием.' },
-        { id: 6, name: 'Круиз по реке Обь', image: '../../images/cruiselistob.jpg', description: 'Река Обь предоставит вам возможность увидеть истинную красоту Сибири и исследовать нетронутые уголки природы.' },
-    ];
+    useEffect(() => {
+        if (!id) return;
 
-    const cruise = cruisePoints.find((point) => point.id === parseInt(id));
+        const fetchCruise = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/cruise/${id}`);
+                const data = await response.json();
+                setCruise(data);
+            } catch (error) {
+                console.error('Ошибка загрузки круиза:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    if (!cruise) {
-        return <p>Круиз не найден.</p>;
-    }
+        fetchCruise();
+    }, [id]);
+
+    if (loading) return <p>Загрузка...</p>;
+    if (!cruise) return <p>Круиз не найден.</p>;
 
     return (
-        <div className={styles.cruiseDetail}>
-            <h1>{cruise.name}</h1>
-            <img src={cruise.image} alt={cruise.name} className={styles.cruiseImage} />
-            <div className={styles.description}>
-                <p>{cruise.description}</p>
+        <div className='layout'>
+            <div className={styles.cruiseDetail}>
+                <div className={styles.cruiseContainer}>
+                    <img src={cruise.image_path} alt={cruise.name} className={styles.cruiseImage} />
+                    <div className={styles.info}>
+                        <h1>{cruise.name}</h1>
+                        <p><strong>Река:</strong> {cruise.river}</p>
+                        <p><strong>Описание:</strong> {cruise.description}</p>
+                        <p><strong>Доступные места:</strong> {cruise.available_places} / {cruise.total_places}</p>
+                        <p><strong>Каюты:</strong> {cruise.cabins}</p>
+                        <p><strong>Дата начала:</strong> {cruise.start_date}</p>
+                        <p><strong>Дата окончания:</strong> {cruise.end_date}</p>
+                        <p><strong>Цена за человека:</strong> {cruise.price_per_person} ₽</p>
+                        <p><strong>Общая длина маршрута:</strong> {cruise.total_distance ? `${cruise.total_distance} км` : 'Не указано'}</p>
+                        {cruise.features && (
+                            <p><strong>Особенности:</strong> {
+                                Array.isArray(cruise.features)
+                                    ? cruise.features.join(', ')
+                                    : typeof cruise.features === 'string'
+                                        ? (() => {
+                                            try {
+                                                const parsed = JSON.parse(cruise.features);
+                                                return Array.isArray(parsed) ? parsed.join(', ') : 'Нет данных';
+                                            } catch (e) {
+                                                return 'Нет данных';
+                                            }
+                                        })()
+                                        : 'Нет данных'
+                            }</p>
+                        )}
+                        <a href="#" className={styles.backButton} onClick={() => window.history.back()}>
+                            Назад
+                        </a>
+                    </div>
+                </div>
             </div>
-            <a href="#" className={styles.backButton} onClick={() => window.history.back()}>
-                Назад
-            </a>
         </div>
     );
 };
