@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from './login.module.css';
 import { useRouter } from 'next/router';
+import QRCode from 'qrcode';
+import speakeasy from 'speakeasy';
+import base32 from 'base32.js'; // Для работы с base32
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -13,8 +16,27 @@ const LoginPage = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);  // Для отслеживания успешной авторизации
+    const [secret, setSecret] = useState('');
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
+    const [code, setCode] = useState('');
+    const [isVerified, setIsVerified] = useState(false);  // Для отслеживания верификации кода
     const router = useRouter();
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            const generateSecret = speakeasy.generateSecret({ length: 20 });
+            setSecret(generateSecret.base32);
+            console.log('Секретный ключ:', generateSecret.base32); // Логируем сгенерированный секретный ключ
+
+            QRCode.toDataURL(generateSecret.otpauth_url, (err, url) => {
+                if (err) console.error('Ошибка генерации QR-кода:', err);
+                setQrCodeUrl(url);
+            });
+        }
+    }, [isAuthenticated]);
+
+    // Для переключения между формой входа и регистрации
     const toggleForm = () => {
         setIsLogin(!isLogin);
         setError(null);
@@ -44,7 +66,7 @@ const LoginPage = () => {
         const body = JSON.stringify({
             email: formData.email,
             password: formData.password,
-            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation }),
+            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation } ),
         });
 
         try {
@@ -64,12 +86,16 @@ const LoginPage = () => {
                 if (isLogin) {
                     localStorage.setItem('token', data.access_token);
                     localStorage.setItem('role', data.role);
+                    setIsAuthenticated(true);  // Отмечаем успешную авторизацию, но не редиректим сразу
 
-                    if (data.role === 'admin') {
-                        router.push('/admin/dashboard');
-                    } else {
-                        router.push('/');
-                    }
+                    // Генерация секретного ключа для двухфакторной аутентификации
+                    const generateSecret = speakeasy.generateSecret({ length: 20 });
+                    setSecret(generateSecret.base32);
+
+                    QRCode.toDataURL(generateSecret.otpauth_url, (err, url) => {
+                        if (err) console.error('Ошибка генерации QR-кода:', err);
+                        setQrCodeUrl(url);
+                    });
                 } else {
                     setIsLogin(true);
                 }
@@ -84,20 +110,58 @@ const LoginPage = () => {
         }
     };
 
+    const handleVerifyCode = () => {
+        try {
+            // Логируем переданные данные для отладки
+            console.log('Секрет:', secret);
+            console.log('Код:', code);
+
+            // Проверка, что секрет и код имеют правильный формат
+            if (typeof secret !== 'string' || !secret) {
+                throw new Error('Секрет должен быть строкой');
+            }
+            if (typeof code !== 'string' || !code) {
+                throw new Error('Код должен быть строкой');
+            }
+
+            // Декодируем секрет в base32 с использованием base32.js
+            const secretBuffer = base32.decode(secret);
+            console.log('Декодированный секрет (в буфере):', secretBuffer);
+
+            // Проверяем код
+            const isValid = speakeasy.totp.verify({
+                secret: secretBuffer, // Используем буфер
+                encoding: 'ascii', // Убираем base32, т.к. мы передаем уже декодированную строку
+                token: code.trim()  // Убираем пробелы из кода
+            });
+
+            if (isValid) {
+                setIsVerified(true);
+                alert('Код подтвержден!');
+
+                // После успешной верификации перенаправляем на главную страницу
+                router.push('/');  // Это перенаправит на главную страницу
+            } else {
+                alert('Неверный код');
+            }
+        } catch (error) {
+            console.error('Ошибка при верификации кода:', error);
+            alert('Произошла ошибка при проверке кода');
+        }
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
                 <div className={styles.switch}>
                     <button
                         onClick={toggleForm}
-                        className={isLogin ? styles.active : ''}
-                    >
+                        className={isLogin ? styles.active : ''}>
                         Войти
                     </button>
                     <button
                         onClick={toggleForm}
-                        className={!isLogin ? styles.active : ''}
-                    >
+                        className={!isLogin ? styles.active : ''}>
                         Регистрация
                     </button>
                 </div>
@@ -186,6 +250,29 @@ const LoginPage = () => {
                     </form>
                 )}
             </div>
+
+            {/* Показываем двухфакторную аутентификацию только после успешного входа */}
+            {isAuthenticated && !isVerified && (
+                <div>
+                    <h2>Двухфакторная аутентификация</h2>
+                    <div>
+                        <p>Сканируйте QR-код в приложении Google Authenticator</p>
+                        {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
+                    </div>
+
+                    <div>
+                        <input
+                            type="text"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            placeholder="Введите код из Google Authenticator"
+                        />
+                        <button onClick={handleVerifyCode}>Подтвердить код</button>
+                    </div>
+
+                    {isVerified && <p>Двухфакторная аутентификация пройдена!</p>}
+                </div>
+            )}
         </div>
     );
 };
