@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import './profile.css'; 
+import Loading from "@/components/Loading/Loading";
 
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -45,7 +46,7 @@ const ProfilePage = () => {
     };
 
     if (loading) {
-        return <div className="loading">Загрузка...</div>;
+        return <Loading />;;
     }
 
     if (!user) {

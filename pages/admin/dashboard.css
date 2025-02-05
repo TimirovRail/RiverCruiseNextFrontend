@@ -43,7 +43,8 @@
     margin-bottom: 8px;
 }
 
-.input-field, .textarea-field {
+.input-field,
+.textarea-field {
     padding: 12px;
     font-size: 16px;
     border: 2px solid #ccc;
@@ -51,25 +52,28 @@
     color: #333;
     transition: all 0.3s ease;
 }
+
 .textarea-field {
     height: 100px;
     resize: vertical;
 }
+
 @media (max-width: 768px) {
     .form-container {
-        flex-direction: column; 
+        flex-direction: column;
         padding: 15px;
     }
 
     .input-group {
-        flex: 1 1 100%; 
+        flex: 1 1 100%;
     }
 
     .input-group p {
         font-size: 14px;
     }
 
-    .input-field, .textarea-field {
+    .input-field,
+    .textarea-field {
         font-size: 14px;
     }
 
@@ -77,6 +81,7 @@
         font-size: 14px;
     }
 }
+
 .user-info,
 .feedbacks-table,
 .bookings-table {
@@ -159,6 +164,35 @@ table tbody tr:hover {
     opacity: 0;
     animation: fadeIn 1s forwards;
 }
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.home-button {
+    background-color: #2A376D;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.logout-button {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.home-button:hover,
+.logout-button:hover {
+    opacity: 0.8;
+}
+
 
 @media (max-width: 768px) {
     .dashboard-container {

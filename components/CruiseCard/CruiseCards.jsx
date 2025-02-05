@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './CruiseCards.module.css';
+import Loading from "@/components/Loading/Loading";
 
 const CruiseCards = () => {
     const [cruises, setCruises] = useState([]);
@@ -22,7 +23,7 @@ const CruiseCards = () => {
         fetchCruises();
     }, []);
 
-    if (loading) return <p>Загрузка...</p>;
+    if (loading) return <Loading />;
 
     return (
         <div className='layout'>

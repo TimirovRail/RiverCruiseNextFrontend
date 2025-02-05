@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styles from './ServiceDetail.module.css';
+import Loading from "@/components/Loading/Loading";
+
 
 const ServiceDetail = () => {
     const router = useRouter();
@@ -23,7 +25,7 @@ const ServiceDetail = () => {
         }
     }, [id]);
 
-    if (loading) return <p>Загрузка...</p>;
+    if (loading) return <Loading />;;
     if (!service) return <p>Услуга не найдена.</p>;
 
     return (

@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './ProfilePopup.module.css';
+import Loading from "@/components/Loading/Loading";
 
-const ProfilePopup = ({ user, onClose }) => {
+const ProfilePopup = ({ onClose }) => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Загружаем пользователя из localStorage при монтировании компонента
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const storedToken = localStorage.getItem('token');
+
+        if (storedUser && storedToken) {
+            setUser(storedUser);
+        } else {
+            // Если данных нет, перенаправляем на страницу входа
+            window.location.href = '/login';
+        }
+    }, []);
+
     const handleLogout = () => {
+        // Удаляем данные пользователя и токен из localStorage
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         window.location.href = '/login';
     };
+
+    // Если пользователь еще не загружен, показываем индикатор загрузки
+    if (!user) {
+        return <Loading />;
+    }
+
+    // Определяем, куда перенаправлять
+    const profileLink = user.role === 'admin' ? '/admin/dashboard' : '/profile';
 
     return (
         <div className={styles.overlay}>
@@ -20,7 +45,7 @@ const ProfilePopup = ({ user, onClose }) => {
                     <p>Имя: {user.name}</p>
                     <p>Email: {user.email}</p>
                     <div className={styles.flexButtons}>
-                        <Link href="/profile">
+                        <Link href={profileLink}>
                             <button className={styles.viewProfileButton}>Перейти в профиль</button>
                         </Link>
                         <button onClick={handleLogout} className={styles.logoutButton}>Выйти</button>
