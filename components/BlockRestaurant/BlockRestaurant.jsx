@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import styles from './BlockRestaurant.module.css';
 import Link from 'next/link';
+import Loading from "@/components/Loading/Loading";
 
 const BlockRestaurant = () => {
     const [services, setServices] = useState([]);
@@ -28,7 +29,7 @@ const BlockRestaurant = () => {
         fetchServices();
     }, []);
 
-    if (loading) return <p>Загрузка...</p>;
+    if (loading) return <Loading />;
     if (error) return <p>Ошибка: {error}</p>;
 
     return (

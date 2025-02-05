@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './CruiseDetail.module.css';
+import Loading from "@/components/Loading/Loading";
 
 const CruiseDetail = () => {
     const { query } = useRouter();
@@ -28,7 +29,7 @@ const CruiseDetail = () => {
         fetchCruise();
     }, [id]);
 
-    if (loading) return <p>Загрузка...</p>;
+    if (loading) return <Loading />;;
     if (!cruise) return <p>Круиз не найден.</p>;
 
     return (

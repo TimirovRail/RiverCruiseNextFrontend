@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './dashboard.css';
+import Loading from "@/components/Loading/Loading";
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -90,9 +91,12 @@ const Dashboard = () => {
         localStorage.removeItem('token');
         router.push('/login');
     };
+    const goToHome = () => {
+        router.push('/');
+    };
 
     if (loading) {
-        return <p>Загрузка...</p>;
+        return <Loading />;
     }
 
     return (
@@ -111,7 +115,10 @@ const Dashboard = () => {
                         <p><strong>Роль:</strong> {userData?.role}</p>
                     </div>
                 )}
-                <button onClick={handleLogout}>Выйти</button>
+                <div className="button-group">
+                    <button onClick={goToHome} className="home-button">На главный экран</button>
+                    <button onClick={handleLogout} className="logout-button">Выйти</button>
+                </div>
 
                 {errors['http://localhost:8000/api/cruises'] ? (
                     <p>Ошибка при загрузке круизов</p>
