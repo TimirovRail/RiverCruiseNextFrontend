@@ -1,69 +1,122 @@
+/* styles.css */
 
-.profile-container {
-    background-color: #f0f8ff; 
-    color: #000000; 
+/* Общие стили для всего профиля */
+body {
     font-family: 'Arial', sans-serif;
-    padding: 30px;
-    text-align: center;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 800px;
+    background-color: #f4f5f7; /* Светлый фон для контраста */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Контейнер с информацией профиля */
+.container {
+    width: 80%;
+    max-width: 1100px;
     margin: 50px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: #006994; 
-}
-
-.profile-info {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-}
-
-.profile-info p {
-    margin: 10px 0;
-}
-
-.logout-button {
-    background-color: #008cba; 
+/* Заголовок профиля */
+header {
+    background-color: #29376D; /* Тёмно-синий цвет */
     color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1.2rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.logout-button:hover {
-    background-color: #005f72; 
-}
-
-.loading {
+    padding: 20px;
+    border-radius: 8px;
     text-align: center;
-    font-size: 1.5rem;
-    color: #007bb5;
 }
 
-@media (max-width: 600px) {
-    .profile-container {
-        padding: 15px;
-    }
+header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+}
 
-    h1 {
-        font-size: 2rem;
-    }
+header h2 {
+    margin: 10px 0 0;
+    font-size: 18px;
+    font-weight: 300;
+}
 
-    .profile-info {
-        font-size: 1rem;
-    }
+/* Секции: отзыва и бронирования */
+.section-content {
+    margin-top: 30px;
+}
 
-    .logout-button {
-        font-size: 1rem;
-        padding: 10px 20px;
-    }
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #3B4055; /* Темно-серый для контраста */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #29376D;
+    padding-bottom: 5px;
+}
+
+/* Стили для списка отзывов и бронирований */
+ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+ul li {
+    background-color: #f9f9f9; /* Очень светлый серый */
+    border-left: 5px solid #29376D;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ul li p {
+    margin: 0;
+    color: #555;
+}
+
+ul li p strong {
+    font-weight: bold;
+    color: #29376D; /* Подчеркнутый цвет для выделения */
+}
+
+ul li p small {
+    font-size: 12px;
+    color: #777;
+}
+
+/* Сообщение об ошибке */
+.error-message {
+    color: red;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Лоадер при загрузке */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: 24px;
+    font-weight: 500;
+    color: #3B4055;
+}
+
+/* Подвал */
+footer {
+    background-color: #29376D; /* Тёмно-синий цвет */
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    margin-top: 40px;
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
 }

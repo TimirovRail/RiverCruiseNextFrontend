@@ -1,68 +1,76 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import './profile.css'; 
+import { useEffect, useState } from "react";
 import Loading from "@/components/Loading/Loading";
+import axios from "axios";
+import './profile.css'; // Подключение стилей
 
-const ProfilePage = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
+export default function Profile() {
+    const [profile, setProfile] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            const token = localStorage.getItem('token'); 
-            if (!token) {
-                router.push('/login'); 
-                return;
-            }
+        axios.get("http://localhost:8000/api/user/profile", {
+            withCredentials: true,  // Для Sanctum
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } // Для JWT
+        })
+            .then(response => {
+                setProfile(response.data);
+            })
+            .catch(error => {
+                console.error("Ошибка загрузки профиля", error);
+                setError("Ошибка загрузки данных");
+            });
+    }, []);
 
-            try {
-                const res = await fetch('http://localhost:8000/api/user/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data.user);
-                } else {
-                    router.push('/login'); 
-                }
-            } catch (err) {
-                console.error(err);
-                router.push('/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfile();
-    }, [router]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        router.push('/login'); 
-    };
-
-    if (loading) {
-        return <Loading />;;
+    if (error) {
+        return <p className="error-message">Ошибка загрузки данных</p>;
     }
 
-    if (!user) {
-        return null; 
+    if (!profile) {
+        return <Loading/>;
     }
 
     return (
-        <div className="profile-container">
-            <h1>Профиль пользователя</h1>
-            <div className="profile-info">
-                <p><strong>Имя:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
+        <div className="container">
+            <header>
+                <h1>{profile.user?.name}</h1>
+                <h2>{profile.user?.email}</h2>
+            </header>
+
+            <div className="section-content">
+                <h3 className="section-title">История отзывов</h3>
+                {profile.feedbacks?.length > 0 ? (
+                    <ul>
+                        {profile.feedbacks.map((fb) => (
+                            <li key={fb.id}>
+                                <p><strong>{fb.feedback}</strong></p>
+                                <p><small>Круиз: {fb.cruise}</small></p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="error-message">Отзывов пока нет</p>
+                )}
             </div>
-            <button onClick={handleLogout} className="logout-button">Выйти</button>
+
+            <div className="section-content">
+                <h3 className="section-title">История бронирований</h3>
+                {profile.bookings?.length > 0 ? (
+                    <ul>
+                        {profile.bookings.map((b) => (
+                            <li key={b.id}>
+                                <p><strong>{b.cruise}</strong></p>
+                                <p><small>Дата: {b.date} — {b.seats} мест</small></p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="error-message">Бронирований пока нет</p>
+                )}
+            </div>
+
+            <footer>
+                <p>Круиз по рекам России</p>
+            </footer>
         </div>
     );
-};
-
-export default ProfilePage;
+}
