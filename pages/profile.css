@@ -3,7 +3,8 @@
 /* Общие стили для всего профиля */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f5f7; /* Светлый фон для контраста */
+    background-color: #f4f5f7;
+    /* Светлый фон для контраста */
     color: #333;
     margin: 0;
     padding: 0;
@@ -22,7 +23,8 @@ body {
 
 /* Заголовок профиля */
 header {
-    background-color: #29376D; /* Тёмно-синий цвет */
+    background-color: #29376D;
+    /* Тёмно-синий цвет */
     color: white;
     padding: 20px;
     border-radius: 8px;
@@ -49,7 +51,8 @@ header h2 {
 .section-title {
     font-size: 24px;
     font-weight: 600;
-    color: #3B4055; /* Темно-серый для контраста */
+    color: #3B4055;
+    /* Темно-серый для контраста */
     margin-bottom: 15px;
     border-bottom: 2px solid #29376D;
     padding-bottom: 5px;
@@ -63,7 +66,8 @@ ul {
 }
 
 ul li {
-    background-color: #f9f9f9; /* Очень светлый серый */
+    background-color: #f9f9f9;
+    /* Очень светлый серый */
     border-left: 5px solid #29376D;
     margin-bottom: 15px;
     padding: 15px;
@@ -78,7 +82,8 @@ ul li p {
 
 ul li p strong {
     font-weight: bold;
-    color: #29376D; /* Подчеркнутый цвет для выделения */
+    color: #29376D;
+    /* Подчеркнутый цвет для выделения */
 }
 
 ul li p small {
@@ -108,7 +113,8 @@ ul li p small {
 
 /* Подвал */
 footer {
-    background-color: #29376D; /* Тёмно-синий цвет */
+    background-color: #29376D;
+    /* Тёмно-синий цвет */
     color: #fff;
     padding: 15px;
     text-align: center;
@@ -119,4 +125,28 @@ footer {
 footer p {
     margin: 0;
     font-size: 14px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffff;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+}
+
+.back-button:hover {
+    background-color: #989898;
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    transform: translateY(0);
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router"; // Используем useRouter из Next.js
 import Loading from "@/components/Loading/Loading";
 import axios from "axios";
 import './profile.css'; // Подключение стилей
@@ -7,6 +8,7 @@ export default function Profile() {
     const [user, setUser] = useState(null);  // Данные текущего пользователя
     const [data, setData] = useState(null);  // Все бронирования и отзывы
     const [error, setError] = useState(null);
+    const router = useRouter(); // Хук для навигации в Next.js
 
     useEffect(() => {
         // Загружаем текущего пользователя
@@ -53,6 +55,13 @@ export default function Profile() {
             <header>
                 <h1>{user.name}</h1>
                 <h2>{user.email}</h2>
+                {/* Кнопка для возврата на главное меню */}
+                <button
+                    onClick={() => router.push("/")} // Переход на главную страницу
+                    className="back-button"
+                >
+                    На главную
+                </button>
             </header>
 
             <div className="section-content">
