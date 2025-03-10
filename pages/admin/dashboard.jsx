@@ -11,6 +11,13 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
     const router = useRouter();
+
+    // Состояние для модального окна
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingCruise, setEditingCruise] = useState(null);
+    const [editingFeedback, setEditingFeedback] = useState(null);
+
+    // Состояние для создания нового круиза
     const [newCruise, setNewCruise] = useState({
         name: '',
         description: '',
@@ -22,29 +29,8 @@ const Dashboard = () => {
         price_per_person: 0,
         available_places: 0,
     });
-    const handleCreateCruise = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/api/cruises', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(newCruise),
-            });
 
-            if (!response.ok) {
-                throw new Error('Ошибка при создании круиза');
-            }
-
-            const data = await response.json();
-            setCruises([...cruises, data]);
-            alert('Круиз успешно добавлен!');
-        } catch (error) {
-            console.error(error);
-            alert('Ошибка: не удалось создать круиз');
-        }
-    };
+    // Загрузка данных
     useEffect(() => {
         const fetchAllData = async () => {
             setLoading(true);
@@ -87,12 +73,251 @@ const Dashboard = () => {
         fetchAllData();
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        router.push('/login');
+    // Создание нового круиза
+    const handleCreateCruise = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/cruises', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify(newCruise),
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при создании круиза');
+            }
+
+            const data = await response.json();
+            setCruises([...cruises, data]);
+            alert('Круиз успешно добавлен!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось создать круиз');
+        }
     };
-    const goToHome = () => {
-        router.push('/');
+
+    // Удаление круиза
+    const handleDeleteCruise = async (cruiseId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/cruises/${cruiseId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при удалении круиза');
+            }
+
+            setCruises(cruises.filter(cruise => cruise.id !== cruiseId));
+            alert('Круиз успешно удалён!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось удалить круиз');
+        }
+    };
+
+    // Удаление отзыва
+    const handleDeleteFeedback = async (feedbackId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/feedbacks/${feedbackId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при удалении отзыва');
+            }
+
+            setFeedbacks(feedbacks.filter(feedback => feedback.id !== feedbackId));
+            alert('Отзыв успешно удалён!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось удалить отзыв');
+        }
+    };
+
+    // Открытие модального окна для редактирования круиза
+    const handleEditCruiseClick = (cruise) => {
+        setEditingCruise(cruise);
+        setIsEditModalOpen(true);
+    };
+
+    // Открытие модального окна для редактирования отзыва
+    const handleEditFeedbackClick = (feedback) => {
+        setEditingFeedback(feedback);
+        setIsEditModalOpen(true);
+    };
+
+    // Сохранение изменений круиза
+    const handleSaveCruise = async (updatedData) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/cruises/${updatedData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при редактировании круиза');
+            }
+
+            const data = await response.json();
+            setCruises(cruises.map(cruise => cruise.id === updatedData.id ? data : cruise));
+            handleCloseModal(); // Закрываем модальное окно и очищаем состояние
+            alert('Круиз успешно обновлён!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось обновить круиз');
+        }
+    };
+
+    // Сохранение изменений отзыва
+    const handleSaveFeedback = async (updatedData) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/feedbacks/${updatedData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при редактировании отзыва');
+            }
+
+            const data = await response.json();
+            setFeedbacks(feedbacks.map(feedback => feedback.id === updatedData.id ? data : feedback));
+            handleCloseModal(); // Закрываем модальное окно и очищаем состояние
+            alert('Отзыв успешно обновлён!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось обновить отзыв');
+        }
+    };
+
+    // Закрытие модального окна и очистка состояния
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false);
+        setEditingCruise(null);
+        setEditingFeedback(null);
+    };
+
+    // Компонент модального окна
+    const EditModal = ({ isOpen, onClose, children }) => {
+        if (!isOpen) return null;
+
+        return (
+            <div className="modal-overlay">
+                <div className="modal-content">
+                    {children}
+                    <button onClick={onClose} className="modal-close-button">Закрыть</button>
+                </div>
+            </div>
+        );
+    };
+
+    // Форма редактирования круиза
+    const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
+        const [formData, setFormData] = useState(cruise);
+
+        const handleChange = (e) => {
+            const { name, value } = e.target;
+            setFormData({ ...formData, [name]: value });
+        };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            onSave(formData);
+        };
+
+        return (
+            <form onSubmit={handleSubmit}>
+                <div className="input-group">
+                    <p>Название круиза</p>
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="input-field"
+                    />
+                </div>
+                <div className="input-group">
+                    <p>Описание круиза</p>
+                    <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        className="textarea-field"
+                    ></textarea>
+                </div>
+                {/* Добавьте остальные поля для редактирования */}
+                <button type="submit" className="button">Сохранить</button>
+                <button type="button" onClick={onCancel} className="button">Отмена</button>
+            </form>
+        );
+    };
+
+    // Форма редактирования отзыва
+    const FeedbackEditForm = ({ feedback, onSave, onCancel }) => {
+        const [formData, setFormData] = useState(feedback);
+
+        const handleChange = (e) => {
+            const { name, value } = e.target;
+            setFormData({ ...formData, [name]: value });
+        };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            onSave(formData);
+        };
+
+        return (
+            <form onSubmit={handleSubmit}>
+                <div className="input-group">
+                    <p>Имя</p>
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="input-field"
+                    />
+                </div>
+                <div className="input-group">
+                    <p>Email</p>
+                    <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="input-field"
+                    />
+                </div>
+                <div className="input-group">
+                    <p>Отзыв</p>
+                    <textarea
+                        name="feedback"
+                        value={formData.feedback}
+                        onChange={handleChange}
+                        className="textarea-field"
+                    ></textarea>
+                </div>
+                <button type="submit" className="button">Сохранить</button>
+                <button type="button" onClick={onCancel} className="button">Отмена</button>
+            </form>
+        );
     };
 
     if (loading) {
@@ -101,6 +326,24 @@ const Dashboard = () => {
 
     return (
         <div className="layout">
+            {/* Модальное окно для редактирования */}
+            <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
+                {editingCruise && (
+                    <CruiseEditForm
+                        cruise={editingCruise}
+                        onSave={handleSaveCruise}
+                        onCancel={handleCloseModal}
+                    />
+                )}
+                {editingFeedback && (
+                    <FeedbackEditForm
+                        feedback={editingFeedback}
+                        onSave={handleSaveFeedback}
+                        onCancel={handleCloseModal}
+                    />
+                )}
+            </EditModal>
+
             <div className="dashboard-container">
                 <div className="title">
                     <h2 className="h1-title">ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
@@ -116,8 +359,11 @@ const Dashboard = () => {
                     </div>
                 )}
                 <div className="button-group">
-                    <button onClick={goToHome} className="home-button">На главный экран</button>
-                    <button onClick={handleLogout} className="logout-button">Выйти</button>
+                    <button onClick={() => router.push('/')} className="home-button">На главный экран</button>
+                    <button onClick={() => {
+                        localStorage.removeItem('token');
+                        router.push('/login');
+                    }} className="logout-button">Выйти</button>
                 </div>
 
                 {errors['http://localhost:8000/api/cruises'] ? (
@@ -136,6 +382,7 @@ const Dashboard = () => {
                                     <th>Начало</th>
                                     <th>Конец</th>
                                     <th>Цена</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,17 +391,24 @@ const Dashboard = () => {
                                         <td>{cruise.name}</td>
                                         <td>{cruise.description}</td>
                                         <td>{cruise.river}</td>
-                                        <td>{cruise.total_places}/{cruise.total_places}</td>
+                                        <td>{cruise.total_places}/{cruise.available_places}</td>
                                         <td>{cruise.cabins}</td>
                                         <td>{cruise.start_date}</td>
                                         <td>{cruise.end_date}</td>
                                         <td>{cruise.price_per_person}</td>
+                                        <td>
+                                            <button onClick={() => handleEditCruiseClick(cruise)} className="edit-button">
+                                                Редактировать
+                                            </button>
+                                            <button onClick={() => handleDeleteCruise(cruise.id)} className="delete-button">
+                                                Удалить
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </>
-
                 )}
 
                 <h2>ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА</h2>
@@ -251,6 +505,7 @@ const Dashboard = () => {
 
                     <button type="submit" className="button">Добавить круиз</button>
                 </form>
+
                 {errors['http://localhost:8000/api/feedbacks'] ? (
                     <p>Ошибка при загрузке отзывов</p>
                 ) : (
@@ -263,6 +518,7 @@ const Dashboard = () => {
                                     <th>Email</th>
                                     <th>Отзыв</th>
                                     <th>Круиз</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -272,6 +528,14 @@ const Dashboard = () => {
                                         <td>{feedback.email}</td>
                                         <td>{feedback.feedback}</td>
                                         <td>{feedback.cruise}</td>
+                                        <td>
+                                            <button onClick={() => handleEditFeedbackClick(feedback)} className="edit-button">
+                                                Редактировать
+                                            </button>
+                                            <button onClick={() => handleDeleteFeedback(feedback.id)} className="delete-button">
+                                                Удалить
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
