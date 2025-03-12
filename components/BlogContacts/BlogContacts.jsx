@@ -18,7 +18,18 @@ export default function BlogContacts() {
     });
 
     const [isAuthenticated, setIsAuthenticated] = useState(false); // Состояние авторизации
+    const [currentImage, setCurrentImage] = useState('/images/ticketback.jpg'); // Текущая фотография
     const router = useRouter(); // Используем useRouter для перенаправления
+
+    // Объект, связывающий круизы с путями к фотографиям
+    const cruiseImages = {
+        Волга: '/images/cruiselistvolga.jpg',
+        Енисей: '/images/cruiselistenisey.jpg',
+        Дон: '/images/cruiselistdon.jpg',
+        Обь: '/images/cruiselistob.jpg',
+        Амур: '/images/cruiselistamur.jpg',
+        Лена: '/images/cruiselistlena.jpg',
+    };
 
     // Проверяем авторизацию при загрузке компонента
     useEffect(() => {
@@ -34,6 +45,11 @@ export default function BlogContacts() {
             ...formData,
             [name]: value,
         });
+
+        // Обновляем фотографию при изменении выбора круиза
+        if (name === 'cruise') {
+            setCurrentImage(cruiseImages[value] || '/images/ticketback.jpg');
+        }
     };
 
     const handleExtrasChange = (e) => {
@@ -234,7 +250,7 @@ export default function BlogContacts() {
                     </div>
                 )}
                 <div className={styles.imageContainer}>
-                    <img src="./images/ticketback.jpg" alt="О круизах" />
+                    <img src={currentImage} alt="Круиз" />
                 </div>
             </motion.div>
         </div>
