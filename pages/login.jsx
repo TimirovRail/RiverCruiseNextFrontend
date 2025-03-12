@@ -53,12 +53,6 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true);
 
-        if (!isLogin && formData.password !== formData.password_confirmation) {
-            setError('Пароли не совпадают');
-            setLoading(false);
-            return;
-        }
-
         const url = isLogin
             ? 'http://localhost:8000/api/auth/login'
             : 'http://localhost:8000/api/auth/register';
@@ -66,7 +60,7 @@ const LoginPage = () => {
         const body = JSON.stringify({
             email: formData.email,
             password: formData.password,
-            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation } ),
+            ...(isLogin ? {} : { name: formData.name, password_confirmation: formData.password_confirmation }),
         });
 
         try {
@@ -84,9 +78,11 @@ const LoginPage = () => {
                 console.log('Успешный ответ:', data);
 
                 if (isLogin) {
+                    // Сохраняем токен и данные пользователя в localStorage
                     localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('role', data.role);
-                    setIsAuthenticated(true);  // Отмечаем успешную авторизацию, но не редиректим сразу
+                    localStorage.setItem('user', JSON.stringify(data.user)); // Сохраняем данные пользователя
+
+                    setIsAuthenticated(true); // Отмечаем успешную авторизацию
 
                     // Генерация секретного ключа для двухфакторной аутентификации
                     const generateSecret = speakeasy.generateSecret({ length: 20 });
@@ -109,7 +105,6 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
-
     const handleVerifyCode = () => {
         try {
             // Логируем переданные данные для отладки
