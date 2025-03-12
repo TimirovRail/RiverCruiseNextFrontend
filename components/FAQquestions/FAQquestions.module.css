@@ -1,0 +1,37 @@
+.faqContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; 
+    align-items: start;
+}
+
+.faqItem {
+    border: 1px solid #ddd;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column; 
+}
+
+.faqQuestion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f9f9f9;
+    color: #333645;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.faqAnswer {
+    padding: 15px;
+    background-color: #fff;
+    color: #333645;
+    font-size: 16px;
+    line-height: 1.5;
+    flex-grow: 1;
+}

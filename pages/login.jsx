@@ -80,6 +80,7 @@ const LoginPage = () => {
                 if (isLogin) {
                     // Сохраняем токен и данные пользователя в localStorage
                     localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('role', data.role);
                     localStorage.setItem('user', JSON.stringify(data.user)); // Сохраняем данные пользователя
 
                     setIsAuthenticated(true); // Отмечаем успешную авторизацию
@@ -134,8 +135,17 @@ const LoginPage = () => {
                 setIsVerified(true);
                 alert('Код подтвержден!');
 
-                // После успешной верификации перенаправляем на главную страницу
-                router.push('/');  // Это перенаправит на главную страницу
+                // Получаем данные пользователя из localStorage
+                const user = JSON.parse(localStorage.getItem('user')); // Извлекаем данные пользователя
+
+                // Проверяем роль пользователя
+                if (user && user.role === 'admin') {
+                    // Перенаправляем администратора на страницу /admin/dashboard
+                    router.push('/admin/dashboard');
+                } else {
+                    // Перенаправляем обычного пользователя на главную страницу
+                    router.push('/');
+                }
             } else {
                 alert('Неверный код');
             }
