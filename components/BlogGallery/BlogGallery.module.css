@@ -97,7 +97,6 @@
 .modalContent {
     max-width: 90%;
     max-height: 90vh;
-    background: #2A376D;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

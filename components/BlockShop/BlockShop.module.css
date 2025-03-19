@@ -193,3 +193,8 @@
     font-size: 1.6rem;
     font-weight: bold;
 }
+
+.cartButton{
+    font-size: 20px;
+    font-weight: 600;
+}
