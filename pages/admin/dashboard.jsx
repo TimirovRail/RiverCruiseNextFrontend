@@ -8,6 +8,7 @@ const Dashboard = () => {
     const [feedbacks, setFeedbacks] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [cruises, setCruises] = useState([]);
+    const [photos, setPhotos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
     const router = useRouter();
@@ -40,6 +41,7 @@ const Dashboard = () => {
                 { url: 'http://localhost:8000/api/feedbacks', setter: setFeedbacks },
                 { url: 'http://localhost:8000/api/bookings', setter: setBookings },
                 { url: 'http://localhost:8000/api/cruises', setter: setCruises },
+                { url: 'http://localhost:8000/api/photos', setter: setPhotos },
             ];
 
             try {
@@ -72,7 +74,47 @@ const Dashboard = () => {
 
         fetchAllData();
     }, []);
+    // Удаление фотографии
+    const handleDeletePhoto = async (photoId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
 
+            if (!response.ok) {
+                throw new Error('Ошибка при удалении фотографии');
+            }
+
+            setPhotos(photos.filter(photo => photo.id !== photoId));
+            alert('Фотография успешно удалена!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось удалить фотографию');
+        }
+    };
+    const fetchPhotos = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/photos', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке фотографий');
+            }
+
+            const data = await response.json();
+            setPhotos(data);
+        } catch (error) {
+                console.error(error);
+            setError(error.message);
+        }
+    };
     // Создание нового круиза
     const handleCreateCruise = async () => {
         try {
@@ -572,6 +614,27 @@ const Dashboard = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </>
+                )}
+                {errors.photos ? (
+                    <p>{errors.photos}</p>
+                ) : (
+                    <>
+                        <h2>ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ</h2>
+                        <div className="photos-grid">
+                            {photos.map((photo) => (
+                                <div key={photo.id} className="photo-card">
+                                    <img
+                                        src={`http://localhost:8000${photo.url}`}
+                                        alt={photo.name || `Фото пользователя ${photo.user_id}`}
+                                        className="photo-image"
+                                    />
+                                    <div className="photo-actions">
+                                        <button onClick={() => handleDeletePhoto(photo.id)}>Удалить</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </>
                 )}
             </div>

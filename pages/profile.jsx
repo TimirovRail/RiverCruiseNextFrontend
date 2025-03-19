@@ -7,6 +7,7 @@ import './profile.css'; // Подключение стилей
 export default function Profile() {
     const [user, setUser] = useState(null);  // Данные текущего пользователя
     const [data, setData] = useState(null);  // Все бронирования и отзывы
+    const [userPhotos, setUserPhotos] = useState([]); // Фотографии пользователя
     const [error, setError] = useState(null);
     const router = useRouter(); // Хук для навигации в Next.js
 
@@ -37,6 +38,22 @@ export default function Profile() {
                 setError("Ошибка загрузки данных");
             });
     }, []);
+
+    useEffect(() => {
+        // Загружаем фотографии пользователя
+        if (user) {
+            axios.get(`http://localhost:8000/api/user/photos/${user.id}`, {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            })
+                .then(response => {
+                    setUserPhotos(response.data.photos);
+                })
+                .catch(error => {
+                    console.error("Ошибка загрузки фотографий", error);
+                });
+        }
+    }, [user]); // Загружаем фотографии при изменении user
 
     if (error) {
         return <p className="error-message">{error}</p>;
@@ -93,6 +110,25 @@ export default function Profile() {
                     </ul>
                 ) : (
                     <p className="error-message">У вас пока нет бронирований</p>
+                )}
+            </div>
+
+            <div className="section-content">
+                <h3 className="section-title">Мои фотографии</h3>
+                {userPhotos.length > 0 ? (
+                    <div className="user-photos">
+                        {userPhotos.map((photo) => (
+                            <div key={photo.id} className="photo-wrapper">
+                                <img
+                                    src={`http://localhost:8000${photo.url}`} // Используем URL из сервера
+                                    alt={photo.name || `User photo ${photo.id}`}
+                                    className="photo"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="error-message">У вас пока нет фотографий</p>
                 )}
             </div>
 
