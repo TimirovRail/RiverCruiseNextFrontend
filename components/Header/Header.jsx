@@ -7,22 +7,27 @@ import ProfilePopup from '../ProfilePopup/ProfilePopup';
 
 const Header = () => {
     const [user, setUser] = useState(null);
-    const [showPopup, setShowPopup] = useState(false); // Используем showPopup
+    const [showPopup, setShowPopup] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // Состояние для бургер-меню
 
     const handleProfileClick = () => {
-        setShowPopup(true);  // Меняем isPopupVisible на showPopup
+        setShowPopup(true);
     };
 
     const handleClosePopup = () => {
-        setShowPopup(false); // Меняем isPopupVisible на showPopup
+        setShowPopup(false);
+    };
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen); // Переключаем состояние меню
     };
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
-        
+
         if (storedUser && storedUser !== 'undefined') {
             try {
-                setUser(JSON.parse(storedUser)); 
+                setUser(JSON.parse(storedUser));
             } catch (error) {
                 console.error('Ошибка парсинга данных пользователя:', error);
             }
@@ -38,7 +43,7 @@ const Header = () => {
                     if (!res.ok) {
                         throw new Error('Ошибка запроса: ' + res.statusText);
                     }
-                    return res.json(); 
+                    return res.json();
                 })
                 .then(data => {
                     setUser(data);
@@ -55,7 +60,14 @@ const Header = () => {
             <div className={styles.logo}>
                 <img src="/images/logo.png" alt="Логотип" />
             </div>
-            <nav className={styles.nav}>
+
+            {/* Кнопка бургер-меню для мобильных устройств */}
+            <button className={styles.burgerMenu} onClick={toggleMenu}>
+                <span className={isMenuOpen ? styles.burgerIconOpen : styles.burgerIcon}></span>
+            </button>
+
+            {/* Навигация */}
+            <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
                 <Link href="/">Главная</Link>
                 <Link href="/Cruises">Круизы</Link>
                 <Link href="/Restaurant">Услуги</Link>
@@ -64,6 +76,7 @@ const Header = () => {
                 <Link href="/Blog">Блог</Link>
                 <Link href="/Shop">Магазин</Link>
             </nav>
+
             <div className={styles.profile}>
                 {user ? (
                     <span onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
@@ -78,7 +91,6 @@ const Header = () => {
                 )}
             </div>
 
-            {/* Используем showPopup вместо isPopupVisible */}
             {showPopup && <ProfilePopup user={user} onClose={handleClosePopup} />}
         </header>
     );

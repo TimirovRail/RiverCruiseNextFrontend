@@ -1,7 +1,12 @@
+/* Базовые стили */
 .slider {
     display: flex;
     align-items: center;
     gap: 30px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
 }
 
 .testimonialWrapper {
@@ -10,6 +15,8 @@
     overflow: hidden;
     transition: transform 0.5s ease-in-out;
     height: auto;
+    width: 100%;
+    justify-content: center;
 }
 
 .testimonial {
@@ -18,20 +25,14 @@
     padding: 20px;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
-    margin: 20px 20px;
+    margin: 20px 0;
     height: auto;
+    border-radius: 8px;
+    flex: 1;
 }
 
 .testimonial:hover {
     transform: scale(1.05);
-}
-
-.avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    object-fit: cover;
 }
 
 .quote {
@@ -39,12 +40,18 @@
     font-style: italic;
     color: #000000;
     margin: 10px 0;
+    line-height: 1.5;
 }
 
 .author {
     font-size: 14px;
     font-weight: bold;
     color: #333;
+}
+
+.cruise {
+    font-size: 12px;
+    color: #666;
 }
 
 .prev,
@@ -56,9 +63,203 @@
     font-size: 18px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border-radius: 5px;
 }
 
 .prev:hover,
 .next:hover {
     background-color: #3b4051;
+}
+
+.prev:disabled,
+.next:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .slider {
+        gap: 30px;
+        max-width: 1500px;
+        padding: 0 20px;
+    }
+
+    .testimonialWrapper {
+        gap: 30px;
+    }
+
+    .testimonial {
+        min-width: 300px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .quote {
+        font-size: 16px;
+    }
+
+    .author {
+        font-size: 14px;
+    }
+
+    .cruise {
+        font-size: 12px;
+    }
+
+    .prev,
+    .next {
+        padding: 10px 15px;
+        font-size: 18px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .slider {
+        gap: 20px;
+        max-width: 1000px;
+        padding: 0 15px;
+    }
+
+    .testimonialWrapper {
+        gap: 20px;
+    }
+
+    .testimonial {
+        min-width: 280px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    .quote {
+        font-size: 15px;
+    }
+
+    .author {
+        font-size: 13px;
+    }
+
+    .cruise {
+        font-size: 11px;
+    }
+
+    .prev,
+    .next {
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .slider {
+        gap: 15px;
+        max-width: 700px;
+        padding: 0 10px;
+    }
+
+    .testimonialWrapper {
+        gap: 15px;
+    }
+
+    .testimonial {
+        min-width: 300px;
+        padding: 12px;
+        margin: 10px 0;
+    }
+
+    .quote {
+        font-size: 14px;
+    }
+
+    .author {
+        font-size: 12px;
+    }
+
+    .cruise {
+        font-size: 10px;
+    }
+
+    .prev,
+    .next {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .slider {
+        gap: 10px;
+        max-width: 450px;
+        padding: 0 8px;
+    }
+
+    .testimonialWrapper {
+        gap: 10px;
+    }
+
+    .testimonial {
+        min-width: 350px;
+        padding: 10px;
+        margin: 8px 0;
+    }
+
+    .quote {
+        font-size: 13px;
+    }
+
+    .author {
+        font-size: 11px;
+    }
+
+    .cruise {
+        font-size: 9px;
+    }
+
+    .prev,
+    .next {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .slider {
+        gap: 8px;
+        max-width: 300px;
+        padding: 0 5px;
+    }
+
+    .testimonialWrapper {
+        gap: 8px;
+    }
+
+    .testimonial {
+        min-width: 260px;
+        padding: 8px;
+        margin: 5px 0;
+    }
+
+    .quote {
+        font-size: 12px;
+    }
+
+    .author {
+        font-size: 10px;
+    }
+
+    .cruise {
+        font-size: 8px;
+    }
+
+    .prev,
+    .next {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
 }

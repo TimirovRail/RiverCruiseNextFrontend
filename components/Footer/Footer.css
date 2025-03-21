@@ -1,20 +1,110 @@
+/* Базовые стили */
 .footer-block {
     background-color: #2A376D;
     padding: 20px;
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.footer-logo {
+    width: 130px;
+    margin-bottom: 15px;
 }
 
 .footer-text {
     width: 100%;
     font-size: 32px;
     color: white;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
+    font-family: "Montserrat", sans-serif;
 }
-.footer-logo{
-    width: 130px;
 
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .footer-block {
+        padding: 20px;
+    }
+
+    .footer-logo {
+        width: 130px;
+        margin-bottom: 15px;
+    }
+
+    .footer-text {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .footer-block {
+        padding: 15px;
+    }
+
+    .footer-logo {
+        width: 110px;
+        margin-bottom: 12px;
+    }
+
+    .footer-text {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .footer-block {
+        padding: 10px;
+    }
+
+    .footer-logo {
+        width: 90px;
+        margin-bottom: 10px;
+    }
+
+    .footer-text {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .footer-block {
+        padding: 8px;
+    }
+
+    .footer-logo {
+        width: 80px;
+        margin-bottom: 8px;
+    }
+
+    .footer-text {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .footer-block {
+        padding: 5px;
+    }
+
+    .footer-logo {
+        width: 70px;
+        margin-bottom: 6px;
+    }
+
+    .footer-text {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
 }

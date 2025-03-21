@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styles from './ServiceDetail.module.css';
 import Loading from "@/components/Loading/Loading";
-
+import Header from '@/components/Header/Header';
 
 const ServiceDetail = () => {
     const router = useRouter();
@@ -25,11 +25,12 @@ const ServiceDetail = () => {
         }
     }, [id]);
 
-    if (loading) return <Loading />;;
+    if (loading) return <Loading />;
     if (!service) return <p>Услуга не найдена.</p>;
 
     return (
         <div className='layout'>
+            <Header />
             <div className={styles.serviceDetail}>
                 <div className={styles.content}>
                     <img src={service.img} alt={service.title} className={styles.serviceImage} />

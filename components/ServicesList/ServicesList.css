@@ -1,3 +1,4 @@
+/* Базовые стили */
 .services-list {
     display: flex;
     flex-wrap: wrap;
@@ -5,53 +6,195 @@
     gap: 50px;
     width: 100%;
     padding: 20px;
+    max-width: 1500px;
+    margin: 0 auto;
 }
-.services-list > div:hover .services-text {
-    color: #FF8C00;
-}
-.services-list > div {
+
+.services-list>div {
     flex-grow: 1;
     max-width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease, opacity 0.3s ease; 
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.services-list > div:hover {
+.services-list>div:hover {
     transform: scale(1.05);
     opacity: 0.9;
-}
-
-.services-text {
-    font-size: 32px;
-    color: #023047;
-    text-align: left;
-    font-weight: bold;
-    transition: color 0.3s ease; 
-}
-
-
-
-.services-description {
-    font-size: 16px;
-    color: #023047;
-    text-align: left;
-    transition: color 0.3s ease; 
-}
-
-.services-list > div:hover .services-description {
-    color: #FF8C00; 
 }
 
 .services-img {
     width: 100%;
     max-width: 450px;
     height: auto;
-    transition: transform 0.3s ease; 
+    border-radius: 8px;
+    transition: transform 0.3s ease;
 }
 
-.services-list > div:hover .services-img {
-    transform: scale(1.1); 
+.services-list>div:hover .services-img {
+    transform: scale(1.1);
+}
+
+.services-text {
+    font-size: 32px;
+    color: #023047;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: color 0.3s ease;
+}
+
+.services-list>div:hover .services-text {
+    color: #FF8C00;
+}
+
+.services-description {
+    font-size: 16px;
+    color: #023047;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.services-list>div:hover .services-description {
+    color: #FF8C00;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .services-list {
+        gap: 50px;
+        padding: 20px;
+        max-width: 1500px;
+    }
+
+    .services-list>div {
+        max-width: 300px;
+    }
+
+    .services-img {
+        max-width: 450px;
+    }
+
+    .services-text {
+        font-size: 32px;
+        margin: 10px 0;
+    }
+
+    .services-description {
+        font-size: 16px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .services-list {
+        gap: 40px;
+        padding: 15px;
+        max-width: 1000px;
+    }
+
+    .services-list>div {
+        max-width: 250px;
+    }
+
+    .services-img {
+        max-width: 350px;
+    }
+
+    .services-text {
+        font-size: 28px;
+        margin: 8px 0;
+    }
+
+    .services-description {
+        font-size: 14px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .services-list {
+        gap: 30px;
+        padding: 10px;
+        max-width: 700px;
+    }
+
+    .services-list>div {
+        max-width: 200px;
+    }
+
+    .services-img {
+        max-width: 300px;
+    }
+
+    .services-text {
+        font-size: 24px;
+        margin: 6px 0;
+    }
+
+    .services-description {
+        font-size: 13px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .services-list {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 8px;
+        max-width: 450px;
+    }
+
+    .services-list>div {
+        max-width: 350px;
+        width: 100%;
+    }
+
+    .services-img {
+        max-width: 100%;
+    }
+
+    .services-text {
+        font-size: 20px;
+        margin: 5px 0;
+    }
+
+    .services-description {
+        font-size: 12px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .services-list {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 5px;
+        max-width: 300px;
+    }
+
+    .services-list>div {
+        max-width: 280px;
+        width: 100%;
+    }
+
+    .services-img {
+        max-width: 100%;
+    }
+
+    .services-text {
+        font-size: 18px;
+        margin: 4px 0;
+    }
+
+    .services-description {
+        font-size: 11px;
+    }
 }

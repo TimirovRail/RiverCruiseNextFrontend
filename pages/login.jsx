@@ -54,8 +54,8 @@ const LoginPage = () => {
         setLoading(true);
 
         const url = isLogin
-            ? 'http://localhost:8000/api/auth/login'
-            : 'http://localhost:8000/api/auth/register';
+            ? 'http://localhost:8000/api/login'
+            : 'http://localhost:8000/api/register';
 
         const body = JSON.stringify({
             email: formData.email,

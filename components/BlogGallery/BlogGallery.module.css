@@ -1,4 +1,4 @@
-
+/* Базовые стили */
 .galleryContainer {
     display: flex;
     gap: 30px;
@@ -6,6 +6,9 @@
     padding: 20px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1500px;
+    margin: 0 auto;
+    border-radius: 8px;
 }
 
 .column {
@@ -13,6 +16,7 @@
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .column h3 {
@@ -21,7 +25,6 @@
     margin-bottom: 20px;
     text-align: center;
 }
-
 
 .images {
     display: grid;
@@ -46,7 +49,6 @@
     height: 150px;
     object-fit: cover;
 }
-
 
 .uploadForm {
     display: flex;
@@ -74,12 +76,12 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border-radius: 5px;
 }
 
 .uploadForm button[type="submit"]:hover {
     background-color: #314184;
 }
-
 
 .modal {
     position: fixed;
@@ -135,4 +137,286 @@
     margin-bottom: 5px;
     font-size: 0.9rem;
     color: #2A376D;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .galleryContainer {
+        flex-direction: row;
+        gap: 30px;
+        padding: 20px;
+        max-width: 1500px;
+    }
+
+    .column {
+        padding: 20px;
+    }
+
+    .column h3 {
+        font-size: 1.5rem;
+    }
+
+    .images {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .image {
+        height: 150px;
+    }
+
+    .uploadForm {
+        gap: 15px;
+    }
+
+    .uploadForm input[type="file"] {
+        padding: 10px;
+    }
+
+    .uploadForm button[type="submit"] {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+
+    .fileList span {
+        font-size: 0.9rem;
+    }
+
+    .modalContent {
+        padding: 20px;
+    }
+
+    .modalImage {
+        max-height: 80vh;
+    }
+
+    .column p {
+        font-size: 1rem;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .galleryContainer {
+        flex-direction: row;
+        gap: 20px;
+        padding: 15px;
+        max-width: 1000px;
+    }
+
+    .column {
+        padding: 15px;
+    }
+
+    .column h3 {
+        font-size: 1.4rem;
+    }
+
+    .images {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+
+    .image {
+        height: 130px;
+    }
+
+    .uploadForm {
+        gap: 12px;
+    }
+
+    .uploadForm input[type="file"] {
+        padding: 8px;
+    }
+
+    .uploadForm button[type="submit"] {
+        padding: 8px 18px;
+        font-size: 14px;
+    }
+
+    .fileList span {
+        font-size: 0.85rem;
+    }
+
+    .modalContent {
+        padding: 15px;
+    }
+
+    .modalImage {
+        max-height: 75vh;
+    }
+
+    .column p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .galleryContainer {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px;
+        max-width: 700px;
+    }
+
+    .column {
+        padding: 12px;
+    }
+
+    .column h3 {
+        font-size: 1.3rem;
+    }
+
+    .images {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .image {
+        height: 120px;
+    }
+
+    .uploadForm {
+        gap: 10px;
+    }
+
+    .uploadForm input[type="file"] {
+        padding: 6px;
+    }
+
+    .uploadForm button[type="submit"] {
+        padding: 6px 16px;
+        font-size: 13px;
+    }
+
+    .fileList span {
+        font-size: 0.8rem;
+    }
+
+    .modalContent {
+        padding: 10px;
+    }
+
+    .modalImage {
+        max-height: 70vh;
+    }
+
+    .column p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .galleryContainer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px;
+        max-width: 450px;
+    }
+
+    .column {
+        padding: 10px;
+    }
+
+    .column h3 {
+        font-size: 1.2rem;
+    }
+
+    .images {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
+    .image {
+        height: 100px;
+    }
+
+    .uploadForm {
+        gap: 8px;
+    }
+
+    .uploadForm input[type="file"] {
+        padding: 5px;
+    }
+
+    .uploadForm button[type="submit"] {
+        padding: 5px 14px;
+        font-size: 12px;
+    }
+
+    .fileList span {
+        font-size: 0.75rem;
+    }
+
+    .modalContent {
+        padding: 8px;
+    }
+
+    .modalImage {
+        max-height: 65vh;
+    }
+
+    .column p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .galleryContainer {
+        flex-direction: column;
+        gap: 8px;
+        padding: 5px;
+        max-width: 300px;
+    }
+
+    .column {
+        padding: 8px;
+    }
+
+    .column h3 {
+        font-size: 1.1rem;
+    }
+
+    .images {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 5px;
+    }
+
+    .image {
+        height: 90px;
+    }
+
+    .uploadForm {
+        gap: 5px;
+    }
+
+    .uploadForm input[type="file"] {
+        padding: 4px;
+    }
+
+    .uploadForm button[type="submit"] {
+        padding: 4px 12px;
+        font-size: 11px;
+    }
+
+    .fileList span {
+        font-size: 0.7rem;
+    }
+
+    .modalContent {
+        padding: 5px;
+    }
+
+    .modalImage {
+        max-height: 60vh;
+    }
+
+    .column p {
+        font-size: 0.8rem;
+    }
 }
