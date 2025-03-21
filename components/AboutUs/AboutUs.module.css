@@ -1,3 +1,4 @@
+/* Базовые стили */
 .about-us {
     display: flex;
     align-items: center;
@@ -26,9 +27,15 @@
     margin-bottom: 30px;
 }
 
+.about-image {
+    flex: 1;
+    padding: 20px;
+}
+
 .about-image img {
     max-width: 100%;
     height: auto;
+    border-radius: 8px;
 }
 
 .about-icon {
@@ -42,11 +49,207 @@
 .about-icon3 {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 15px;
 }
 
-.about-icon-text{
+.about-icon img {
+    width: 40px;
+    height: 40px;
+}
+
+.about-icon-text {
     font-size: 24px;
     color: #3B4055;
     font-weight: bold;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .about-us {
+        flex-direction: row;
+        max-width: 1500px;
+        padding: 40px;
+    }
+
+    .about-content {
+        padding: 20px;
+    }
+
+    .about-description {
+        font-size: 24px;
+        line-height: 1.8;
+    }
+
+    .about-image {
+        padding: 20px;
+    }
+
+    .about-icon {
+        gap: 20px;
+    }
+
+    .about-icon img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .about-icon-text {
+        font-size: 24px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .about-us {
+        flex-direction: row;
+        max-width: 1000px;
+        padding: 30px;
+    }
+
+    .about-content {
+        padding: 15px;
+    }
+
+    .about-description {
+        font-size: 20px;
+        line-height: 1.6;
+    }
+
+    .about-image {
+        padding: 15px;
+    }
+
+    .about-icon {
+        gap: 15px;
+    }
+
+    .about-icon img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .about-icon-text {
+        font-size: 20px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .about-us {
+        flex-direction: column;
+        max-width: 700px;
+        padding: 20px;
+    }
+
+    .about-content {
+        padding: 10px;
+    }
+
+    .about-description {
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    .about-image {
+        padding: 10px;
+    }
+
+    .about-icon {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .about-icon img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .about-icon-text {
+        font-size: 18px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .about-us {
+        flex-direction: column;
+        max-width: 450px;
+        padding: 15px;
+    }
+
+    .about-content {
+        padding: 10px;
+    }
+
+    .about-description {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    .about-description p:not(:last-child) {
+        margin-bottom: 20px;
+    }
+
+    .about-image {
+        padding: 10px;
+    }
+
+    .about-icon {
+        gap: 10px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-icon img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .about-icon-text {
+        font-size: 16px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .about-us {
+        flex-direction: column;
+        max-width: 300px;
+        padding: 10px;
+    }
+
+    .about-content {
+        padding: 5px;
+    }
+
+    .about-description {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+
+    .about-description p:not(:last-child) {
+        margin-bottom: 15px;
+    }
+
+    .about-image {
+        padding: 5px;
+    }
+
+    .about-icon {
+        gap: 8px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-icon img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .about-icon-text {
+        font-size: 14px;
+    }
 }

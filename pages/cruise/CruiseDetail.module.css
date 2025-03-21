@@ -1,8 +1,12 @@
+/* Базовые стили */
 .cruiseDetail {
     width: 100%;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .cruiseContainer {
@@ -16,6 +20,7 @@
     width: 50%;
     height: auto;
     object-fit: cover;
+    border-radius: 8px;
 }
 
 .info {
@@ -23,6 +28,7 @@
     padding: 10px;
     background-color: #ffffff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .cruiseDetail h1 {
@@ -47,24 +53,192 @@
     transition: background-color 0.3s ease;
     margin-top: 15px;
     text-align: center;
+    border-radius: 5px;
 }
 
 .backButton:hover {
     background-color: #1E2A4B;
 }
 
-/* Для мобильных устройств (адаптация) */
-@media (max-width: 768px) {
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .cruiseDetail {
+        max-width: 1500px;
+        padding: 20px;
+    }
+
+    .cruiseContainer {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .cruiseImage {
+        width: 50%;
+    }
+
+    .info {
+        width: 50%;
+        padding: 10px;
+    }
+
+    .cruiseDetail h1 {
+        font-size: 2rem;
+    }
+
+    .cruiseDetail p {
+        font-size: 1.1rem;
+    }
+
+    .backButton {
+        padding: 12px 18px;
+        font-size: 1rem;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .cruiseDetail {
+        max-width: 1000px;
+        padding: 15px;
+    }
+
+    .cruiseContainer {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .cruiseImage {
+        width: 50%;
+    }
+
+    .info {
+        width: 50%;
+        padding: 8px;
+    }
+
+    .cruiseDetail h1 {
+        font-size: 1.8rem;
+    }
+
+    .cruiseDetail p {
+        font-size: 1rem;
+    }
+
+    .backButton {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .cruiseDetail {
+        max-width: 700px;
+        padding: 10px;
+    }
+
     .cruiseContainer {
         flex-direction: column;
         align-items: center;
+        gap: 10px;
     }
 
     .cruiseImage {
         width: 100%;
+        max-height: 300px;
     }
 
     .info {
         width: 100%;
+        padding: 8px;
+    }
+
+    .cruiseDetail h1 {
+        font-size: 1.6rem;
+    }
+
+    .cruiseDetail p {
+        font-size: 0.9rem;
+    }
+
+    .backButton {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .cruiseDetail {
+        max-width: 450px;
+        padding: 8px;
+    }
+
+    .cruiseContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cruiseImage {
+        width: 100%;
+        max-height: 250px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 6px;
+    }
+
+    .cruiseDetail h1 {
+        font-size: 1.4rem;
+    }
+
+    .cruiseDetail p {
+        font-size: 0.85rem;
+    }
+
+    .backButton {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .cruiseDetail {
+        max-width: 300px;
+        padding: 5px;
+    }
+
+    .cruiseContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .cruiseImage {
+        width: 100%;
+        max-height: 200px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 5px;
+    }
+
+    .cruiseDetail h1 {
+        font-size: 1.2rem;
+    }
+
+    .cruiseDetail p {
+        font-size: 0.8rem;
+    }
+
+    .backButton {
+        padding: 5px 10px;
+        font-size: 0.75rem;
     }
 }

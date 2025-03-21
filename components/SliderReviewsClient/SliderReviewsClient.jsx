@@ -6,8 +6,29 @@ import styles from "./SliderReviewsClient.module.css";
 export default function Testimonials() {
     const [testimonials, setTestimonials] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
-    const ITEMS_PER_PAGE = 3;
+    const [itemsPerPage, setItemsPerPage] = useState(3); // Начальное значение для больших экранов
 
+    // Определяем количество элементов на основе ширины экрана
+    useEffect(() => {
+        const updateItemsPerPage = () => {
+            if (window.innerWidth <= 479) {
+                setItemsPerPage(1); // Смартфоны (320px и меньше)
+            } else if (window.innerWidth <= 767) {
+                setItemsPerPage(1); // Смартфоны (480px)
+            } else if (window.innerWidth <= 1023) {
+                setItemsPerPage(2); // Планшеты (768px)
+            } else {
+                setItemsPerPage(3); // Большие экраны (1024px и выше)
+            }
+        };
+
+        updateItemsPerPage(); // Вызываем при монтировании
+        window.addEventListener("resize", updateItemsPerPage); // Обновляем при изменении размера окна
+
+        return () => window.removeEventListener("resize", updateItemsPerPage); // Очищаем слушатель
+    }, []);
+
+    // Загружаем отзывы
     useEffect(() => {
         fetch("http://127.0.0.1:8000/api/feedbacks")
             .then((response) => response.json())
@@ -20,20 +41,20 @@ export default function Testimonials() {
     }, []);
 
     const nextTestimonial = () => {
-        if (activeIndex + ITEMS_PER_PAGE < testimonials.length) {
-            setActiveIndex((prevIndex) => prevIndex + ITEMS_PER_PAGE);
+        if (activeIndex + itemsPerPage < testimonials.length) {
+            setActiveIndex((prevIndex) => prevIndex + itemsPerPage);
         }
     };
 
     const prevTestimonial = () => {
-        if (activeIndex - ITEMS_PER_PAGE >= 0) {
-            setActiveIndex((prevIndex) => prevIndex - ITEMS_PER_PAGE);
+        if (activeIndex - itemsPerPage >= 0) {
+            setActiveIndex((prevIndex) => prevIndex - itemsPerPage);
         }
     };
 
     const visibleTestimonials = testimonials.slice(
         activeIndex,
-        activeIndex + ITEMS_PER_PAGE
+        activeIndex + itemsPerPage
     );
 
     return (
@@ -45,9 +66,9 @@ export default function Testimonials() {
                 <p>Загрузка отзывов...</p>
             ) : (
                 <div className={styles.slider}>
-                    <button 
-                        className={styles.prev} 
-                        onClick={prevTestimonial} 
+                    <button
+                        className={styles.prev}
+                        onClick={prevTestimonial}
                         disabled={activeIndex === 0}
                     >
                         &lt;
@@ -63,10 +84,10 @@ export default function Testimonials() {
                             </div>
                         ))}
                     </div>
-                    <button 
-                        className={styles.next} 
-                        onClick={nextTestimonial} 
-                        disabled={activeIndex + ITEMS_PER_PAGE >= testimonials.length}
+                    <button
+                        className={styles.next}
+                        onClick={nextTestimonial}
+                        disabled={activeIndex + itemsPerPage >= testimonials.length}
                     >
                         &gt;
                     </button>

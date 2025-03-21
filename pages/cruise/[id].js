@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './CruiseDetail.module.css';
 import Loading from "@/components/Loading/Loading";
+import Header from '@/components/Header/Header';
 
 const CruiseDetail = () => {
     const { query } = useRouter();
@@ -34,6 +35,7 @@ const CruiseDetail = () => {
 
     return (
         <div className='layout'>
+            <Header />
             <div className={styles.cruiseDetail}>
                 <div className={styles.cruiseContainer}>
                     <img src={cruise.image_path} alt={cruise.name} className={styles.cruiseImage} />

@@ -1,19 +1,26 @@
+/* Базовые стили */
 .contactInfo {
     flex: 1;
     padding: 20px;
     background-color: #ffffff;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
 .contactInfo p {
     margin: 10px 0;
     font-size: 16px;
+    line-height: 1.5;
+    color: #333;
 }
 
 .socials {
     display: flex;
     gap: 15px;
     margin-top: 20px;
+    justify-content: center;
 }
 
 .socialLink {
@@ -23,4 +30,116 @@
 
 .socialLink:hover {
     transform: scale(1.1);
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .contactInfo {
+        padding: 20px;
+        max-width: 1500px;
+    }
+
+    .contactInfo p {
+        font-size: 16px;
+    }
+
+    .socials {
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .socialLink svg {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .contactInfo {
+        padding: 15px;
+        max-width: 1000px;
+    }
+
+    .contactInfo p {
+        font-size: 15px;
+    }
+
+    .socials {
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .socialLink svg {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .contactInfo {
+        padding: 12px;
+        max-width: 700px;
+    }
+
+    .contactInfo p {
+        font-size: 14px;
+    }
+
+    .socials {
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .socialLink svg {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .contactInfo {
+        padding: 10px;
+        max-width: 450px;
+    }
+
+    .contactInfo p {
+        font-size: 13px;
+    }
+
+    .socials {
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .socialLink svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .contactInfo {
+        padding: 8px;
+        max-width: 300px;
+    }
+
+    .contactInfo p {
+        font-size: 12px;
+    }
+
+    .socials {
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .socialLink svg {
+        width: 24px;
+        height: 24px;
+    }
 }

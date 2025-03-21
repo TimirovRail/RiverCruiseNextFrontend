@@ -1,39 +1,108 @@
+/* Основной контейнер */
 .bookingForm {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
-}
-.formContainer {
-    flex: 1;
-    margin-right: 20px;
-}
-.imageContainer {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.imageContainer img {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-.bookingForm h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.inputGroup {
+/* Контейнер формы */
+.formContainer {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Сетка круизов */
+.cruiseGrid {
+    margin-bottom: 30px;
+}
+
+.cruiseGrid label {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2A376D;
     margin-bottom: 15px;
+}
+
+.cruiseGridInner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд */
+    gap: 15px; /* Уменьшим отступ между карточками */
+}
+
+/* Карточка круиза */
+.cruiseCard {
+    background-color: #fff;
+    border: 2px solid #2A376D;
+    border-radius: 8px;
+    padding: 10px; /* Уменьшим внутренние отступы */
+    transition: transform 0.2s ease;
+}
+
+.cruiseCard:hover {
+    transform: translateY(-3px);
+}
+
+.cruiseCard h3 {
+    margin: 0 0 8px;
+    font-size: 16px; /* Уменьшим заголовок */
+    color: #2A376D;
+    text-align: center;
+}
+
+.cruiseCard img {
+    width: 100%;
+    height: 100px; /* Уменьшим высоту картинки */
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+/* Сетка расписаний */
+.scheduleGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Уменьшим минимальную ширину карточек расписания */
+    gap: 8px; /* Уменьшим отступы */
+}
+
+/* Карточка расписания */
+.scheduleCard {
+    background-color: #fff;
+    border: 2px solid #2A376D;
+    border-radius: 6px;
+    padding: 8px; /* Уменьшим внутренние отступы */
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.scheduleCard:hover {
+    background-color: #e6f0fa;
+}
+
+.scheduleCard.selected {
+    border-color: #28a745; /* Зелёная обводка для выбранного рейса */
+    background-color: #e6f7e6; /* Лёгкий зелёный фон */
+}
+
+.scheduleCard p {
+    margin: 3px 0; /* Уменьшим отступы между строками */
+    font-size: 12px; /* Уменьшим шрифт */
+}
+
+/* Группа ввода */
+.inputGroup {
+    margin-bottom: 20px;
 }
 
 .inputGroup label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
+    color: #2A376D;
+    font-size: 16px;
 }
 
 .inputGroup input,
@@ -42,7 +111,16 @@
     width: 100%;
     padding: 10px;
     border: 2px solid #2A376D;
+    border-radius: 6px;
+    font-size: 16px;
     outline: none;
+    transition: border-color 0.2s;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus,
+.inputGroup textarea:focus {
+    border-color: #1a2550;
 }
 
 .inputGroup textarea {
@@ -50,20 +128,7 @@
     height: 80px;
 }
 
-.submitButton {
-    width: 100%;
-    padding: 10px;
-    background-color: #2A376D;
-    color: white;
-    font-size: 16px;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.submitButton:hover {
-    background-color: #333645;
-}
-
+/* Чекбоксы */
 .checkboxes {
     display: flex;
     flex-direction: column;
@@ -75,11 +140,67 @@
     align-items: center;
     gap: 10px;
     font-size: 16px;
+    color: #333;
     cursor: pointer;
 }
 
 .checkboxes input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2A376D;
+}
+
+/* Кнопка */
+.submitButton {
+    width: 100%;
+    padding: 12px;
+    background-color: #2A376D;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #1a2550;
+}
+
+/* Итоговая сумма */
+.totalPrice {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.totalPrice h3 {
     margin: 0;
-    width: auto;
-    height: auto;
+    font-size: 18px;
+    color: #2A376D;
+    font-weight: bold;
+}
+
+/* Сообщение об авторизации */
+.authMessage {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border: 2px solid #2A376D;
+    border-radius: 6px;
+}
+
+.authMessage p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.authMessage a {
+    color: #2A376D;
+    text-decoration: underline;
+}
+
+.authMessage a:hover {
+    color: #1a2550;
 }

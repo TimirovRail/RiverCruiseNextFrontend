@@ -1,7 +1,12 @@
+/* Базовые стили */
 .serviceDetail {
     width: 100%;
     background-color: #f8f8f8;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
 }
 
 .content {
@@ -14,16 +19,19 @@
     width: 50%;
     height: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    object-fit: cover;
 }
 
 .info {
     width: 50%;
+    padding: 10px;
 }
 
 .info h1 {
     font-size: 2rem;
     font-weight: bold;
-    color: #29376D; 
+    color: #29376D;
     margin-bottom: 10px;
 }
 
@@ -48,8 +56,212 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
+    border-radius: 5px;
 }
 
 .backButton:hover {
-    background-color: #1E2A4B; 
+    background-color: #1E2A4B;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .serviceDetail {
+        max-width: 1500px;
+        padding: 20px;
+    }
+
+    .content {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .serviceImage {
+        width: 50%;
+    }
+
+    .info {
+        width: 50%;
+        padding: 10px;
+    }
+
+    .info h1 {
+        font-size: 2rem;
+    }
+
+    .info h2 {
+        font-size: 1.5rem;
+    }
+
+    .info p {
+        font-size: 1.2rem;
+    }
+
+    .backButton {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .serviceDetail {
+        max-width: 1000px;
+        padding: 15px;
+    }
+
+    .content {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .serviceImage {
+        width: 50%;
+    }
+
+    .info {
+        width: 50%;
+        padding: 8px;
+    }
+
+    .info h1 {
+        font-size: 1.8rem;
+    }
+
+    .info h2 {
+        font-size: 1.3rem;
+    }
+
+    .info p {
+        font-size: 1.1rem;
+    }
+
+    .backButton {
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .serviceDetail {
+        max-width: 700px;
+        padding: 10px;
+    }
+
+    .content {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .serviceImage {
+        width: 100%;
+        max-height: 300px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .info h1 {
+        font-size: 1.6rem;
+    }
+
+    .info h2 {
+        font-size: 1.2rem;
+    }
+
+    .info p {
+        font-size: 1rem;
+    }
+
+    .backButton {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .serviceDetail {
+        max-width: 450px;
+        padding: 8px;
+    }
+
+    .content {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .serviceImage {
+        width: 100%;
+        max-height: 250px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 6px;
+    }
+
+    .info h1 {
+        font-size: 1.4rem;
+    }
+
+    .info h2 {
+        font-size: 1.1rem;
+    }
+
+    .info p {
+        font-size: 0.9rem;
+    }
+
+    .backButton {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .serviceDetail {
+        max-width: 300px;
+        padding: 5px;
+    }
+
+    .content {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .serviceImage {
+        width: 100%;
+        max-height: 200px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 5px;
+    }
+
+    .info h1 {
+        font-size: 1.2rem;
+    }
+
+    .info h2 {
+        font-size: 1rem;
+    }
+
+    .info p {
+        font-size: 0.8rem;
+    }
+
+    .backButton {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
 }

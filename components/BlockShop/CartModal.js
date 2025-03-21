@@ -97,8 +97,8 @@ const CartModal = ({ isOpen, onClose }) => {
     };
 
     const handleCheckout = () => {
-        onClose();
-        router.push('/checkout');
+        onClose(); // Закрываем модальное окно корзины
+        router.push('/checkout'); // Перенаправляем на страницу оформления заказа
     };
 
     if (!isOpen) return null;

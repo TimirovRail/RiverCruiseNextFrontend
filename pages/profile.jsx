@@ -13,7 +13,7 @@ export default function Profile() {
 
     useEffect(() => {
         // Загружаем текущего пользователя
-        axios.get("http://localhost:8000/api/user/profile", {
+        axios.get("http://localhost:8000/api/auth/user/profile", {
             withCredentials: true,
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         })

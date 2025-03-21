@@ -1,3 +1,4 @@
+/* Базовые стили */
 .feedbackContainer {
     display: flex;
     justify-content: space-between;
@@ -6,6 +7,9 @@
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
     padding: 30px;
     animation: fadeIn 1s ease-in-out;
+    max-width: 1500px;
+    margin: 0 auto;
+    border-radius: 8px;
 }
 
 .formWrapper {
@@ -17,6 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 1;
 }
 
 .feedbackImage {
@@ -24,16 +29,6 @@
     max-width: 500px;
     height: auto;
     border-radius: 8px;
-}
-
-.title {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.h1Title {
-    font-size: 28px;
-    color: #2A376D;
 }
 
 .feedbackForm {
@@ -46,22 +41,26 @@
     position: relative;
 }
 
-.label {
+.inputGroup label {
     font-weight: bold;
     color: #29376D;
     margin-bottom: 8px;
+    display: block;
 }
 
-.input, .textarea {
+.input,
+.textarea {
     width: 100%;
     padding: 12px;
     font-size: 18px;
     border: 2px solid #2A376D;
     box-sizing: border-box;
     transition: border-color 0.3s ease;
+    border-radius: 5px;
 }
 
-.input:focus, .textarea:focus {
+.input:focus,
+.textarea:focus {
     border-color: #2A376D;
     outline: none;
 }
@@ -79,6 +78,7 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border-radius: 5px;
 }
 
 .submitButton:hover {
@@ -93,44 +93,15 @@
     border: 1px solid #c3e6cb;
     text-align: center;
     animation: slideIn 1s ease-in-out;
+    border-radius: 5px;
 }
 
-.error {
-    color: red;
-    font-size: 12px;
-    position: absolute;
-    bottom: -20px;
-}
-
-.feedbackList {
-    flex: 1;
-    padding-left: 30px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.feedbackItem {
-    background-color: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.feedbackText {
-    font-size: 16px;
-    font-style: italic;
-}
-
-.author {
-    font-size: 14px;
-    font-weight: bold;
-    color: #555;
-}
-
+/* Анимации */
 @keyframes fadeIn {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -141,8 +112,211 @@
         transform: translateX(-50%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .feedbackContainer {
+        flex-direction: row;
+        padding: 30px;
+        max-width: 1500px;
+    }
+
+    .formWrapper {
+        padding-right: 30px;
+    }
+
+    .feedbackImage {
+        max-width: 500px;
+    }
+
+    .input,
+    .textarea {
+        padding: 12px;
+        font-size: 18px;
+    }
+
+    .textarea {
+        height: 150px;
+    }
+
+    .submitButton {
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    .successMessage {
+        padding: 10px;
+        font-size: 16px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .feedbackContainer {
+        flex-direction: row;
+        padding: 20px;
+        max-width: 1000px;
+    }
+
+    .formWrapper {
+        padding-right: 20px;
+    }
+
+    .feedbackImage {
+        max-width: 400px;
+    }
+
+    .input,
+    .textarea {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .textarea {
+        height: 120px;
+    }
+
+    .submitButton {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    .successMessage {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .feedbackContainer {
+        flex-direction: column;
+        padding: 15px;
+        max-width: 700px;
+    }
+
+    .formWrapper {
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .imageWrapper {
+        justify-content: center;
+    }
+
+    .feedbackImage {
+        max-width: 350px;
+    }
+
+    .input,
+    .textarea {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .textarea {
+        height: 100px;
+    }
+
+    .submitButton {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .successMessage {
+        padding: 6px;
+        font-size: 13px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .feedbackContainer {
+        flex-direction: column;
+        padding: 10px;
+        max-width: 450px;
+    }
+
+    .formWrapper {
+        padding-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .imageWrapper {
+        justify-content: center;
+    }
+
+    .feedbackImage {
+        max-width: 300px;
+    }
+
+    .input,
+    .textarea {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .textarea {
+        height: 80px;
+    }
+
+    .submitButton {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+
+    .successMessage {
+        padding: 5px;
+        font-size: 12px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .feedbackContainer {
+        flex-direction: column;
+        padding: 8px;
+        max-width: 300px;
+    }
+
+    .formWrapper {
+        padding-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .imageWrapper {
+        justify-content: center;
+    }
+
+    .feedbackImage {
+        max-width: 250px;
+    }
+
+    .input,
+    .textarea {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .textarea {
+        height: 60px;
+    }
+
+    .submitButton {
+        padding: 5px 12px;
+        font-size: 11px;
+    }
+
+    .successMessage {
+        padding: 4px;
+        font-size: 11px;
     }
 }

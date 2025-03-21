@@ -1,3 +1,4 @@
+/* Базовые стили */
 .main {
     margin-top: 80px;
 }
@@ -28,7 +29,7 @@
     margin-bottom: 400px;
 }
 
-.ctaButton {
+.overlay button {
     width: 350px;
     height: 60px;
     border-radius: 45px;
@@ -41,9 +42,153 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.ctaButton:hover {
-    background-color: #D3E3F1;
+.overlay button img {
+    width: 40px;
+    height: 40px;
+}
 
+.overlay button:hover {
+    background-color: #D3E3F1;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .main {
+        margin-top: 80px;
+    }
+
+    .hero {
+        height: 100vh;
+    }
+
+    .title {
+        font-size: 64px;
+        margin-bottom: 400px;
+    }
+
+    .overlay button {
+        width: 350px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .overlay button img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .main {
+        margin-top: 70px;
+    }
+
+    .hero {
+        height: 90vh;
+    }
+
+    .title {
+        font-size: 56px;
+        margin-bottom: 300px;
+    }
+
+    .overlay button {
+        width: 300px;
+        height: 55px;
+        font-size: 1.4rem;
+    }
+
+    .overlay button img {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .main {
+        margin-top: 60px;
+    }
+
+    .hero {
+        height: 80vh;
+    }
+
+    .title {
+        font-size: 48px;
+        margin-bottom: 200px;
+    }
+
+    .overlay button {
+        width: 250px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
+
+    .overlay button img {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .main {
+        margin-top: 50px;
+    }
+
+    .hero {
+        height: 70vh;
+    }
+
+    .title {
+        font-size: 36px;
+        margin-bottom: 150px;
+    }
+
+    .overlay button {
+        width: 200px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+
+    .overlay button img {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .main {
+        margin-top: 40px;
+    }
+
+    .hero {
+        height: 60vh;
+    }
+
+    .title {
+        font-size: 28px;
+        margin-bottom: 100px;
+    }
+
+    .overlay button {
+        width: 180px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .overlay button img {
+        width: 20px;
+        height: 20px;
+    }
 }

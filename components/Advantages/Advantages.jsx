@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Advantages.module.css'; 
+import styles from './Advantages.module.css';
 import { FaAnchor, FaCompass, FaCocktail, FaLeaf } from 'react-icons/fa';
 
 const Advantages = () => {

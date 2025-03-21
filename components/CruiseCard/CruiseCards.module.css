@@ -1,8 +1,12 @@
+/* Базовые стили */
 .card_container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .card {
@@ -17,6 +21,7 @@
     transform: translateY(20px);
     animation: fadeInUp 0.6s ease-out forwards;
     transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 8px;
 }
 
 .card:hover {
@@ -55,6 +60,10 @@
     margin-top: 0.5rem;
 }
 
+.buttons {
+    margin-top: 1rem;
+}
+
 .readMore {
     display: inline-block;
     padding: 12px 20px;
@@ -64,17 +73,11 @@
     text-decoration: none;
     text-align: center;
     transition: background-color 0.3s;
-    margin-top: 20px;
+    border-radius: 5px;
 }
 
 .readMore:hover {
     background-color: #1E2A4B;
-}
-
-@media (min-width: 640px) {
-    .card {
-        width: calc(50% - 1rem);
-    }
 }
 
 /* Анимация появления */
@@ -83,11 +86,6 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.cardAnimation {
-    animation-delay: 0.2s;
-    /* Задержка анимации */
 }
 
 .card:nth-child(2) {
@@ -108,4 +106,176 @@
 
 .card:nth-child(6) {
     animation-delay: 1.2s;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .card_container {
+        gap: 2rem;
+        max-width: 1500px;
+        padding: 0 20px;
+    }
+
+    .card {
+        width: calc(50% - 1rem);
+    }
+
+    .meta {
+        height: 200px;
+    }
+
+    .description {
+        padding: 1rem;
+    }
+
+    .description h1 {
+        font-size: 1.5rem;
+    }
+
+    .description p {
+        font-size: 1.1rem;
+    }
+
+    .readMore {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .card_container {
+        gap: 1.5rem;
+        max-width: 1000px;
+        padding: 0 15px;
+    }
+
+    .card {
+        width: calc(50% - 0.75rem);
+    }
+
+    .meta {
+        height: 180px;
+    }
+
+    .description {
+        padding: 0.8rem;
+    }
+
+    .description h1 {
+        font-size: 1.4rem;
+    }
+
+    .description p {
+        font-size: 1rem;
+    }
+
+    .readMore {
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .card_container {
+        gap: 1rem;
+        max-width: 700px;
+        padding: 0 10px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .meta {
+        height: 160px;
+    }
+
+    .description {
+        padding: 0.7rem;
+    }
+
+    .description h1 {
+        font-size: 1.3rem;
+    }
+
+    .description p {
+        font-size: 0.9rem;
+    }
+
+    .readMore {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .card_container {
+        gap: 0.8rem;
+        max-width: 450px;
+        padding: 0 8px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .meta {
+        height: 140px;
+    }
+
+    .description {
+        padding: 0.6rem;
+    }
+
+    .description h1 {
+        font-size: 1.2rem;
+    }
+
+    .description p {
+        font-size: 0.85rem;
+    }
+
+    .readMore {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .card_container {
+        gap: 0.5rem;
+        max-width: 300px;
+        padding: 0 5px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .meta {
+        height: 120px;
+    }
+
+    .description {
+        padding: 0.5rem;
+    }
+
+    .description h1 {
+        font-size: 1.1rem;
+    }
+
+    .description p {
+        font-size: 0.8rem;
+    }
+
+    .readMore {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
 }

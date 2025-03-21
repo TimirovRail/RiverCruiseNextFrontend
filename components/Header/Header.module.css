@@ -1,3 +1,4 @@
+/* Базовые стили */
 .header {
     position: fixed;
     top: 0;
@@ -20,7 +21,6 @@
     display: flex;
     gap: 80px;
     font-size: 18px;
-
 }
 
 .nav a {
@@ -29,31 +29,263 @@
     font-family: 'Mulish', sans-serif;
     font-optical-sizing: auto;
 }
-.nav a:hover{
+
+.nav a:hover {
     color: rgb(0, 0, 0);
 }
+
+.profile {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
 .profile button {
     background: none;
     border: none;
     font-size: 16px;
     cursor: pointer;
 }
-.profile {
-    display: flex;
-    align-items: center;
-    position: relative;
+
+.profile button img {
+    width: 30px;
+    height: 30px;
 }
+
 .profile span {
-    font-size: 18px; 
-    font-weight: 600; 
-    color: #ffffff; 
-    cursor: pointer; 
-    padding: 5px 10px; 
-    border-radius: 5px; 
-    transition: background-color 0.3s ease, color 0.3s ease; 
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .profile span:hover {
-    background-color: rgb(0, 123, 255); 
-    color: #ffffff; 
+    background-color: rgb(0, 123, 255);
+    color: #ffffff;
+}
+
+/* Стили для бургер-меню */
+.burgerMenu {
+    display: none; /* Скрываем на больших экранах */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.burgerIcon,
+.burgerIconOpen {
+    display: block;
+    width: 30px;
+    height: 3px;
+    background-color: #fff;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.burgerIcon::before,
+.burgerIcon::after,
+.burgerIconOpen::before,
+.burgerIconOpen::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background-color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.burgerIcon::before {
+    top: -8px;
+}
+
+.burgerIcon::after {
+    top: 8px;
+}
+
+.burgerIconOpen {
+    background-color: transparent;
+}
+
+.burgerIconOpen::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.burgerIconOpen::after {
+    transform: rotate(-45deg);
+    top: 0;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .header {
+        padding: 15px 60px;
+    }
+
+    .logo img {
+        width: 250px;
+    }
+
+    .nav {
+        display: flex;
+        gap: 80px;
+        font-size: 18px;
+    }
+
+    .profile span {
+        font-size: 18px;
+    }
+
+    .profile button img {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .header {
+        padding: 15px 40px;
+    }
+
+    .logo img {
+        width: 200px;
+    }
+
+    .nav {
+        gap: 50px;
+        font-size: 16px;
+    }
+
+    .profile span {
+        font-size: 16px;
+    }
+
+    .profile button img {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .header {
+        padding: 10px 30px;
+    }
+
+    .logo img {
+        width: 180px;
+    }
+
+    .nav {
+        gap: 30px;
+        font-size: 14px;
+    }
+
+    .profile span {
+        font-size: 14px;
+    }
+
+    .profile button img {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .header {
+        padding: 10px 20px;
+        flex-wrap: wrap;
+    }
+
+    .logo img {
+        width: 150px;
+    }
+
+    .burgerMenu {
+        display: block; /* Показываем бургер-меню */
+    }
+
+    .nav {
+        display: none; /* Скрываем навигацию по умолчанию */
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        padding: 20px 0;
+        background-color: #3B4055;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
+
+    .navOpen {
+        display: flex; /* Показываем навигацию, если меню открыто */
+    }
+
+    .nav a {
+        font-size: 16px;
+    }
+
+    .profile span {
+        font-size: 14px;
+    }
+
+    .profile button img {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .header {
+        padding: 8px 15px;
+        flex-wrap: wrap;
+    }
+
+    .logo img {
+        width: 120px;
+    }
+
+    .burgerMenu {
+        display: block; /* Показываем бургер-меню */
+    }
+
+    .nav {
+        display: none; /* Скрываем навигацию по умолчанию */
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        padding: 15px 0;
+        background-color: #3B4055;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
+
+    .navOpen {
+        display: flex; /* Показываем навигацию, если меню открыто */
+    }
+
+    .nav a {
+        font-size: 14px;
+    }
+
+    .profile span {
+        font-size: 12px;
+    }
+
+    .profile button img {
+        width: 20px;
+        height: 20px;
+    }
 }
