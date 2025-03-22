@@ -1,47 +1,81 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './LeaveFeedback.module.css';
 
 export default function LeaveFeedback() {
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState('5');
     const [cruiseId, setCruiseId] = useState('');
+    const [bookingId, setBookingId] = useState(''); // Добавляем booking_id
     const [cruises, setCruises] = useState([]);
     const [submitted, setSubmitted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
+        const storedUser = localStorage.getItem('user');
+        if (token && storedUser) {
             setIsAuthenticated(true);
-            fetchCruises(token);
+            setUser(JSON.parse(storedUser));
+            fetchAvailableCruises(token);
+        } else {
+            setIsLoading(false);
+            router.push('/login');
         }
-    }, []);
+    }, [router]);
 
-    const fetchCruises = async (token) => {
-        const res = await fetch('http://localhost:8000/api/cruises', {
-            headers: { 'Authorization': `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setCruises(data);
+    const fetchAvailableCruises = async (token) => {
+        try {
+            const res = await fetch('http://localhost:8000/api/auth/available-cruises', {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(`Ошибка загрузки круизов: ${errorData.error || res.statusText}`);
+            }
+            const data = await res.json();
+            console.log('Полученные круизы:', data); // Логируем данные
+            setCruises(data);
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCruiseChange = (e) => {
+        const selectedCruise = cruises.find(cruise => cruise.cruise_id === parseInt(e.target.value));
+        if (selectedCruise) {
+            setCruiseId(selectedCruise.cruise_id);
+            setBookingId(selectedCruise.booking_id); // Устанавливаем booking_id
+        } else {
+            setCruiseId('');
+            setBookingId('');
+        }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!isAuthenticated) {
             alert('Для отправки отзыва необходимо авторизоваться');
+            router.push('/login');
             return;
         }
 
-        if (!comment || !cruiseId) {
+        if (!comment || !cruiseId || !bookingId) {
             alert('Пожалуйста, заполните все поля');
             return;
         }
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/reviews', {
+            const response = await fetch('http://localhost:8000/api/auth/reviews', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,20 +83,23 @@ export default function LeaveFeedback() {
                 },
                 body: JSON.stringify({
                     cruise_id: cruiseId,
+                    booking_id: bookingId,
                     comment,
                     rating,
+                    user_id: user.id,
                 }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error);
+                throw new Error(errorData.error || 'Ошибка отправки отзыва');
             }
 
             const newReview = await response.json();
             setComment('');
             setRating('5');
             setCruiseId('');
+            setBookingId('');
             setSubmitted(true);
             setTimeout(() => setSubmitted(false), 3000);
         } catch (error) {
@@ -77,52 +114,61 @@ export default function LeaveFeedback() {
             </div>
             <div className={styles.feedbackContainer}>
                 <div className={styles.formWrapper}>
-                    {submitted && <div className={styles.successMessage}>Отзыв отправлен!</div>}
-                    {!isAuthenticated ? (
-                        <p>Для отправки отзыва необходимо <a href="/login">авторизоваться</a>.</p>
+                    {isLoading ? (
+                        <p>Загрузка круизов...</p>
                     ) : (
-                        <form onSubmit={handleSubmit} className={styles.feedbackForm}>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="cruiseId">Выберите круиз</label>
-                                <select
-                                    id="cruiseId"
-                                    value={cruiseId}
-                                    onChange={(e) => setCruiseId(e.target.value)}
-                                    className={styles.input}
-                                >
-                                    <option value="">Выберите круиз</option>
-                                    {cruises.map((cruise) => (
-                                        <option key={cruise.id} value={cruise.id}>
-                                            {cruise.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="comment">Отзыв</label>
-                                <textarea
-                                    id="comment"
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    className={styles.textarea}
-                                    required
-                                />
-                            </div>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="rating">Оценка</label>
-                                <select
-                                    id="rating"
-                                    value={rating}
-                                    onChange={(e) => setRating(e.target.value)}
-                                    className={styles.input}
-                                >
-                                    {[1, 2, 3, 4, 5].map((r) => (
-                                        <option key={r} value={r}>{r}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <button type="submit" className={styles.submitButton}>Отправить</button>
-                        </form>
+                        <>
+                            {submitted && <div className={styles.successMessage}>Отзыв отправлен!</div>}
+                            {!isAuthenticated ? (
+                                <p>Для отправки отзыва необходимо <a href="/login">авторизоваться</a>.</p>
+                            ) : cruises.length === 0 ? (
+                                <p>У вас нет завершённых круизов, о которых можно оставить отзыв.</p>
+                            ) : (
+                                <form onSubmit={handleSubmit} className={styles.feedbackForm}>
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="cruiseId">Выберите круиз</label>
+                                        <select
+                                            id="cruiseId"
+                                            value={cruiseId}
+                                            onChange={handleCruiseChange}
+                                            className={styles.input}
+                                            required
+                                        >
+                                            <option value="">Выберите круиз</option>
+                                            {cruises.map((cruise) => (
+                                                <option key={cruise.cruise_id} value={cruise.cruise_id}>
+                                                    {cruise.cruise_name} (Дата: {new Date(cruise.departure_datetime).toLocaleDateString()})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="comment">Отзыв</label>
+                                        <textarea
+                                            id="comment"
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            className={styles.textarea}
+                                            required
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="rating">Оценка</label>
+                                        <select
+                                            id="rating"
+                                            value={rating}
+                                            onChange={(e) => setRating(e.target.value)}
+                                            className={styles.input}
+                                        >
+                                            {[1, 2, 3, 4, 5].map((r) => (
+                                                <option key={r} value={r}>{r}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <button type="submit" className={styles.submitButton}>Отправить</button>
+                                </form>
+                            )}
+                        </>
                     )}
                 </div>
                 <div className={styles.imageWrapper}>
