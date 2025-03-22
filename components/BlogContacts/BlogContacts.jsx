@@ -88,7 +88,7 @@ export default function BlogContacts() {
     const handleScheduleSelect = (scheduleId, cruiseName) => {
         console.log('Выбранный scheduleId:', scheduleId, 'Тип:', typeof scheduleId);
         console.log('Текущий cruise_schedule_id:', formData.cruise_schedule_id, 'Тип:', typeof formData.cruise_schedule_id);
-        setFormData((prev) => ({ ...prev, cruise_schedule_id: String(scheduleId) })); // Приводим к строке
+        setFormData((prev) => ({ ...prev, cruise_schedule_id: String(scheduleId) }));
         calculateTotal({ ...formData, cruise_schedule_id: String(scheduleId) });
     };
 
@@ -108,7 +108,7 @@ export default function BlogContacts() {
         let price = 0;
         const schedule = cruises
             .flatMap((c) => c.schedules || [])
-            .find((s) => String(s.id) === String(data.cruise_schedule_id)); // Приводим к строке
+            .find((s) => String(s.id) === String(data.cruise_schedule_id));
         if (schedule && data.seats) {
             const cruise = cruises.find((c) => c.id === schedule.cruise_id);
             const basePrice = cruise.price_per_person * parseInt(data.seats);
@@ -145,6 +145,12 @@ export default function BlogContacts() {
                 body: JSON.stringify({
                     ...formData,
                     user_id: user.id,
+                }, (key, value) => {
+                    // Предотвращаем Unicode-экранирование
+                    if (typeof value === 'string') {
+                        return value;
+                    }
+                    return value;
                 }),
             });
 
@@ -160,7 +166,7 @@ export default function BlogContacts() {
                     comment: '',
                 });
                 setTotalPrice(0);
-                fetchCruises(token); // Обновляем данные о круизах
+                fetchCruises(token);
             } else {
                 const errorData = await response.json();
                 console.log('Ошибка от сервера:', errorData);

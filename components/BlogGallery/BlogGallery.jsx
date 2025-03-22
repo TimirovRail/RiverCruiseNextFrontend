@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './BlogGallery.module.css';
 
 export default function PhotoGallery() {
@@ -8,16 +9,8 @@ export default function PhotoGallery() {
     const [newPhotos, setNewPhotos] = useState([]);
     const [userId, setUserId] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
-
-        if (token && user) {
-            setIsAuthenticated(true);
-            setUserId(user.id);
-        }
-    }, []);
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
     const serviceImages = [
         { src: './images/blog1.jpg', alt: 'Photo 1' },
@@ -30,6 +23,33 @@ export default function PhotoGallery() {
         { src: './images/blog8.jpg', alt: 'Photo 8' },
         { src: './images/blog9.jpg', alt: 'Photo 9' },
     ];
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (token && user) {
+            setIsAuthenticated(true);
+            setUserId(user.id);
+            fetchUserPhotos(user.id);
+        } else {
+            setIsLoading(false);
+            router.push('/login');
+        }
+    }, [router]);
+
+    const fetchUserPhotos = async (userId) => {
+        try {
+            const res = await fetch(`http://localhost:8000/api/user/photos/${userId}`);
+            if (!res.ok) throw new Error('Ошибка загрузки фотографий пользователя');
+            const data = await res.json();
+            setUserPhotos(data.photos || []);
+        } catch (error) {
+            console.error('Ошибка:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const openImage = (src) => {
         setSelectedImage(src);
@@ -53,6 +73,7 @@ export default function PhotoGallery() {
 
         if (!isAuthenticated) {
             alert('Для загрузки фотографий необходимо авторизоваться');
+            router.push('/login');
             return;
         }
 
@@ -63,12 +84,12 @@ export default function PhotoGallery() {
 
         const formData = new FormData();
         newPhotos.forEach((photo) => {
-            formData.append('photos[]', photo);
+            formData.append('photos', photo);
         });
         formData.append('user_id', userId);
 
         try {
-            const response = await fetch('http://localhost:8000/api/upload-photos', {
+            const response = await fetch('http://localhost:8000/api/auth/upload-photos', {
                 method: 'POST',
                 body: formData,
             });
@@ -78,11 +99,15 @@ export default function PhotoGallery() {
                 console.log('Фотографии успешно загружены:', data);
                 setUserPhotos([...userPhotos, ...data.photos]);
                 setNewPhotos([]);
+                fetchUserPhotos(userId); // Обновляем список фотографий
             } else {
-                console.error('Ошибка при загрузке:', await response.text());
+                const errorData = await response.json();
+                console.error('Ошибка при загрузке:', errorData);
+                alert(`Ошибка: ${errorData.error || 'Неизвестная ошибка'}`);
             }
         } catch (error) {
             console.error('Ошибка при загрузке:', error);
+            alert('Произошла ошибка при загрузке фотографий.');
         }
     };
 
@@ -91,55 +116,61 @@ export default function PhotoGallery() {
             <div className='title'>
                 <h2 className='h1-title'>ФОТОГАЛЕРЕЯ</h2>
             </div>
-            <div className={styles.galleryContainer}>
-                <div className={styles.column}>
-                    <h3>Фотки из сервиса</h3>
-                    <div className={styles.images}>
-                        {serviceImages.map((image, index) => (
-                            <div
-                                key={index}
-                                className={styles.imageWrapper}
-                                onClick={() => openImage(image.src)}
-                            >
-                                <img src={image.src} alt={image.alt} className={styles.image} />
-                            </div>
-                        ))}
+            {isLoading ? (
+                <p>Загрузка...</p>
+            ) : (
+                <div className={styles.galleryContainer}>
+                    <div className={styles.column}>
+                        <h3>Фотки из сервиса</h3>
+                        <div className={styles.images}>
+                            {serviceImages.map((image, index) => (
+                                <div
+                                    key={index}
+                                    className={styles.imageWrapper}
+                                    onClick={() => openImage(image.src)}
+                                >
+                                    <img src={image.src} alt={image.alt} className={styles.image} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
 
-                <div className={styles.column}>
-                    <h3>Фотки пользователей</h3>
-                    {!isAuthenticated ? (
-                        <p>Для загрузки фотографий необходимо <a href="/login">авторизоваться</a>.</p>
-                    ) : (
-                        <form onSubmit={handleSubmit} className={styles.uploadForm}>
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={handleFileChange}
-                            />
-                            <div className={styles.fileList}>
-                                {newPhotos.map((photo, index) => (
-                                    <span key={index}>{photo.name}</span>
-                                ))}
-                            </div>
-                            <button type="submit">Загрузить</button>
-                        </form>
-                    )}
-                    <div className={styles.images}>
-                        {userPhotos.map((photo, index) => (
-                            <div key={index} className={styles.imageWrapper}>
-                                <img
-                                    src={`http://localhost:8000${photo.url}`} 
-                                    alt={photo.name || `User photo ${index}`}
-                                    className={styles.image}
-                                />
-                            </div>
-                        ))}
+                    <div className={styles.column}>
+                        <h3>Фотки пользователей</h3>
+                        {!isAuthenticated ? (
+                            <p>Для загрузки фотографий необходимо <a href="/login">авторизоваться</a>.</p>
+                        ) : (
+                            <>
+                                <form onSubmit={handleSubmit} className={styles.uploadForm}>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    <div className={styles.fileList}>
+                                        {newPhotos.map((photo, index) => (
+                                            <span key={index}>{photo.name}</span>
+                                        ))}
+                                    </div>
+                                    <button type="submit">Загрузить</button>
+                                </form>
+                                <div className={styles.images}>
+                                    {userPhotos.map((photo, index) => (
+                                        <div key={index} className={styles.imageWrapper}>
+                                            <img
+                                                src={`http://localhost:8000${photo.url}`}
+                                                alt={photo.name || `User photo ${index}`}
+                                                className={styles.image}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
-            </div>
+            )}
 
             {selectedImage && (
                 <div className={styles.modal} onClick={closeImage}>

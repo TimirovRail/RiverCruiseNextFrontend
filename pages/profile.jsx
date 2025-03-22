@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // Используем useRouter из Next.js
+import { useRouter } from "next/router";
 import Loading from "@/components/Loading/Loading";
 import axios from "axios";
-import './profile.css'; // Подключение стилей
+import './profile.css';
 
 export default function Profile() {
-    const [user, setUser] = useState(null);  // Данные текущего пользователя
-    const [data, setData] = useState(null);  // Все бронирования и отзывы
-    const [userPhotos, setUserPhotos] = useState([]); // Фотографии пользователя
+    const [user, setUser] = useState(null);
+    const [data, setData] = useState(null);
+    const [userPhotos, setUserPhotos] = useState([]);
     const [error, setError] = useState(null);
-    const router = useRouter(); // Хук для навигации в Next.js
+    const router = useRouter();
 
     useEffect(() => {
-        // Загружаем текущего пользователя
-        axios.get("http://localhost:8000/api/auth/user/profile", {
+        axios.get("http://localhost:8000/api/auth/profile", {
             withCredentials: true,
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         })
@@ -25,7 +24,6 @@ export default function Profile() {
                 setError("Ошибка загрузки данных пользователя");
             });
 
-        // Загружаем все данные
         axios.get("http://localhost:8000/api/all-data", {
             withCredentials: true,
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
@@ -40,7 +38,6 @@ export default function Profile() {
     }, []);
 
     useEffect(() => {
-        // Загружаем фотографии пользователя
         if (user) {
             axios.get(`http://localhost:8000/api/user/photos/${user.id}`, {
                 withCredentials: true,
@@ -53,7 +50,7 @@ export default function Profile() {
                     console.error("Ошибка загрузки фотографий", error);
                 });
         }
-    }, [user]); // Загружаем фотографии при изменении user
+    }, [user]);
 
     if (error) {
         return <p className="error-message">{error}</p>;
@@ -63,8 +60,7 @@ export default function Profile() {
         return <Loading />;
     }
 
-    // Фильтруем отзывы и бронирования текущего пользователя
-    const userFeedbacks = data.feedbacks?.filter(fb => fb.user_id === user.id) || [];
+    const userReviews = data.reviews?.filter(fb => fb.user_id === user.id) || [];
     const userBookings = data.bookings?.filter(b => b.user_id === user.id) || [];
 
     return (
@@ -72,9 +68,8 @@ export default function Profile() {
             <header>
                 <h1>{user.name}</h1>
                 <h2>{user.email}</h2>
-                {/* Кнопка для возврата на главное меню */}
                 <button
-                    onClick={() => router.push("/")} // Переход на главную страницу
+                    onClick={() => router.push("/")}
                     className="back-button"
                 >
                     На главную
@@ -83,12 +78,13 @@ export default function Profile() {
 
             <div className="section-content">
                 <h3 className="section-title">Мои отзывы</h3>
-                {userFeedbacks.length > 0 ? (
+                {userReviews.length > 0 ? (
                     <ul>
-                        {userFeedbacks.map((fb) => (
+                        {userReviews.map((fb) => (
                             <li key={fb.id}>
-                                <p><strong>{fb.feedback}</strong></p>
+                                <p><strong>{fb.comment}</strong></p>
                                 <p><small>Круиз: {fb.cruise}</small></p>
+                                <p><small>Оценка: {fb.rating}/5</small></p>
                             </li>
                         ))}
                     </ul>
@@ -104,7 +100,19 @@ export default function Profile() {
                         {userBookings.map((b) => (
                             <li key={b.id}>
                                 <p><strong>{b.cruise}</strong></p>
-                                <p><small>Дата: {b.date} — {b.seats} мест</small></p>
+                                <p>
+                                    <small>
+                                        Дата: {new Date(b.date).toLocaleDateString()} — {b.seats} мест
+                                    </small>
+                                </p>
+                                <p><small>Класс каюты: {b.cabin_class}</small></p>
+                                <p><small>Стоимость: {b.total_price} руб.</small></p>
+                                {Array.isArray(b.extras) && b.extras.length > 0 && (
+                                    <p><small>Доп. услуги: {b.extras.join(', ')}</small></p>
+                                )}
+                                {b.comment && (
+                                    <p><small>Комментарий: {b.comment}</small></p>
+                                )}
                             </li>
                         ))}
                     </ul>
@@ -120,7 +128,7 @@ export default function Profile() {
                         {userPhotos.map((photo) => (
                             <div key={photo.id} className="photo-wrapper">
                                 <img
-                                    src={`http://localhost:8000${photo.url}`} // Используем URL из сервера
+                                    src={`http://localhost:8000${photo.url}`}
                                     alt={photo.name || `User photo ${photo.id}`}
                                     className="photo"
                                 />

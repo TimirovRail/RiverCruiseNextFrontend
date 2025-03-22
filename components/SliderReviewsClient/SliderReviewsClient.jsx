@@ -3,37 +3,37 @@
 import { useState, useEffect } from "react";
 import styles from "./SliderReviewsClient.module.css";
 
-export default function Testimonials() {
-    const [testimonials, setTestimonials] = useState([]);
+export default function SliderReviewsClient() {
+    const [reviews, setReviews] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(3); // Начальное значение для больших экранов
+    const [itemsPerPage, setItemsPerPage] = useState(3);
 
     // Определяем количество элементов на основе ширины экрана
     useEffect(() => {
         const updateItemsPerPage = () => {
             if (window.innerWidth <= 479) {
-                setItemsPerPage(1); // Смартфоны (320px и меньше)
+                setItemsPerPage(1);
             } else if (window.innerWidth <= 767) {
-                setItemsPerPage(1); // Смартфоны (480px)
+                setItemsPerPage(1);
             } else if (window.innerWidth <= 1023) {
-                setItemsPerPage(2); // Планшеты (768px)
+                setItemsPerPage(2);
             } else {
-                setItemsPerPage(3); // Большие экраны (1024px и выше)
+                setItemsPerPage(3);
             }
         };
 
-        updateItemsPerPage(); // Вызываем при монтировании
-        window.addEventListener("resize", updateItemsPerPage); // Обновляем при изменении размера окна
+        updateItemsPerPage();
+        window.addEventListener("resize", updateItemsPerPage);
 
-        return () => window.removeEventListener("resize", updateItemsPerPage); // Очищаем слушатель
+        return () => window.removeEventListener("resize", updateItemsPerPage);
     }, []);
 
-    // Загружаем отзывы
+    // Загружаем отзывы из /api/reviews
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/feedbacks")
+        fetch("http://127.0.0.1:8000/api/reviews")
             .then((response) => response.json())
             .then((data) => {
-                setTestimonials(data);
+                setReviews(data);
             })
             .catch((error) => {
                 console.error("Ошибка загрузки отзывов:", error);
@@ -41,7 +41,7 @@ export default function Testimonials() {
     }, []);
 
     const nextTestimonial = () => {
-        if (activeIndex + itemsPerPage < testimonials.length) {
+        if (activeIndex + itemsPerPage < reviews.length) {
             setActiveIndex((prevIndex) => prevIndex + itemsPerPage);
         }
     };
@@ -52,17 +52,14 @@ export default function Testimonials() {
         }
     };
 
-    const visibleTestimonials = testimonials.slice(
-        activeIndex,
-        activeIndex + itemsPerPage
-    );
+    const visibleReviews = reviews.slice(activeIndex, activeIndex + itemsPerPage);
 
     return (
         <div className="layout">
             <div className="title">
                 <h2 className="h1-title">ОТЗЫВЫ НАШИХ КЛИЕНТОВ</h2>
             </div>
-            {testimonials.length === 0 ? (
+            {reviews.length === 0 ? (
                 <p>Загрузка отзывов...</p>
             ) : (
                 <div className={styles.slider}>
@@ -74,20 +71,21 @@ export default function Testimonials() {
                         &lt;
                     </button>
                     <div className={styles.testimonialWrapper}>
-                        {visibleTestimonials.map((testimonial) => (
-                            <div key={testimonial.id} className={styles.testimonial}>
+                        {visibleReviews.map((review) => (
+                            <div key={review.id} className={styles.testimonial}>
                                 <blockquote className={styles.quote}>
-                                    “{testimonial.feedback}”
+                                    “{review.comment}”
                                 </blockquote>
-                                <p className={styles.author}>- {testimonial.name}</p>
-                                <p className={styles.cruise}>{testimonial.cruise}</p>
+                                <p className={styles.author}>- {review.user?.name || 'Аноним'}</p>
+                                <p className={styles.cruise}>{review.cruise?.name || 'Неизвестный круиз'}</p>
+                                <p className={styles.rating}>Оценка: {review.rating}/5</p>
                             </div>
                         ))}
                     </div>
                     <button
                         className={styles.next}
                         onClick={nextTestimonial}
-                        disabled={activeIndex + itemsPerPage >= testimonials.length}
+                        disabled={activeIndex + itemsPerPage >= reviews.length}
                     >
                         &gt;
                     </button>
