@@ -102,10 +102,14 @@ export default function Profile() {
                                 <p><strong>{b.cruise}</strong></p>
                                 <p>
                                     <small>
-                                        Дата: {new Date(b.date).toLocaleDateString()} — {b.seats} мест
+                                        Дата: {new Date(b.date).toLocaleDateString()}
                                     </small>
                                 </p>
-                                <p><small>Класс каюты: {b.cabin_class}</small></p>
+                                <p>
+                                    <small>
+                                        Места: Эконом: {b.economy_seats}, Стандарт: {b.standard_seats}, Люкс: {b.luxury_seats}
+                                    </small>
+                                </p>
                                 <p><small>Стоимость: {b.total_price} руб.</small></p>
                                 {Array.isArray(b.extras) && b.extras.length > 0 && (
                                     <p><small>Доп. услуги: {b.extras.join(', ')}</small></p>

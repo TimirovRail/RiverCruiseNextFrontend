@@ -20,7 +20,7 @@
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.6s ease-out forwards;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 8px;
 }
 
@@ -42,6 +42,11 @@
     left: 0;
     background-size: cover;
     background-position: center;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .photo {
+    transform: scale(1.05);
 }
 
 .description {
@@ -58,10 +63,13 @@
 .description p {
     font-size: 1.1rem;
     margin-top: 0.5rem;
+    color: #666;
+    line-height: 1.5;
 }
 
 .buttons {
     margin-top: 1rem;
+    text-align: center;
 }
 
 .readMore {
@@ -72,12 +80,20 @@
     background-color: #2A376D;
     text-decoration: none;
     text-align: center;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     border-radius: 5px;
 }
 
 .readMore:hover {
     background-color: #1E2A4B;
+    transform: translateY(-2px);
+}
+
+.errorMessage {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #e63946;
+    padding: 20px;
 }
 
 /* Анимация появления */
@@ -86,26 +102,6 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.card:nth-child(2) {
-    animation-delay: 0.4s;
-}
-
-.card:nth-child(3) {
-    animation-delay: 0.6s;
-}
-
-.card:nth-child(4) {
-    animation-delay: 0.8s;
-}
-
-.card:nth-child(5) {
-    animation-delay: 1s;
-}
-
-.card:nth-child(6) {
-    animation-delay: 1.2s;
 }
 
 /* Адаптивность */
