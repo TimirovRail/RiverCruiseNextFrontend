@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './CruiseDetail.module.css';
-import Loading from "@/components/Loading/Loading";
+import Loading from '@/components/Loading/Loading';
 import Header from '@/components/Header/Header';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 const CruiseDetail = () => {
     const { query } = useRouter();
@@ -30,41 +32,143 @@ const CruiseDetail = () => {
         fetchCruise();
     }, [id]);
 
-    if (loading) return <Loading />;;
+    if (loading) return <Loading />;
     if (!cruise) return <p>Круиз не найден.</p>;
 
     return (
-        <div className='layout'>
+        <div className="layout">
             <Header />
             <div className={styles.cruiseDetail}>
                 <div className={styles.cruiseContainer}>
-                    <img src={cruise.image_path} alt={cruise.name} className={styles.cruiseImage} />
+                    <div className={styles.imageSection}>
+                        <img src={cruise.image_path} alt={cruise.name} className={styles.cruiseImage} />
+                        {/* Классы кают */}
+                        {cruise.cabins_by_class && (
+                            <div className={styles.cabinClasses}>
+                                <h3>Классы кают</h3>
+                                <div className={styles.cabinClassList}>
+                                    {cruise.cabins_by_class.economy && (
+                                        <div className={styles.cabinClass}>
+                                            <h4>Эконом</h4>
+                                            <p>Мест: {cruise.cabins_by_class.economy.places}</p>
+                                            {cruise.cabins_by_class.economy.image_path && (
+                                                <img
+                                                    src={cruise.cabins_by_class.economy.image_path}
+                                                    alt="Эконом каюта"
+                                                    className={styles.cabinImage}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                    {cruise.cabins_by_class.standard && (
+                                        <div className={styles.cabinClass}>
+                                            <h4>Стандарт</h4>
+                                            <p>Мест: {cruise.cabins_by_class.standard.places}</p>
+                                            {cruise.cabins_by_class.standard.image_path && (
+                                                <img
+                                                    src={cruise.cabins_by_class.standard.image_path}
+                                                    alt="Стандарт каюта"
+                                                    className={styles.cabinImage}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                    {cruise.cabins_by_class.luxury && (
+                                        <div className={styles.cabinClass}>
+                                            <h4>Люкс</h4>
+                                            <p>Мест: {cruise.cabins_by_class.luxury.places}</p>
+                                            {cruise.cabins_by_class.luxury.image_path && (
+                                                <img
+                                                    src={cruise.cabins_by_class.luxury.image_path}
+                                                    alt="Люкс каюта"
+                                                    className={styles.cabinImage}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {/* Услуги на борту */}
+                        {cruise.features && Array.isArray(cruise.features) && cruise.features.length > 0 && (
+                            <div className={styles.features}>
+                                <h3>Услуги на борту</h3>
+                                <ul>
+                                    {cruise.features.map((feature, index) => (
+                                        <li key={index}>
+                                            {feature.name} <span>({feature.price} ₽)</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                     <div className={styles.info}>
                         <h1>{cruise.name}</h1>
-                        <p><strong>Река:</strong> {cruise.river}</p>
-                        <p><strong>Описание:</strong> {cruise.description}</p>
-                        <p><strong>Доступные места:</strong> {cruise.available_places} / {cruise.total_places}</p>
-                        <p><strong>Каюты:</strong> {cruise.cabins}</p>
-                        <p><strong>Дата начала:</strong> {cruise.start_date}</p>
-                        <p><strong>Дата окончания:</strong> {cruise.end_date}</p>
-                        <p><strong>Цена за человека:</strong> {cruise.price_per_person} ₽</p>
-                        <p><strong>Общая длина маршрута:</strong> {cruise.total_distance ? `${cruise.total_distance} км` : 'Не указано'}</p>
-                        {cruise.features && (
-                            <p><strong>Особенности:</strong> {
-                                Array.isArray(cruise.features)
-                                    ? cruise.features.join(', ')
-                                    : typeof cruise.features === 'string'
-                                        ? (() => {
-                                            try {
-                                                const parsed = JSON.parse(cruise.features);
-                                                return Array.isArray(parsed) ? parsed.join(', ') : 'Нет данных';
-                                            } catch (e) {
-                                                return 'Нет данных';
-                                            }
-                                        })()
-                                        : 'Нет данных'
-                            }</p>
+                        <div className={styles.infoGrid}>
+                            <p><strong>Река:</strong> {cruise.river}</p>
+                            <p><strong>Описание:</strong> {cruise.description}</p>
+                            <p><strong>Каюты:</strong> {cruise.cabins}</p>
+                            <p><strong>Цена за человека:</strong> {cruise.price_per_person} ₽</p>
+                            <p>
+                                <strong>Длина маршрута:</strong>{' '}
+                                {cruise.total_distance ? `${cruise.total_distance} км` : 'Не указано'}
+                            </p>
+                        </div>
+
+                        {/* Расписание */}
+                        {cruise.schedules && cruise.schedules.length > 0 ? (
+                            <div className={styles.schedules}>
+                                <h3>Расписание</h3>
+                                <div className={styles.scheduleList}>
+                                    {cruise.schedules.map((schedule) => (
+                                        <div key={schedule.id} className={styles.scheduleItem}>
+                                            <div className={styles.scheduleDates}>
+                                                <p>
+                                                    <strong>Отправление:</strong>{' '}
+                                                    {format(new Date(schedule.departure_datetime), 'dd MMMM yyyy, HH:mm', {
+                                                        locale: ru,
+                                                    })}
+                                                </p>
+                                                <p>
+                                                    <strong>Прибытие:</strong>{' '}
+                                                    {format(new Date(schedule.arrival_datetime), 'dd MMMM yyyy, HH:mm', {
+                                                        locale: ru,
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <div className={styles.schedulePlaces}>
+                                                <p>
+                                                    <strong>Всего мест:</strong> {schedule.total_places}{' '}
+                                                    <span>(Доступно: {schedule.available_places})</span>
+                                                </p>
+                                                <p>
+                                                    <strong>Эконом:</strong> {schedule.available_economy_places} /{' '}
+                                                    {schedule.economy_places}
+                                                </p>
+                                                <p>
+                                                    <strong>Стандарт:</strong> {schedule.available_standard_places} /{' '}
+                                                    {schedule.standard_places}
+                                                </p>
+                                                <p>
+                                                    <strong>Люкс:</strong> {schedule.available_luxury_places} /{' '}
+                                                    {schedule.luxury_places}
+                                                </p>
+                                            </div>
+                                            <div className={styles.scheduleStatus}>
+                                                <p>
+                                                    <strong>Статус:</strong>{' '}
+                                                    <span className={styles.statusBadge}>{schedule.status}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <p className={styles.noSchedule}>Расписание не указано</p>
                         )}
+
                         <a href="#" className={styles.backButton} onClick={() => window.history.back()}>
                             Назад
                         </a>

@@ -1,71 +1,257 @@
-/* Базовые стили */
 .cruiseDetail {
     width: 100%;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 1500px;
-    margin: 0 auto;
+    max-width: 1200px;
+    margin: 20px auto;
     padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .cruiseContainer {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    gap: 20px;
+}
+
+.imageSection {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
 .cruiseImage {
-    width: 50%;
+    width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .info {
-    width: 50%;
-    padding: 10px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    width: 45%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.cruiseDetail h1 {
+.info h1 {
     font-size: 2rem;
-    color: #2A376D;
+    color: #2a376d;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.infoGrid p {
+    font-size: 1.1rem;
+    color: #444;
+}
+
+.infoGrid p strong {
+    color: #2a376d;
+    font-weight: 600;
+}
+
+/* Классы кают */
+.cabinClasses {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cabinClasses h3 {
+    font-size: 1.3rem;
+    color: #2a376d;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.cabinClassList {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.cabinClass {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cabinClass:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cabinClass h4 {
+    font-size: 1.1rem;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.cabinClass p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.cabinImage {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+/* Услуги */
+.features {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.features h3 {
+    font-size: 1.3rem;
+    color: #2a376d;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.features ul li {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 8px;
+}
+
+.features ul li span {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Расписание */
+.schedules {
+    margin-top: 20px;
+}
+
+.schedules h3 {
+    font-size: 1.3rem;
+    color: #2a376d;
+    font-weight: 600;
     margin-bottom: 15px;
 }
 
-.cruiseDetail p {
-    font-size: 1.1rem;
-    color: #444;
+.scheduleList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.scheduleItem {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.scheduleItem:hover {
+    transform: translateY(-2px);
+}
+
+.scheduleDates {
     margin-bottom: 10px;
 }
 
+.scheduleDates p {
+    font-size: 1rem;
+    color: #444;
+}
+
+.scheduleDates p strong {
+    color: #2a376d;
+}
+
+.schedulePlaces {
+    margin-bottom: 10px;
+}
+
+.schedulePlaces p {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.schedulePlaces p strong {
+    color: #2a376d;
+}
+
+.schedulePlaces p span {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.scheduleStatus p {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.scheduleStatus p strong {
+    color: #2a376d;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 12px;
+    text-transform: capitalize;
+}
+
+.noSchedule {
+    font-size: 1rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 15px;
+}
+
+/* Кнопка "Назад" */
 .backButton {
     display: inline-block;
-    padding: 12px 18px;
+    padding: 12px 25px;
     font-size: 1rem;
     color: #fff;
-    background-color: #2A376D;
+    background-color: #2a376d;
+    border-radius: 8px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-top: 15px;
     text-align: center;
-    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .backButton:hover {
-    background-color: #1E2A4B;
+    background-color: #1e2a4b;
+    transform: translateY(-2px);
 }
 
 /* Адаптивность */
 
-/* Для мониторов (1280px, 1600px, 1920px и выше) */
+/* Для мониторов (1280px и выше) */
 @media (min-width: 1280px) {
     .cruiseDetail {
-        max-width: 1500px;
+        max-width: 1200px;
         padding: 20px;
     }
 
@@ -74,33 +260,35 @@
         gap: 20px;
     }
 
-    .cruiseImage {
-        width: 50%;
+    .imageSection {
+        width: 55%;
     }
 
     .info {
-        width: 50%;
-        padding: 10px;
+        width: 45%;
     }
 
-    .cruiseDetail h1 {
+    .info h1 {
         font-size: 2rem;
     }
 
-    .cruiseDetail p {
+    .infoGrid p {
         font-size: 1.1rem;
     }
 
-    .backButton {
-        padding: 12px 18px;
-        font-size: 1rem;
+    .cabinClass {
+        min-width: 140px;
+    }
+
+    .cabinImage {
+        max-width: 150px;
     }
 }
 
-/* Для нетбуков (1024px и выше) */
+/* Для нетбуков (1024px - 1279px) */
 @media (max-width: 1279px) and (min-width: 1024px) {
     .cruiseDetail {
-        max-width: 1000px;
+        max-width: 900px;
         padding: 15px;
     }
 
@@ -109,136 +297,210 @@
         gap: 15px;
     }
 
-    .cruiseImage {
-        width: 50%;
+    .imageSection {
+        width: 55%;
     }
 
     .info {
-        width: 50%;
-        padding: 8px;
+        width: 45%;
+        padding: 15px;
     }
 
-    .cruiseDetail h1 {
+    .info h1 {
         font-size: 1.8rem;
     }
 
-    .cruiseDetail p {
+    .infoGrid p {
         font-size: 1rem;
     }
 
-    .backButton {
-        padding: 10px 16px;
-        font-size: 0.9rem;
+    .cabinClass {
+        min-width: 120px;
+    }
+
+    .cabinImage {
+        max-width: 130px;
     }
 }
 
-/* Для планшетов (768px и выше) */
+/* Для планшетов (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
     .cruiseDetail {
         max-width: 700px;
+        padding: 15px;
+    }
+
+    .cruiseContainer {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .imageSection,
+    .info {
+        width: 100%;
+    }
+
+    .info h1 {
+        font-size: 1.6rem;
+    }
+
+    .infoGrid p {
+        font-size: 0.95rem;
+    }
+
+    .cabinClassList {
+        gap: 10px;
+    }
+
+    .cabinClass {
+        min-width: 110px;
+    }
+
+    .cabinImage {
+        max-width: 120px;
+    }
+
+    .scheduleItem {
+        padding: 12px;
+    }
+}
+
+/* Для смартфонов (480px - 767px) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .cruiseDetail {
+        max-width: 450px;
         padding: 10px;
     }
 
     .cruiseContainer {
         flex-direction: column;
-        align-items: center;
         gap: 10px;
     }
 
-    .cruiseImage {
-        width: 100%;
-        max-height: 300px;
-    }
-
+    .imageSection,
     .info {
         width: 100%;
-        padding: 8px;
-    }
-
-    .cruiseDetail h1 {
-        font-size: 1.6rem;
-    }
-
-    .cruiseDetail p {
-        font-size: 0.9rem;
-    }
-
-    .backButton {
-        padding: 8px 14px;
-        font-size: 0.85rem;
-    }
-}
-
-/* Для смартфонов (480px и выше) */
-@media (max-width: 767px) and (min-width: 480px) {
-    .cruiseDetail {
-        max-width: 450px;
-        padding: 8px;
-    }
-
-    .cruiseContainer {
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
     }
 
     .cruiseImage {
-        width: 100%;
         max-height: 250px;
     }
 
     .info {
-        width: 100%;
-        padding: 6px;
+        padding: 15px;
     }
 
-    .cruiseDetail h1 {
+    .info h1 {
         font-size: 1.4rem;
     }
 
-    .cruiseDetail p {
-        font-size: 0.85rem;
+    .infoGrid p {
+        font-size: 0.9rem;
+    }
+
+    .cabinClasses h3,
+    .features h3,
+    .schedules h3 {
+        font-size: 1.2rem;
+    }
+
+    .cabinClass {
+        min-width: 100px;
+    }
+
+    .cabinImage {
+        max-width: 100px;
+    }
+
+    .scheduleItem {
+        padding: 10px;
+    }
+
+    .scheduleDates p,
+    .schedulePlaces p,
+    .scheduleStatus p {
+        font-size: 0.9rem;
     }
 
     .backButton {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
 }
 
-/* Для маленьких смартфонов (320px) */
+/* Для маленьких смартфонов (менее 480px) */
 @media (max-width: 479px) {
     .cruiseDetail {
-        max-width: 300px;
-        padding: 5px;
+        max-width: 320px;
+        padding: 8px;
     }
 
     .cruiseContainer {
         flex-direction: column;
-        align-items: center;
-        gap: 5px;
+        gap: 8px;
+    }
+
+    .imageSection,
+    .info {
+        width: 100%;
     }
 
     .cruiseImage {
-        width: 100%;
         max-height: 200px;
     }
 
     .info {
-        width: 100%;
-        padding: 5px;
+        padding: 10px;
     }
 
-    .cruiseDetail h1 {
+    .info h1 {
         font-size: 1.2rem;
     }
 
-    .cruiseDetail p {
-        font-size: 0.8rem;
+    .infoGrid p {
+        font-size: 0.85rem;
+    }
+
+    .cabinClasses h3,
+    .features h3,
+    .schedules h3 {
+        font-size: 1.1rem;
+    }
+
+    .cabinClassList {
+        gap: 8px;
+    }
+
+    .cabinClass {
+        min-width: 90px;
+        padding: 8px;
+    }
+
+    .cabinImage {
+        max-width: 90px;
+    }
+
+    .features ul li {
+        font-size: 0.9rem;
+    }
+
+    .scheduleItem {
+        padding: 8px;
+    }
+
+    .scheduleDates p,
+    .schedulePlaces p,
+    .scheduleStatus p {
+        font-size: 0.85rem;
+    }
+
+    .statusBadge {
+        font-size: 0.75rem;
+        padding: 3px 6px;
     }
 
     .backButton {
-        padding: 5px 10px;
-        font-size: 0.75rem;
+        padding: 8px 15px;
+        font-size: 0.85rem;
     }
 }
