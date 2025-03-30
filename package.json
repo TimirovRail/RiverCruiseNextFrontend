@@ -11,6 +11,8 @@
   "dependencies": {
     "@react-three/drei": "^9.116.0",
     "@react-three/fiber": "^8.17.10",
+    "@stripe/react-stripe-js": "^3.5.1",
+    "@stripe/stripe-js": "^6.1.0",
     "axios": "^1.7.7",
     "base32.js": "^0.1.0",
     "date-fns": "^4.1.0",

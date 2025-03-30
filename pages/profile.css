@@ -177,3 +177,195 @@ footer p {
     object-fit: cover;
     border-radius: 10px;
 }
+
+/* Существующие стили остаются, добавляем новые */
+
+.pay-button {
+    padding: 8px 15px;
+    background-color: #2a376d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.pay-button:hover {
+    background-color: #1e2a4b;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.seats-container {
+    margin-top: 15px;
+}
+
+.seat-category {
+    margin-bottom: 20px;
+}
+
+.seat-category h4 {
+    font-size: 1.2rem;
+    color: #2a376d;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+.seats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.seat:hover:not(.taken) {
+    transform: scale(1.1);
+}
+
+.seat.selected {
+    background: #28a745;
+    color: #fff;
+}
+
+.seat.taken {
+    background: #888;
+    cursor: not-allowed;
+}
+
+.confirm-button,
+.close-button,
+.pay-now-button {
+    padding: 10px 20px;
+    margin: 10px 5px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-button {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.confirm-button:hover {
+    background-color: #218838;
+}
+
+.confirm-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.close-button:hover {
+    background-color: #c82333;
+}
+
+.payment-form {
+    margin-top: 15px;
+}
+
+.payment-form .pay-now-button {
+    background-color: #007bff;
+    color: #fff;
+    margin-top: 15px;
+}
+
+.payment-form .pay-now-button:hover {
+    background-color: #0069d9;
+}
+
+/* Адаптивность */
+@media (max-width: 767px) {
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .seats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+
+    .confirm-button,
+    .close-button,
+    .pay-now-button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 479px) {
+    .modal-content {
+        padding: 10px;
+    }
+
+    .seats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    }
+
+    .seat {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+    }
+
+    .seat-category h4 {
+        font-size: 1rem;
+    }
+}
+
+.section-content .qr-code {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.section-content .qr-code h4 {
+    margin-bottom: 5px;
+}
