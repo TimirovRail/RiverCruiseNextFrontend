@@ -8,6 +8,7 @@ export default function PhotoGallery() {
     const [userPhotos, setUserPhotos] = useState([]);
     const [newPhotos, setNewPhotos] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [userName, setUserName] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
@@ -31,6 +32,7 @@ export default function PhotoGallery() {
         if (token && user) {
             setIsAuthenticated(true);
             setUserId(user.id);
+            setUserName(user.name);
             fetchUserPhotos(user.id);
         } else {
             setIsLoading(false);
@@ -40,10 +42,16 @@ export default function PhotoGallery() {
 
     const fetchUserPhotos = async (userId) => {
         try {
-            const res = await fetch(`http://localhost:8000/api/user/photos/${userId}`);
+            const token = localStorage.getItem('token');
+            const res = await fetch(`http://localhost:8000/api/user/photos/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (!res.ok) throw new Error('Ошибка загрузки фотографий пользователя');
             const data = await res.json();
             setUserPhotos(data.photos || []);
+            console.log('Загруженные фотографии:', data.photos);
         } catch (error) {
             console.error('Ошибка:', error);
         } finally {
@@ -82,15 +90,23 @@ export default function PhotoGallery() {
             return;
         }
 
+        const token = localStorage.getItem('token');
         const formData = new FormData();
         newPhotos.forEach((photo) => {
-            formData.append('photos', photo);
+            formData.append('photos[]', photo);
         });
         formData.append('user_id', userId);
+
+        for (let pair of formData.entries()) {
+            console.log(`${pair[0]}:`, pair[1]);
+        }
 
         try {
             const response = await fetch('http://localhost:8000/api/auth/upload-photos', {
                 method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formData,
             });
 
@@ -99,7 +115,7 @@ export default function PhotoGallery() {
                 console.log('Фотографии успешно загружены:', data);
                 setUserPhotos([...userPhotos, ...data.photos]);
                 setNewPhotos([]);
-                fetchUserPhotos(userId); // Обновляем список фотографий
+                fetchUserPhotos(userId);
             } else {
                 const errorData = await response.json();
                 console.error('Ошибка при загрузке:', errorData);
@@ -155,17 +171,35 @@ export default function PhotoGallery() {
                                     </div>
                                     <button type="submit">Загрузить</button>
                                 </form>
-                                <div className={styles.images}>
-                                    {userPhotos.map((photo, index) => (
-                                        <div key={index} className={styles.imageWrapper}>
-                                            <img
-                                                src={`http://localhost:8000${photo.url}`}
-                                                alt={photo.name || `User photo ${index}`}
-                                                className={styles.image}
-                                            />
+                                {userPhotos.length > 0 ? (
+                                    <div>
+                                        <p>
+                                            {userName || 'Пользователь'} оставил {userPhotos.length} фотографий
+                                        </p>
+                                        <div className={styles.images}>
+                                            {userPhotos.map((photo, index) => {
+                                                const imageUrl = `http://localhost:8000${photo.url}`;
+                                                console.log(`Попытка загрузить изображение: ${imageUrl}`);
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={styles.imageWrapper}
+                                                        onClick={() => openImage(imageUrl)}
+                                                    >
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt={photo.name || `User photo ${index}`}
+                                                            className={styles.image}
+                                                            onError={() => console.error(`Не удалось загрузить изображение: ${imageUrl}`)}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ) : (
+                                    <p>Вы ещё не загрузили фотографии.</p>
+                                )}
                             </>
                         )}
                     </div>
@@ -173,7 +207,7 @@ export default function PhotoGallery() {
             )}
 
             {selectedImage && (
-                <div className={styles.modal} onClick={closeImage}>
+                <div className={styles.modal} onClick={closeImage}> 
                     <div className={styles.modalContent}>
                         <img src={selectedImage} alt="Selected" className={styles.modalImage} />
                     </div>
