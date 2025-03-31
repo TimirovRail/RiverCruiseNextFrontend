@@ -1,7 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense, lazy } from 'react';
 import { useRouter } from 'next/router';
 import styles from './dashboard.css';
 import Loading from "@/components/Loading/Loading";
+
+// Ленивая загрузка компонентов
+const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
+const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
+const CruisesList = lazy(() => import('../../components/Dashboard/CruisesList'));
+const CreateCruiseForm = lazy(() => import('../../components/Dashboard/CreateCruiseForm'));
+const FeedbacksList = lazy(() => import('../../components/Dashboard/FeedbacksList'));
+const BookingsList = lazy(() => import('../../components/Dashboard/BookingsList'));
+const PhotosList = lazy(() => import('../../components/Dashboard/PhotosList'));
+const EditModal = lazy(() => import('../../components/Dashboard/EditModal'));
+const CruiseEditForm = lazy(() => import('../../components/Dashboard/CruiseEditForm'));
+const FeedbackEditForm = lazy(() => import('../../components/Dashboard/FeedbackEditForm'));
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -13,23 +25,25 @@ const Dashboard = () => {
     const [errors, setErrors] = useState({});
     const router = useRouter();
 
+    // Состояния для сворачивания/разворачивания блоков
+    const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
+    const [isCruisesOpen, setIsCruisesOpen] = useState(false);
+    const [isCreateCruiseOpen, setIsCreateCruiseOpen] = useState(false);
+    const [isFeedbacksOpen, setIsFeedbacksOpen] = useState(false);
+    const [isBookingsOpen, setIsBookingsOpen] = useState(false);
+    const [isPhotosOpen, setIsPhotosOpen] = useState(false);
+
     // Состояние для модального окна
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingCruise, setEditingCruise] = useState(null);
     const [editingFeedback, setEditingFeedback] = useState(null);
 
-    // Состояние для создания нового круиза
-    const [newCruise, setNewCruise] = useState({
-        name: '',
-        description: '',
-        river: '',
-        total_places: 0,
-        cabins: 0,
-        start_date: '',
-        end_date: '',
-        price_per_person: 0,
-        available_places: 0,
-    });
+    // Функция для форматирования даты
+    const formatDate = (datetime) => {
+        if (!datetime || typeof datetime !== 'string') return '—';
+        const date = new Date(datetime);
+        return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
+    };
 
     // Загрузка данных
     useEffect(() => {
@@ -37,32 +51,41 @@ const Dashboard = () => {
             setLoading(true);
 
             const urls = [
-                { url: 'http://localhost:8000/api/user', setter: setUserData },
-                { url: 'http://localhost:8000/api/feedbacks', setter: setFeedbacks },
-                { url: 'http://localhost:8000/api/bookings', setter: setBookings },
-                { url: 'http://localhost:8000/api/cruises', setter: setCruises },
-                { url: 'http://localhost:8000/api/photos', setter: setPhotos },
+                { url: 'http://localhost:8000/api/user', setter: setUserData, key: 'user' },
+                { url: 'http://localhost:8000/api/feedbacks', setter: setFeedbacks, key: 'feedbacks' },
+                { url: 'http://localhost:8000/api/bookings', setter: setBookings, key: 'bookings' },
+                { url: 'http://localhost:8000/api/cruises', setter: setCruises, key: 'cruises' },
+                { url: 'http://localhost:8000/api/photos', setter: setPhotos, key: 'photos' },
             ];
 
             try {
                 await Promise.all(
-                    urls.map(async ({ url, setter }) => {
+                    urls.map(async ({ url, setter, key }) => {
                         const response = await fetch(url, {
                             method: 'GET',
                             headers: {
                                 Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                'Content-Type': 'application/json',
                             },
                         });
 
                         if (!response.ok) {
-                            throw new Error(`Ошибка при загрузке данных с ${url}`);
+                            const errorText = await response.text();
+                            throw new Error(`Ошибка при загрузке данных с ${url}: ${errorText}`);
                         }
 
                         const data = await response.json();
+                        if (key !== 'user' && !Array.isArray(data)) {
+                            throw new Error(`Данные с ${url} должны быть массивом`);
+                        }
+                        if (key === 'user' && (typeof data !== 'object' || Array.isArray(data))) {
+                            throw new Error(`Данные с ${url} должны быть объектом`);
+                        }
                         setter(data);
                     })
                 );
             } catch (err) {
+                console.error(err);
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     [err.message]: true,
@@ -74,8 +97,14 @@ const Dashboard = () => {
 
         fetchAllData();
     }, []);
+
     // Удаление фотографии
     const handleDeletePhoto = async (photoId) => {
+        if (!photoId) {
+            alert('Ошибка: ID фотографии не указан');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
                 method: 'DELETE',
@@ -85,38 +114,20 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при удалении фотографии');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при удалении фотографии: ${errorText}`);
             }
 
             setPhotos(photos.filter(photo => photo.id !== photoId));
             alert('Фотография успешно удалена!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить фотографию');
+            alert(`Ошибка: ${error.message}`);
         }
     };
-    const fetchPhotos = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/api/photos', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
 
-            if (!response.ok) {
-                throw new Error('Ошибка при загрузке фотографий');
-            }
-
-            const data = await response.json();
-            setPhotos(data);
-        } catch (error) {
-                console.error(error);
-            setError(error.message);
-        }
-    };
     // Создание нового круиза
-    const handleCreateCruise = async () => {
+    const handleCreateCruise = async (newCruise) => {
         try {
             const response = await fetch('http://localhost:8000/api/cruises', {
                 method: 'POST',
@@ -128,7 +139,8 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при создании круиза');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при создании круиза: ${errorText}`);
             }
 
             const data = await response.json();
@@ -136,12 +148,17 @@ const Dashboard = () => {
             alert('Круиз успешно добавлен!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось создать круиз');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
     // Удаление круиза
     const handleDeleteCruise = async (cruiseId) => {
+        if (!cruiseId) {
+            alert('Ошибка: ID круиза не указан');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/${cruiseId}`, {
                 method: 'DELETE',
@@ -151,19 +168,25 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при удалении круиза');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при удалении круиза: ${errorText}`);
             }
 
             setCruises(cruises.filter(cruise => cruise.id !== cruiseId));
             alert('Круиз успешно удалён!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить круиз');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
     // Удаление отзыва
     const handleDeleteFeedback = async (feedbackId) => {
+        if (!feedbackId) {
+            alert('Ошибка: ID отзыва не указан');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8000/api/feedbacks/${feedbackId}`, {
                 method: 'DELETE',
@@ -173,14 +196,15 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при удалении отзыва');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при удалении отзыва: ${errorText}`);
             }
 
             setFeedbacks(feedbacks.filter(feedback => feedback.id !== feedbackId));
             alert('Отзыв успешно удалён!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить отзыв');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -209,16 +233,17 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при редактировании круиза');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при редактировании круиза: ${errorText}`);
             }
 
             const data = await response.json();
             setCruises(cruises.map(cruise => cruise.id === updatedData.id ? data : cruise));
-            handleCloseModal(); // Закрываем модальное окно и очищаем состояние
+            handleCloseModal();
             alert('Круиз успешно обновлён!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось обновить круиз');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -235,16 +260,17 @@ const Dashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при редактировании отзыва');
+                const errorText = await response.text();
+                throw new Error(`Ошибка при редактировании отзыва: ${errorText}`);
             }
 
             const data = await response.json();
             setFeedbacks(feedbacks.map(feedback => feedback.id === updatedData.id ? data : feedback));
-            handleCloseModal(); // Закрываем модальное окно и очищаем состояние
+            handleCloseModal();
             alert('Отзыв успешно обновлён!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось обновить отзыв');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -255,388 +281,133 @@ const Dashboard = () => {
         setEditingFeedback(null);
     };
 
-    // Компонент модального окна
-    const EditModal = ({ isOpen, onClose, children }) => {
-        if (!isOpen) return null;
-
-        return (
-            <div className="modal-overlay">
-                <div className="modal-content">
-                    {children}
-                    <button onClick={onClose} className="modal-close-button">Закрыть</button>
-                </div>
-            </div>
-        );
-    };
-
-    // Форма редактирования круиза
-    const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
-        const [formData, setFormData] = useState(cruise);
-
-        const handleChange = (e) => {
-            const { name, value } = e.target;
-            setFormData({ ...formData, [name]: value });
-        };
-
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            onSave(formData);
-        };
-
-        return (
-            <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <p>Название круиза</p>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="input-field"
-                    />
-                </div>
-                <div className="input-group">
-                    <p>Описание круиза</p>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="textarea-field"
-                    ></textarea>
-                </div>
-                {/* Добавьте остальные поля для редактирования */}
-                <button type="submit" className="button">Сохранить</button>
-                <button type="button" onClick={onCancel} className="button">Отмена</button>
-            </form>
-        );
-    };
-
-    // Форма редактирования отзыва
-    const FeedbackEditForm = ({ feedback, onSave, onCancel }) => {
-        const [formData, setFormData] = useState(feedback);
-
-        const handleChange = (e) => {
-            const { name, value } = e.target;
-            setFormData({ ...formData, [name]: value });
-        };
-
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            onSave(formData);
-        };
-
-        return (
-            <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <p>Имя</p>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="input-field"
-                    />
-                </div>
-                <div className="input-group">
-                    <p>Email</p>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="input-field"
-                    />
-                </div>
-                <div className="input-group">
-                    <p>Отзыв</p>
-                    <textarea
-                        name="feedback"
-                        value={formData.feedback}
-                        onChange={handleChange}
-                        className="textarea-field"
-                    ></textarea>
-                </div>
-                <button type="submit" className="button">Сохранить</button>
-                <button type="button" onClick={onCancel} className="button">Отмена</button>
-            </form>
-        );
-    };
-
     if (loading) {
         return <Loading />;
     }
 
     return (
-        <div className="layout">
+        <div className={styles.layout}>
             {/* Модальное окно для редактирования */}
-            <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
-                {editingCruise && (
-                    <CruiseEditForm
-                        cruise={editingCruise}
-                        onSave={handleSaveCruise}
-                        onCancel={handleCloseModal}
-                    />
-                )}
-                {editingFeedback && (
-                    <FeedbackEditForm
-                        feedback={editingFeedback}
-                        onSave={handleSaveFeedback}
-                        onCancel={handleCloseModal}
-                    />
-                )}
-            </EditModal>
+            <Suspense fallback={<Loading />}>
+                <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
+                    {editingCruise && (
+                        <CruiseEditForm
+                            cruise={editingCruise}
+                            onSave={handleSaveCruise}
+                            onCancel={handleCloseModal}
+                        />
+                    )}
+                    {editingFeedback && (
+                        <FeedbackEditForm
+                            feedback={editingFeedback}
+                            onSave={handleSaveFeedback}
+                            onCancel={handleCloseModal}
+                        />
+                    )}
+                </EditModal>
+            </Suspense>
 
-            <div className="dashboard-container">
-                <div className="title">
-                    <h2 className="h1-title">ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
+            <div className={styles.dashboardContainer}>
+                <div className={styles.title}>
+                    <h2 className={styles.h1Title}>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
                 </div>
-                {errors['http://localhost:8000/api/user'] ? (
-                    <p>Ошибка при загрузке данных пользователя</p>
-                ) : (
-                    <div className="user-info">
-                        <h2>ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ</h2>
-                        <p><strong>Имя:</strong> {userData?.name}</p>
-                        <p><strong>Email:</strong> {userData?.email}</p>
-                        <p><strong>Роль:</strong> {userData?.role}</p>
-                    </div>
-                )}
-                <div className="button-group">
-                    <button onClick={() => router.push('/')} className="home-button">На главный экран</button>
+
+                {/* Информация о пользователе */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ"
+                        isOpen={isUserInfoOpen}
+                        onToggle={() => setIsUserInfoOpen(!isUserInfoOpen)}
+                    >
+                        <UserInfo
+                            userData={userData}
+                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/user']}
+                        />
+                    </CollapsibleSection>
+                </Suspense>
+
+                <div className={styles.buttonGroup}>
+                    <button onClick={() => router.push('/')} className={styles.homeButton}>На главную</button>
                     <button onClick={() => {
                         localStorage.removeItem('token');
                         router.push('/login');
-                    }} className="logout-button">Выйти</button>
+                    }} className={styles.logoutButton}>Выйти</button>
                 </div>
 
-                {errors['http://localhost:8000/api/cruises'] ? (
-                    <p>Ошибка при загрузке круизов</p>
-                ) : (
-                    <>
-                        <h2>СПИСОК КРУИЗОВ</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Название</th>
-                                    <th>Описание</th>
-                                    <th>Река</th>
-                                    <th>Места</th>
-                                    <th>Каюты</th>
-                                    <th>Начало</th>
-                                    <th>Конец</th>
-                                    <th>Цена</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cruises.map((cruise, index) => (
-                                    <tr key={index}>
-                                        <td>{cruise.name}</td>
-                                        <td>{cruise.description}</td>
-                                        <td>{cruise.river}</td>
-                                        <td>{cruise.total_places}/{cruise.available_places}</td>
-                                        <td>{cruise.cabins}</td>
-                                        <td>{cruise.start_date}</td>
-                                        <td>{cruise.end_date}</td>
-                                        <td>{cruise.price_per_person}</td>
-                                        <td>
-                                            <button onClick={() => handleEditCruiseClick(cruise)} className="edit-button">
-                                                Редактировать
-                                            </button>
-                                            <button onClick={() => handleDeleteCruise(cruise.id)} className="delete-button">
-                                                Удалить
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </>
-                )}
-
-                <h2>ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА</h2>
-
-                <form onSubmit={(e) => { e.preventDefault(); handleCreateCruise(); }} className="form-container">
-                    <div className="input-group">
-                        <p>Введите название круиза</p>
-                        <input
-                            type="text"
-                            value={newCruise.name}
-                            onChange={(e) => setNewCruise({ ...newCruise, name: e.target.value })}
-                            className="input-field"
+                {/* Список круизов */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="СПИСОК КРУИЗОВ"
+                        isOpen={isCruisesOpen}
+                        onToggle={() => setIsCruisesOpen(!isCruisesOpen)}
+                    >
+                        <CruisesList
+                            cruises={cruises}
+                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/cruises']}
+                            formatDate={formatDate}
+                            onEdit={handleEditCruiseClick}
+                            onDelete={handleDeleteCruise}
                         />
-                    </div>
+                    </CollapsibleSection>
+                </Suspense>
 
-                    <div className="input-group">
-                        <p>Описание круиза</p>
-                        <textarea
-                            value={newCruise.description}
-                            onChange={(e) => setNewCruise({ ...newCruise, description: e.target.value })}
-                            className="textarea-field"
-                        ></textarea>
-                    </div>
+                {/* Форма для создания круиза */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА"
+                        isOpen={isCreateCruiseOpen}
+                        onToggle={() => setIsCreateCruiseOpen(!isCreateCruiseOpen)}
+                    >
+                        <CreateCruiseForm onSubmit={handleCreateCruise} />
+                    </CollapsibleSection>
+                </Suspense>
 
-                    <div className="input-group">
-                        <p>Название реки</p>
-                        <input
-                            type="text"
-                            value={newCruise.river}
-                            onChange={(e) => setNewCruise({ ...newCruise, river: e.target.value })}
-                            className="input-field"
+                {/* Отзывы клиентов */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="ОТЗЫВЫ КЛИЕНТОВ"
+                        isOpen={isFeedbacksOpen}
+                        onToggle={() => setIsFeedbacksOpen(!isFeedbacksOpen)}
+                    >
+                        <FeedbacksList
+                            feedbacks={feedbacks}
+                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/feedbacks']}
+                            onEdit={handleEditFeedbackClick}
+                            onDelete={handleDeleteFeedback}
                         />
-                    </div>
+                    </CollapsibleSection>
+                </Suspense>
 
-                    <div className="input-group">
-                        <p>Общее количество мест</p>
-                        <input
-                            type="number"
-                            value={newCruise.total_places}
-                            onChange={(e) => setNewCruise({ ...newCruise, total_places: Number(e.target.value) })}
-                            className="input-field"
+                {/* Бронированные билеты */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="БРОНИРОВАННЫЕ БИЛЕТЫ"
+                        isOpen={isBookingsOpen}
+                        onToggle={() => setIsBookingsOpen(!isBookingsOpen)}
+                    >
+                        <BookingsList
+                            bookings={bookings}
+                            I
+                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/bookings']}
+                            formatDate={formatDate}
                         />
-                    </div>
+                    </CollapsibleSection>
+                </Suspense>
 
-                    <div className="input-group">
-                        <p>Количество кают</p>
-                        <input
-                            type="number"
-                            value={newCruise.cabins}
-                            onChange={(e) => setNewCruise({ ...newCruise, cabins: Number(e.target.value) })}
-                            className="input-field"
+                {/* Фотографии пользователей */}
+                <Suspense fallback={<Loading />}>
+                    <CollapsibleSection
+                        title="ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ"
+                        isOpen={isPhotosOpen}
+                        onToggle={() => setIsPhotosOpen(!isPhotosOpen)}
+                    >
+                        <PhotosList
+                            photos={photos}
+                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/photos']}
+                            onDelete={handleDeletePhoto}
                         />
-                    </div>
-
-                    <div className="input-group">
-                        <p>Начало круиза</p>
-                        <input
-                            type="date"
-                            value={newCruise.start_date}
-                            onChange={(e) => setNewCruise({ ...newCruise, start_date: e.target.value })}
-                            className="input-field"
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <p>Конец круиза</p>
-                        <input
-                            type="date"
-                            value={newCruise.end_date}
-                            onChange={(e) => setNewCruise({ ...newCruise, end_date: e.target.value })}
-                            className="input-field"
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <p>Цена за человека</p>
-                        <input
-                            type="number"
-                            value={newCruise.price_per_person}
-                            onChange={(e) => setNewCruise({ ...newCruise, price_per_person: Number(e.target.value) })}
-                            className="input-field"
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <p>Доступные места</p>
-                        <input
-                            type="number"
-                            value={newCruise.available_places}
-                            onChange={(e) => setNewCruise({ ...newCruise, available_places: Number(e.target.value) })}
-                            className="input-field"
-                        />
-                    </div>
-
-                    <button type="submit" className="button">Добавить круиз</button>
-                </form>
-
-                {errors['http://localhost:8000/api/feedbacks'] ? (
-                    <p>Ошибка при загрузке отзывов</p>
-                ) : (
-                    <>
-                        <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Имя</th>
-                                    <th>Email</th>
-                                    <th>Отзыв</th>
-                                    <th>Круиз</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {feedbacks.map((feedback, index) => (
-                                    <tr key={index}>
-                                        <td>{feedback.name}</td>
-                                        <td>{feedback.email}</td>
-                                        <td>{feedback.feedback}</td>
-                                        <td>{feedback.cruise}</td>
-                                        <td>
-                                            <button onClick={() => handleEditFeedbackClick(feedback)} className="edit-button">
-                                                Редактировать
-                                            </button>
-                                            <button onClick={() => handleDeleteFeedback(feedback.id)} className="delete-button">
-                                                Удалить
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </>
-                )}
-
-                {errors['http://localhost:8000/api/bookings'] ? (
-                    <p>Ошибка при загрузке бронирований</p>
-                ) : (
-                    <>
-                        <h2>БРОНИРОВАННЫЕ БИЛЕТЫ</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Имя</th>
-                                    <th>Email</th>
-                                    <th>Круиз</th>
-                                    <th>Дата</th>
-                                    <th>Количество мест</th>
-                                    <th>Комментарий</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {bookings.map((booking, index) => (
-                                    <tr key={index}>
-                                        <td>{booking.name}</td>
-                                        <td>{booking.email}</td>
-                                        <td>{booking.cruise}</td>
-                                        <td>{booking.date}</td>
-                                        <td>{booking.seats}</td>
-                                        <td>{booking.comment}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </>
-                )}
-                {errors.photos ? (
-                    <p>{errors.photos}</p>
-                ) : (
-                    <>
-                        <h2>ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ</h2>
-                        <div className="photos-grid">
-                            {photos.map((photo) => (
-                                <div key={photo.id} className="photo-card">
-                                    <img
-                                        src={`http://localhost:8000${photo.url}`}
-                                        alt={photo.name || `Фото пользователя ${photo.user_id}`}
-                                        className="photo-image"
-                                    />
-                                    <div className="photo-actions">
-                                        <button onClick={() => handleDeletePhoto(photo.id)}>Удалить</button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                )}
+                    </CollapsibleSection>
+                </Suspense>
             </div>
         </div>
     );
