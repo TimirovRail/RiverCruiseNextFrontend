@@ -1,8 +1,21 @@
-import { useState } from 'react';
-import styles from '../../pages/admin/dashboard.css';
+import { useState, useEffect } from 'react';
+import styles from '../../pages/admin/adminComponents.module.css';
 
 const FeedbackEditForm = ({ feedback, onSave, onCancel }) => {
-    const [formData, setFormData] = useState(feedback);
+    const [formData, setFormData] = useState({
+        comment: '',
+        rating: '',
+    });
+
+    useEffect(() => {
+        if (feedback) {
+            setFormData({
+                id: feedback.id,
+                comment: feedback.comment || '',
+                rating: feedback.rating || '',
+            });
+        }
+    }, [feedback]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -15,58 +28,34 @@ const FeedbackEditForm = ({ feedback, onSave, onCancel }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
             <div className={styles.inputGroup}>
-                <p>Пользователь ID</p>
-                <input
-                    type="number"
-                    name="user_id"
-                    value={formData.user_id || ''}
-                    onChange={handleChange}
-                    className={styles.inputField}
-                />
-            </div>
-            <div className={styles.inputGroup}>
-                <p>Круиз ID</p>
-                <input
-                    type="number"
-                    name="cruise_id"
-                    value={formData.cruise_id || ''}
-                    onChange={handleChange}
-                    className={styles.inputField}
-                />
-            </div>
-            <div className={styles.inputGroup}>
-                <p>Имя</p>
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name || ''}
-                    onChange={handleChange}
-                    className={styles.inputField}
-                />
-            </div>
-            <div className={styles.inputGroup}>
-                <p>Email</p>
-                <input
-                    type="email"
-                    name="email"
-                    value={formData.email || ''}
-                    onChange={handleChange}
-                    className={styles.inputField}
-                />
-            </div>
-            <div className={styles.inputGroup}>
-                <p>Отзыв</p>
+                <label>Комментарий</label>
                 <textarea
-                    name="feedback"
-                    value={formData.feedback || ''}
+                    name="comment"
+                    value={formData.comment}
                     onChange={handleChange}
                     className={styles.textareaField}
-                ></textarea>
+                    required
+                />
             </div>
-            <button type="submit" className={styles.button}>Сохранить</button>
-            <button type="button" onClick={onCancel} className={styles.button}>Отмена</button>
+            <div className={styles.inputGroup}>
+                <label>Оценка (1-5)</label>
+                <input
+                    type="number"
+                    name="rating"
+                    value={formData.rating}
+                    onChange={handleChange}
+                    className={styles.inputField}
+                    min="1"
+                    max="5"
+                    required
+                />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" className={styles.button}>Сохранить</button>
+                <button type="button" onClick={onCancel} className={styles.deleteButton}>Отмена</button>
+            </div>
         </form>
     );
 };

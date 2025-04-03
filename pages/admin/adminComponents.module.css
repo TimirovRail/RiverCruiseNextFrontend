@@ -1,0 +1,366 @@
+/* Общий контейнер для компонентов */
+.componentContainer {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
+    margin-top: 20px;
+}
+
+/* Стили для текста ошибок */
+.errorMessage {
+    color: #e74c3c;
+    font-size: 16px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Стили для CollapsibleSection */
+.collapsibleSection {
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 24px;
+    color: #3B4055;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 10px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sectionTitle:hover {
+    color: #2A376D;
+}
+
+.toggleIcon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.toggleIcon.open {
+    transform: rotate(180deg);
+}
+
+/* Стили для UserInfo */
+.userInfo p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}
+
+/* Стили для таблиц (FeedbacksList, BookingsList, CruisesList) */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.table th {
+    background-color: #f4f4f4;
+    color: #2A376D;
+    font-weight: 600;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.01);
+}
+
+/* Статусы в BookingsList */
+.statusConfirmed {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.statusCancelled {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.statusPending {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* Стили для форм (CreateCruiseForm, CruiseEditForm, FeedbackEditForm) */
+.formContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(33% - 20px);
+    padding: 5px;
+}
+
+.inputGroup label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #3a3a3a;
+    margin-bottom: 8px;
+}
+
+.inputField,
+.textareaField {
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.inputField:focus,
+.textareaField:focus {
+    border-color: #2A376D;
+    outline: none;
+}
+
+.textareaField {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Стили для кнопок */
+.button {
+    background-color: #2A376D;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #1e2a46;
+    transform: translateY(-2px);
+}
+
+.editButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+.editButton:hover {
+    background-color: #45a049;
+}
+
+.deleteButton {
+    background-color: #f44336;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
+
+/* Стили для PhotosList */
+.photosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.photoCard {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.photoCard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.photoImage {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.photoActions {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Стили для модального окна (EditModal) */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modalCloseButton {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.modalCloseButton:hover {
+    background-color: #d32f2f;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .componentContainer {
+        padding: 15px;
+    }
+
+    .sectionTitle {
+        font-size: 20px;
+    }
+
+    .table th,
+    .table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .formContainer {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .inputGroup {
+        flex: 1 1 100%;
+    }
+
+    .inputGroup label {
+        font-size: 14px;
+    }
+
+    .inputField,
+    .textareaField {
+        font-size: 14px;
+    }
+
+    .button,
+    .editButton,
+    .deleteButton {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .photoImage {
+        height: 120px;
+    }
+
+    .modalContent {
+        width: 90%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sectionTitle {
+        font-size: 18px;
+    }
+
+    .table th,
+    .table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .inputField,
+    .textareaField {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .button,
+    .editButton,
+    .deleteButton {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .photoImage {
+        height: 100px;
+    }
+}

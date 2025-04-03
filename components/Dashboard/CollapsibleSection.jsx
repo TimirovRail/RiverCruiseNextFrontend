@@ -1,18 +1,15 @@
-import styles from '../../pages/admin/dashboard.css';
+import styles from '../../pages/admin/adminComponents.module.css';
 
-const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
+const CollapsibleSection = ({ title, isOpen, onToggle, children }) => {
     return (
         <div className={styles.collapsibleSection}>
-            <h2
-                onClick={onToggle}
-                className={styles.sectionTitle}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && onToggle()}
-            >
-                {title} {isOpen ? '▲' : '▼'}
+            <h2 className={styles.sectionTitle} onClick={onToggle}>
+                {title}
+                <span className={`${styles.toggleIcon} ${isOpen ? styles.open : ''}`}>
+                    ▼
+                </span>
             </h2>
-            {isOpen && <div className={styles.sectionContent}>{children}</div>}
+            {isOpen && <div className={styles.fade}>{children}</div>}
         </div>
     );
 };
