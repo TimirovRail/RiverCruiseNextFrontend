@@ -1,9 +1,10 @@
+/* Существующие стили остаются без изменений */
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #F1F5F9; 
+    background-color: #F1F5F9;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -130,5 +131,144 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Новые стили для двухфакторной аутентификации */
+.authContainer {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 2rem;
+    /* Отступ от основной формы */
+    animation: fadeIn 0.6s ease-out;
+    text-align: center;
+}
+
+.authContainer h2 {
+    text-align: center;
+    color: #2A376D;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.qrCodeWrapper {
+    margin: 1.5rem 0;
+}
+
+.qrCodeWrapper p {
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.qrCodeWrapper img {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9fafb;
+}
+
+.codeInputWrapper {
+    margin-bottom: 1.5rem;
+}
+
+.codeInputWrapper input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f9fafb;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+
+.codeInputWrapper input:focus {
+    border-color: #006C9E;
+    outline: none;
+}
+
+.verifyButton {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #2A376D;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.verifyButton:hover {
+    background-color: #005D85;
+    transform: scale(1.05);
+}
+
+.successMessage {
+    color: #2ecc71;
+    font-size: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .authContainer {
+        padding: 2rem;
+        max-width: 350px;
+        margin-top: 1.5rem;
+    }
+
+    .authContainer h2 {
+        font-size: 1.3rem;
+    }
+
+    .qrCodeWrapper img {
+        max-width: 180px;
+    }
+
+    .codeInputWrapper input {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+    }
+
+    .verifyButton {
+        font-size: 1rem;
+        padding: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .authContainer {
+        padding: 1.5rem;
+        max-width: 300px;
+        margin-top: 1rem;
+    }
+
+    .authContainer h2 {
+        font-size: 1.2rem;
+    }
+
+    .qrCodeWrapper img {
+        max-width: 150px;
+    }
+
+    .codeInputWrapper input {
+        font-size: 0.85rem;
+        padding: 0.6rem;
+    }
+
+    .verifyButton {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
 }

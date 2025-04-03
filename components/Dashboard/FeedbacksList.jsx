@@ -1,20 +1,27 @@
-import styles from '../../pages/admin/dashboard.css';
+import styles from '../../pages/admin/adminComponents.module.css';
 
 const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
+    const safeFormatDate = (datetime) => {
+        if (typeof formatDate === 'function') {
+            return formatDate(datetime);
+        }
+        return datetime ? new Date(datetime).toLocaleDateString('ru-RU') : '—';
+    };
+
     return (
-        <>
+        <div className={styles.componentContainer}>
             {error ? (
-                <p>Ошибка при загрузке отзывов</p>
+                <p className={styles.errorMessage}>Ошибка при загрузке отзывов</p>
             ) : (
                 <table className={styles.table}>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Пользователь ID</th>
-                            <th>Круиз ID</th>
-                            <th>Имя</th>
+                            <th>Пользователь</th>
                             <th>Email</th>
-                            <th>Отзыв</th>
+                            <th>Круиз</th>
+                            <th>Комментарий</th>
+                            <th>Оценка</th>
                             <th>Создан</th>
                             <th>Обновлён</th>
                             <th>Действия</th>
@@ -25,13 +32,13 @@ const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
                             feedbacks.map((feedback) => (
                                 <tr key={feedback.id}>
                                     <td>{feedback.id || '—'}</td>
-                                    <td>{feedback.user_id || '—'}</td>
-                                    <td>{feedback.cruise_id || '—'}</td>
-                                    <td>{feedback.name || '—'}</td>
-                                    <td>{feedback.email || '—'}</td>
-                                    <td>{feedback.feedback || '—'}</td>
-                                    <td>{formatDate(feedback.created_at)}</td>
-                                    <td>{formatDate(feedback.updated_at)}</td>
+                                    <td>{feedback.user_name || '—'}</td>
+                                    <td>{feedback.user_email || '—'}</td>
+                                    <td>{feedback.cruise_name || '—'}</td>
+                                    <td>{feedback.comment || '—'}</td>
+                                    <td>{feedback.rating || '—'}</td>
+                                    <td>{safeFormatDate(feedback.created_at)}</td>
+                                    <td>{safeFormatDate(feedback.updated_at)}</td>
                                     <td>
                                         <button onClick={() => onEdit(feedback)} className={styles.editButton}>
                                             Редактировать
@@ -50,7 +57,7 @@ const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
                     </tbody>
                 </table>
             )}
-        </>
+        </div>
     );
 };
 

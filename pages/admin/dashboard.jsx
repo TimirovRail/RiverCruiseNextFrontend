@@ -1,9 +1,8 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { useRouter } from 'next/router';
-import styles from './dashboard.css';
+import styles from './dashboard.module.css';
 import Loading from "@/components/Loading/Loading";
 
-// Ленивая загрузка компонентов
 const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
 const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
 const CruisesList = lazy(() => import('../../components/Dashboard/CruisesList'));
@@ -20,12 +19,12 @@ const Dashboard = () => {
     const [feedbacks, setFeedbacks] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [cruises, setCruises] = useState([]);
+    const [cruiseSchedules, setCruiseSchedules] = useState([]);
     const [photos, setPhotos] = useState([]);
+    const [users, setUsers] = useState([]); // Добавляем состояние для пользователей
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
-    const router = useRouter();
 
-    // Состояния для сворачивания/разворачивания блоков
     const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
     const [isCruisesOpen, setIsCruisesOpen] = useState(false);
     const [isCreateCruiseOpen, setIsCreateCruiseOpen] = useState(false);
@@ -33,19 +32,18 @@ const Dashboard = () => {
     const [isBookingsOpen, setIsBookingsOpen] = useState(false);
     const [isPhotosOpen, setIsPhotosOpen] = useState(false);
 
-    // Состояние для модального окна
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingCruise, setEditingCruise] = useState(null);
     const [editingFeedback, setEditingFeedback] = useState(null);
 
-    // Функция для форматирования даты
+    const router = useRouter();
+
     const formatDate = (datetime) => {
         if (!datetime || typeof datetime !== 'string') return '—';
         const date = new Date(datetime);
         return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
     };
 
-    // Загрузка данных
     useEffect(() => {
         const fetchAllData = async () => {
             setLoading(true);
@@ -55,78 +53,121 @@ const Dashboard = () => {
                 { url: 'http://localhost:8000/api/feedbacks', setter: setFeedbacks, key: 'feedbacks' },
                 { url: 'http://localhost:8000/api/bookings', setter: setBookings, key: 'bookings' },
                 { url: 'http://localhost:8000/api/cruises', setter: setCruises, key: 'cruises' },
+                { url: 'http://localhost:8000/api/cruise_schedules', setter: setCruiseSchedules, key: 'cruise_schedules' },
                 { url: 'http://localhost:8000/api/photos', setter: setPhotos, key: 'photos' },
+                { url: 'http://localhost:8000/api/users', setter: setUsers, key: 'users' }, // Добавляем загрузку пользователей
             ];
 
-            try {
-                await Promise.all(
-                    urls.map(async ({ url, setter, key }) => {
-                        const response = await fetch(url, {
-                            method: 'GET',
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`,
-                                'Content-Type': 'application/json',
-                            },
-                        });
+            const fetchPromises = urls.map(async ({ url, setter, key }) => {
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
 
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`Ошибка при загрузке данных с ${url}: ${errorText}`);
-                        }
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Ошибка при загрузке данных с ${url}: ${errorText}`);
+                    }
 
-                        const data = await response.json();
-                        if (key !== 'user' && !Array.isArray(data)) {
-                            throw new Error(`Данные с ${url} должны быть массивом`);
-                        }
-                        if (key === 'user' && (typeof data !== 'object' || Array.isArray(data))) {
-                            throw new Error(`Данные с ${url} должны быть объектом`);
-                        }
-                        setter(data);
-                    })
-                );
-            } catch (err) {
-                console.error(err);
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [err.message]: true,
-                }));
-            } finally {
-                setLoading(false);
-            }
+                    const data = await response.json();
+                    console.log(`Данные с ${url}:`, data); // Отладка
+                    if (key !== 'user' && !Array.isArray(data)) {
+                        throw new Error(`Данные с ${url} должны быть массивом`);
+                    }
+                    if (key === 'user' && (typeof data !== 'object' || Array.isArray(data))) {
+                        throw new Error(`Данные с ${url} должны быть объектом`);
+                    }
+                    setter(data);
+                } catch (err) {
+                    console.error(err.message);
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        [url]: err.message,
+                    }));
+                    setter(key === 'user' ? null : []);
+                }
+            });
+
+            await Promise.all(fetchPromises);
+            setLoading(false);
         };
 
         fetchAllData();
     }, []);
 
-    // Удаление фотографии
-    const handleDeletePhoto = async (photoId) => {
-        if (!photoId) {
-            alert('Ошибка: ID фотографии не указан');
-            return;
-        }
+    // Функции для связывания данных
+    const getUserById = (userId) => {
+        return users.find(user => user.id === userId) || null;
+    };
 
+    const getCruiseById = (cruiseId) => {
+        return cruises.find(cruise => cruise.id === cruiseId) || null;
+    };
+
+    const getCruiseSchedules = (cruiseId) => {
+        return cruiseSchedules.filter(schedule => schedule.cruise_id === cruiseId);
+    };
+
+    // Обновляем круизы, добавляя к ним расписания
+    const cruisesWithSchedules = cruises.map(cruise => ({
+        ...cruise,
+        schedules: getCruiseSchedules(cruise.id),
+    }));
+
+    // Обновляем отзывы, добавляя данные о пользователе и круизе
+    const feedbacksWithDetails = feedbacks.map(feedback => {
+        const user = getUserById(feedback.user_id);
+        const cruise = getCruiseById(feedback.cruise_id);
+        return {
+            ...feedback,
+            user_name: user ? user.name : '—',
+            user_email: user ? user.email : '—',
+            cruise_name: cruise ? cruise.name : '—',
+        };
+    });
+
+    // Обновляем бронирования, добавляя данные о пользователе и круизе
+    const bookingsWithDetails = bookings.map(booking => {
+        const user = getUserById(booking.user_id);
+        const cruise = getCruiseById(booking.cruise_id);
+        return {
+            ...booking,
+            user_name: user ? user.name : '—',
+            user_email: user ? user.email : '—',
+            cruise_name: cruise ? cruise.name : '—',
+        };
+    });
+
+    // Обновляем фотографии, добавляя данные о пользователе
+    const photosWithDetails = photos.map(photo => {
+        const user = getUserById(photo.user_id);
+        return {
+            ...photo,
+            user_name: user ? user.name : '—',
+        };
+    });
+
+    // Функции для управления CRUD
+    const handleDeletePhoto = async (photoId) => {
+        if (!photoId) return alert('Ошибка: ID фотографии не указан');
         try {
             const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
                 method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при удалении фотографии: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при удалении фотографии');
             setPhotos(photos.filter(photo => photo.id !== photoId));
             alert('Фотография успешно удалена!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось удалить фотографию');
         }
     };
 
-    // Создание нового круиза
     const handleCreateCruise = async (newCruise) => {
         try {
             const response = await fetch('http://localhost:8000/api/cruises', {
@@ -137,90 +178,58 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify(newCruise),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при создании круиза: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при создании круиза');
             const data = await response.json();
             setCruises([...cruises, data]);
             alert('Круиз успешно добавлен!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось создать круиз');
         }
     };
 
-    // Удаление круиза
     const handleDeleteCruise = async (cruiseId) => {
-        if (!cruiseId) {
-            alert('Ошибка: ID круиза не указан');
-            return;
-        }
-
+        if (!cruiseId) return alert('Ошибка: ID круиза не указан');
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/${cruiseId}`, {
                 method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при удалении круиза: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при удалении круиза');
             setCruises(cruises.filter(cruise => cruise.id !== cruiseId));
             alert('Круиз успешно удалён!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось удалить круиз');
         }
     };
 
-    // Удаление отзыва
     const handleDeleteFeedback = async (feedbackId) => {
-        if (!feedbackId) {
-            alert('Ошибка: ID отзыва не указан');
-            return;
-        }
-
+        if (!feedbackId) return alert('Ошибка: ID отзыва не указан');
         try {
             const response = await fetch(`http://localhost:8000/api/feedbacks/${feedbackId}`, {
                 method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при удалении отзыва: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при удалении отзыва');
             setFeedbacks(feedbacks.filter(feedback => feedback.id !== feedbackId));
             alert('Отзыв успешно удалён!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось удалить отзыв');
         }
     };
 
-    // Открытие модального окна для редактирования круиза
     const handleEditCruiseClick = (cruise) => {
         setEditingCruise(cruise);
         setIsEditModalOpen(true);
     };
 
-    // Открытие модального окна для редактирования отзыва
     const handleEditFeedbackClick = (feedback) => {
         setEditingFeedback(feedback);
         setIsEditModalOpen(true);
     };
 
-    // Сохранение изменений круиза
     const handleSaveCruise = async (updatedData) => {
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/${updatedData.id}`, {
@@ -231,23 +240,17 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify(updatedData),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при редактировании круиза: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при редактировании круиза');
             const data = await response.json();
             setCruises(cruises.map(cruise => cruise.id === updatedData.id ? data : cruise));
             handleCloseModal();
             alert('Круиз успешно обновлён!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось обновить круиз');
         }
     };
 
-    // Сохранение изменений отзыва
     const handleSaveFeedback = async (updatedData) => {
         try {
             const response = await fetch(`http://localhost:8000/api/feedbacks/${updatedData.id}`, {
@@ -258,36 +261,27 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify(updatedData),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Ошибка при редактировании отзыва: ${errorText}`);
-            }
-
+            if (!response.ok) throw new Error('Ошибка при редактировании отзыва');
             const data = await response.json();
             setFeedbacks(feedbacks.map(feedback => feedback.id === updatedData.id ? data : feedback));
             handleCloseModal();
             alert('Отзыв успешно обновлён!');
         } catch (error) {
             console.error(error);
-            alert(`Ошибка: ${error.message}`);
+            alert('Ошибка: не удалось обновить отзыв');
         }
     };
 
-    // Закрытие модального окна и очистка состояния
     const handleCloseModal = () => {
         setIsEditModalOpen(false);
         setEditingCruise(null);
         setEditingFeedback(null);
     };
 
-    if (loading) {
-        return <Loading />;
-    }
+    if (loading) return <Loading />;
 
     return (
         <div className={styles.layout}>
-            {/* Модальное окно для редактирования */}
             <Suspense fallback={<Loading />}>
                 <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
                     {editingCruise && (
@@ -312,7 +306,6 @@ const Dashboard = () => {
                     <h2 className={styles.h1Title}>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
                 </div>
 
-                {/* Информация о пользователе */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ"
@@ -321,7 +314,7 @@ const Dashboard = () => {
                     >
                         <UserInfo
                             userData={userData}
-                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/user']}
+                            error={errors['http://localhost:8000/api/user']}
                         />
                     </CollapsibleSection>
                 </Suspense>
@@ -334,7 +327,6 @@ const Dashboard = () => {
                     }} className={styles.logoutButton}>Выйти</button>
                 </div>
 
-                {/* Список круизов */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="СПИСОК КРУИЗОВ"
@@ -342,8 +334,8 @@ const Dashboard = () => {
                         onToggle={() => setIsCruisesOpen(!isCruisesOpen)}
                     >
                         <CruisesList
-                            cruises={cruises}
-                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/cruises']}
+                            cruises={cruisesWithSchedules}
+                            error={errors['http://localhost:8000/api/cruises']}
                             formatDate={formatDate}
                             onEdit={handleEditCruiseClick}
                             onDelete={handleDeleteCruise}
@@ -351,7 +343,6 @@ const Dashboard = () => {
                     </CollapsibleSection>
                 </Suspense>
 
-                {/* Форма для создания круиза */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА"
@@ -362,7 +353,6 @@ const Dashboard = () => {
                     </CollapsibleSection>
                 </Suspense>
 
-                {/* Отзывы клиентов */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="ОТЗЫВЫ КЛИЕНТОВ"
@@ -370,15 +360,15 @@ const Dashboard = () => {
                         onToggle={() => setIsFeedbacksOpen(!isFeedbacksOpen)}
                     >
                         <FeedbacksList
-                            feedbacks={feedbacks}
-                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/feedbacks']}
+                            feedbacks={feedbacksWithDetails}
+                            error={errors['http://localhost:8000/api/feedbacks']}
+                            formatDate={formatDate} // Добавляем formatDate
                             onEdit={handleEditFeedbackClick}
                             onDelete={handleDeleteFeedback}
                         />
                     </CollapsibleSection>
                 </Suspense>
 
-                {/* Бронированные билеты */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="БРОНИРОВАННЫЕ БИЛЕТЫ"
@@ -386,15 +376,13 @@ const Dashboard = () => {
                         onToggle={() => setIsBookingsOpen(!isBookingsOpen)}
                     >
                         <BookingsList
-                            bookings={bookings}
-                            I
-                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/bookings']}
+                            bookings={bookingsWithDetails}
+                            error={errors['http://localhost:8000/api/bookings']}
                             formatDate={formatDate}
                         />
                     </CollapsibleSection>
                 </Suspense>
 
-                {/* Фотографии пользователей */}
                 <Suspense fallback={<Loading />}>
                     <CollapsibleSection
                         title="ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ"
@@ -402,8 +390,9 @@ const Dashboard = () => {
                         onToggle={() => setIsPhotosOpen(!isPhotosOpen)}
                     >
                         <PhotosList
-                            photos={photos}
-                            error={errors['Ошибка при загрузке данных с http://localhost:8000/api/photos']}
+                            photos={photosWithDetails}
+                            error={errors['http://localhost:8000/api/photos']}
+                            formatDate={formatDate} // Добавляем formatDate
                             onDelete={handleDeletePhoto}
                         />
                     </CollapsibleSection>

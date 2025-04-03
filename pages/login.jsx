@@ -256,26 +256,27 @@ const LoginPage = () => {
                 )}
             </div>
 
-            {/* Показываем двухфакторную аутентификацию только после успешного входа */}
             {isAuthenticated && !isVerified && (
-                <div>
+                <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
-                    <div>
+                    <div className={styles.qrCodeWrapper}>
                         <p>Сканируйте QR-код в приложении Google Authenticator</p>
                         {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
                     </div>
 
-                    <div>
+                    <div className={styles.codeInputWrapper}>
                         <input
                             type="text"
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
                             placeholder="Введите код из Google Authenticator"
                         />
-                        <button onClick={handleVerifyCode}>Подтвердить код</button>
+                        <button onClick={handleVerifyCode} className={styles.verifyButton}>
+                            Подтвердить код
+                        </button>
                     </div>
 
-                    {isVerified && <p>Двухфакторная аутентификация пройдена!</p>}
+                    {isVerified && <p className={styles.successMessage}>Двухфакторная аутентификация пройдена!</p>}
                 </div>
             )}
         </div>

@@ -1,4 +1,4 @@
-import styles from '../../pages/admin/dashboard.css';
+import styles from '../../pages/admin/adminComponents.module.css';
 
 const EditModal = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
@@ -7,7 +7,9 @@ const EditModal = ({ isOpen, onClose, children }) => {
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
                 {children}
-                <button onClick={onClose} className={styles.modalCloseButton}>Закрыть</button>
+                <button onClick={onClose} className={styles.modalCloseButton}>
+                    Закрыть
+                </button>
             </div>
         </div>
     );

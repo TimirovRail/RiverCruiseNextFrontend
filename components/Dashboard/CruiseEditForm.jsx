@@ -1,8 +1,31 @@
-import { useState } from 'react';
-import styles from '../../pages/admin/dashboard.css';
+import { useState, useEffect } from 'react';
+import styles from '../../pages/admin/adminComponents.module.css';
 
 const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
-    const [formData, setFormData] = useState(cruise);
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        river: '',
+        cabins: '',
+        total_duration: '',
+        features: '',
+        price_per_person: '',
+    });
+
+    useEffect(() => {
+        if (cruise) {
+            setFormData({
+                id: cruise.id,
+                name: cruise.name || '',
+                description: cruise.description || '',
+                river: cruise.river || '',
+                cabins: cruise.cabins || '',
+                total_duration: cruise.total_duration || '',
+                features: cruise.features || '',
+                price_per_person: cruise.price_per_person || '',
+            });
+        }
+    }, [cruise]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -15,87 +38,86 @@ const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
             <div className={styles.inputGroup}>
-                <p>Название круиза</p>
+                <label>Название</label>
                 <input
                     type="text"
                     name="name"
-                    value={formData.name || ''}
+                    value={formData.name}
                     onChange={handleChange}
                     className={styles.inputField}
+                    required
                 />
             </div>
             <div className={styles.inputGroup}>
-                <p>Описание круиза</p>
+                <label>Описание</label>
                 <textarea
                     name="description"
-                    value={formData.description || ''}
+                    value={formData.description}
                     onChange={handleChange}
                     className={styles.textareaField}
-                ></textarea>
+                    required
+                />
             </div>
             <div className={styles.inputGroup}>
-                <p>Река</p>
+                <label>Река</label>
                 <input
                     type="text"
                     name="river"
-                    value={formData.river || ''}
+                    value={formData.river}
                     onChange={handleChange}
                     className={styles.inputField}
+                    required
                 />
             </div>
             <div className={styles.inputGroup}>
-                <p>Количество кают</p>
+                <label>Каюты</label>
                 <input
                     type="number"
                     name="cabins"
-                    value={formData.cabins || 0}
+                    value={formData.cabins}
                     onChange={handleChange}
                     className={styles.inputField}
+                    required
                 />
             </div>
             <div className={styles.inputGroup}>
-                <p>Длительность (например, "5 дней")</p>
+                <label>Длительность (дней)</label>
                 <input
-                    type="text"
+                    type="number"
                     name="total_duration"
-                    value={formData.total_duration || ''}
+                    value={formData.total_duration}
                     onChange={handleChange}
                     className={styles.inputField}
+                    required
                 />
             </div>
             <div className={styles.inputGroup}>
-                <p>Особенности</p>
-                <textarea
-                    name="features"
-                    value={formData.features || ''}
-                    onChange={handleChange}
-                    className={styles.textareaField}
-                ></textarea>
-            </div>
-            <div className={styles.inputGroup}>
-                <p>Изображения (URL)</p>
+                <label>Особенности</label>
                 <input
                     type="text"
-                    name="images"
-                    value={formData.images || ''}
+                    name="features"
+                    value={formData.features}
                     onChange={handleChange}
                     className={styles.inputField}
                 />
             </div>
             <div className={styles.inputGroup}>
-                <p>Цена за человека</p>
+                <label>Цена за человека (руб.)</label>
                 <input
                     type="number"
                     name="price_per_person"
-                    value={formData.price_per_person || 0}
+                    value={formData.price_per_person}
                     onChange={handleChange}
                     className={styles.inputField}
+                    required
                 />
             </div>
-            <button type="submit" className={styles.button}>Сохранить</button>
-            <button type="button" onClick={onCancel} className={styles.button}>Отмена</button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" className={styles.button}>Сохранить</button>
+                <button type="button" onClick={onCancel} className={styles.deleteButton}>Отмена</button>
+            </div>
         </form>
     );
 };
