@@ -1,6 +1,6 @@
 import styles from '../../pages/admin/adminComponents.module.css';
 
-const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
+const ReviewsList = ({ reviews, error, formatDate, onEdit, onDelete }) => {
     const safeFormatDate = (datetime) => {
         if (typeof formatDate === 'function') {
             return formatDate(datetime);
@@ -28,22 +28,22 @@ const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {Array.isArray(feedbacks) && feedbacks.length > 0 ? (
-                            feedbacks.map((feedback) => (
-                                <tr key={feedback.id}>
-                                    <td>{feedback.id || '—'}</td>
-                                    <td>{feedback.user_name || '—'}</td>
-                                    <td>{feedback.user_email || '—'}</td>
-                                    <td>{feedback.cruise_name || '—'}</td>
-                                    <td>{feedback.comment || '—'}</td>
-                                    <td>{feedback.rating || '—'}</td>
-                                    <td>{safeFormatDate(feedback.created_at)}</td>
-                                    <td>{safeFormatDate(feedback.updated_at)}</td>
+                        {Array.isArray(reviews) && reviews.length > 0 ? (
+                            reviews.map((review) => (
+                                <tr key={review.id}>
+                                    <td>{review.id || '—'}</td>
+                                    <td>{review.user ? review.user.name : '—'}</td>
+                                    <td>{review.user ? review.user.email : '—'}</td>
+                                    <td>{review.cruise ? review.cruise.name : '—'}</td>
+                                    <td>{review.comment || '—'}</td>
+                                    <td>{review.rating || '—'}</td>
+                                    <td>{safeFormatDate(review.created_at)}</td>
+                                    <td>{safeFormatDate(review.updated_at)}</td>
                                     <td>
-                                        <button onClick={() => onEdit(feedback)} className={styles.editButton}>
+                                        <button onClick={() => onEdit(review)} className={styles.editButton}>
                                             Редактировать
                                         </button>
-                                        <button onClick={() => onDelete(feedback.id)} className={styles.deleteButton}>
+                                        <button onClick={() => onDelete(review.id)} className={styles.deleteButton}>
                                             Удалить
                                         </button>
                                     </td>
@@ -61,4 +61,4 @@ const FeedbacksList = ({ feedbacks, error, formatDate, onEdit, onDelete }) => {
     );
 };
 
-export default FeedbacksList;
+export default ReviewsList;

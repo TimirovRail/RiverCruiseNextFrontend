@@ -7,7 +7,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { loadStripe } from '@stripe/stripe-js';
 import Loading from '../components/Loading/Loading';
 
-const stripePromise = loadStripe('pk_test_51J...');
+const stripePromise = loadStripe('pk_test_51R7tDn07BVvEjWueRJTSYfrtHZ7UqTy3A8RQ3KUTtNVSnT9czvcX2GZCbaOOeHEMB2E3QWndHxLwhvX6FJopxB2G00s7rcz8mh');
 
 const PaymentForm = ({ booking, onClose }) => {
     const stripe = useStripe();
@@ -284,15 +284,13 @@ export default function Profile() {
                             <li key={b.id}>
                                 <p>
                                     <strong>
-                                        {b.cruise_schedule && b.cruise_schedule.cruise && b.cruise_schedule.cruise.name
-                                            ? b.cruise_schedule.cruise.name
-                                            : "Название круиза не указано"}
+                                        {b.cruise_name || "Название круиза не указано"}
                                     </strong>
                                 </p>
                                 <p>
                                     <small>
-                                        Дата: {b.cruise_schedule?.departure_datetime
-                                            ? new Date(b.cruise_schedule.departure_datetime).toLocaleDateString()
+                                        Дата отправления: {b.departure_datetime
+                                            ? new Date(b.departure_datetime).toLocaleDateString()
                                             : "Дата не указана"}
                                     </small>
                                 </p>
@@ -325,15 +323,13 @@ export default function Profile() {
                             <li key={b.id}>
                                 <p>
                                     <strong>
-                                        {b.cruise_schedule && b.cruise_schedule.cruise && b.cruise_schedule.cruise.name
-                                            ? b.cruise_schedule.cruise.name
-                                            : "Название круиза не указано"}
+                                        {b.cruise_name || "Название круиза не указано"}
                                     </strong>
                                 </p>
                                 <p>
                                     <small>
-                                        Дата: {b.cruise_schedule?.departure_datetime
-                                            ? new Date(b.cruise_schedule.departure_datetime).toLocaleDateString()
+                                        Дата отправления: {b.departure_datetime
+                                            ? new Date(b.departure_datetime).toLocaleDateString()
                                             : "Дата не указана"}
                                     </small>
                                 </p>
@@ -367,9 +363,7 @@ export default function Profile() {
                 <div className="modal">
                     <div className="modal-content">
                         <h3>
-                            Выбор мест для {selectedBooking.cruise_schedule && selectedBooking.cruise_schedule.cruise && selectedBooking.cruise_schedule.cruise.name
-                                ? selectedBooking.cruise_schedule.cruise.name
-                                : "Неизвестный круиз"}
+                            Выбор мест для {selectedBooking.cruise_name || "Неизвестный круиз"}
                         </h3>
                         {selectedBooking.seats ? (
                             <div className="seats-container">
@@ -419,9 +413,7 @@ export default function Profile() {
                 <div className="modal">
                     <div className="modal-content">
                         <h3>
-                            Оплата для {selectedBooking.cruise_schedule && selectedBooking.cruise_schedule.cruise && selectedBooking.cruise_schedule.cruise.name
-                                ? selectedBooking.cruise_schedule.cruise.name
-                                : "Неизвестный круиз"}
+                            Оплата для {selectedBooking.cruise_name || "Неизвестный круиз"}
                         </h3>
                         <Elements stripe={stripePromise}>
                             <PaymentForm booking={selectedBooking} onClose={() => {
