@@ -53,25 +53,39 @@
     margin: 10px 0;
 }
 
+/* Обертка для таблиц с горизонтальной прокруткой */
+.tableWrapper {
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 20px;
+}
+
 /* Стили для таблиц (FeedbacksList, BookingsList, CruisesList) */
 .table {
     width: 100%;
+    min-width: 1200px; /* Минимальная ширина таблицы, чтобы всё помещалось */
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 .table th,
 .table td {
-    padding: 15px;
+    padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
     transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap; /* Предотвращаем перенос текста */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .table th {
     background-color: #f4f4f4;
     color: #2A376D;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .table tbody tr:hover {
@@ -265,7 +279,6 @@
         opacity: 0;
         transform: translateY(30px);
     }
-
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -278,6 +291,20 @@
 }
 
 /* Медиа-запросы для адаптивности */
+@media (max-width: 1024px) {
+    .table th,
+    .table td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .editButton,
+    .deleteButton {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+
 @media (max-width: 768px) {
     .componentContainer {
         padding: 15px;
@@ -289,8 +316,8 @@
 
     .table th,
     .table td {
-        font-size: 14px;
-        padding: 10px;
+        font-size: 12px;
+        padding: 8px;
     }
 
     .formContainer {
@@ -314,8 +341,8 @@
     .button,
     .editButton,
     .deleteButton {
-        font-size: 14px;
-        padding: 10px 15px;
+        font-size: 12px;
+        padding: 8px 12px;
     }
 
     .photosGrid {
@@ -339,21 +366,20 @@
 
     .table th,
     .table td {
-        font-size: 12px;
-        padding: 8px;
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .editButton,
+    .deleteButton {
+        font-size: 10px;
+        padding: 3px 6px;
     }
 
     .inputField,
     .textareaField {
         font-size: 12px;
         padding: 10px;
-    }
-
-    .button,
-    .editButton,
-    .deleteButton {
-        font-size: 12px;
-        padding: 8px 12px;
     }
 
     .photosGrid {
