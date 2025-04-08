@@ -2,13 +2,12 @@ import { useState } from 'react';
 import styles from '../../pages/admin/adminComponents.module.css';
 
 const CreateCruiseForm = ({ onSubmit }) => {
-    // Состояние для данных круиза
     const [cruiseData, setCruiseData] = useState({
         name: '',
         description: '',
         river: '',
         cabins: '',
-        price_per_person: '',
+        price_per_person: '', // Теперь одно поле вместо объекта
         total_distance: '',
         image_path: '',
         panorama_url: '',
@@ -20,22 +19,15 @@ const CreateCruiseForm = ({ onSubmit }) => {
         features: [],
     });
 
-    // Состояние для данных расписания
     const [scheduleData, setScheduleData] = useState({
         departure_datetime: '',
         arrival_datetime: '',
-        total_places: '',
-        available_places: '',
         economy_places: '',
         standard_places: '',
         luxury_places: '',
-        available_economy_places: '',
-        available_standard_places: '',
-        available_luxury_places: '',
         status: 'planned',
     });
 
-    // Состояние для управления списком особенностей
     const [featureInput, setFeatureInput] = useState({ name: '', price: '' });
 
     const handleCruiseChange = (e) => {
@@ -50,14 +42,14 @@ const CreateCruiseForm = ({ onSubmit }) => {
 
     const handleCabinsByClassChange = (e) => {
         const { name, value } = e.target;
-        const [classType, field] = name.split('.'); // Например, "luxury.places" или "economy.image_path"
+        const [classType, field] = name.split('.');
         setCruiseData({
             ...cruiseData,
             cabins_by_class: {
                 ...cruiseData.cabins_by_class,
                 [classType]: {
                     ...cruiseData.cabins_by_class[classType],
-                    [field]: value,
+                    [field]: field === 'places' ? parseInt(value) || 0 : value,
                 },
             },
         });
@@ -72,7 +64,7 @@ const CreateCruiseForm = ({ onSubmit }) => {
         if (featureInput.name && featureInput.price) {
             setCruiseData({
                 ...cruiseData,
-                features: [...cruiseData.features, { name: featureInput.name, price: parseFloat(featureInput.price) }],
+                features: [...cruiseData.features, { name: featureInput.name, price: parseFloat(featureInput.price) || 0 }],
             });
             setFeatureInput({ name: '', price: '' });
         }
@@ -94,62 +86,73 @@ const CreateCruiseForm = ({ onSubmit }) => {
                 name: cruiseData.name,
                 description: cruiseData.description,
                 river: cruiseData.river,
-                cabins: parseInt(cruiseData.cabins),
-                price_per_person: parseFloat(cruiseData.price_per_person),
-                total_distance: parseFloat(cruiseData.total_distance),
+                cabins: parseInt(cruiseData.cabins) || 0,
+                price_per_person: parseFloat(cruiseData.price_per_person) || 0, // Теперь одно число
+                total_distance: parseFloat(cruiseData.total_distance) || 0,
                 image_path: cruiseData.image_path || null,
                 panorama_url: cruiseData.panorama_url || null,
-                cabins_by_class: JSON.stringify(cruiseData.cabins_by_class),
-                features: JSON.stringify(cruiseData.features),
+                cabins_by_class: cruiseData.cabins_by_class,
+                features: cruiseData.features,
             };
+
+            console.log('Отправляемые данные круиза:', cruisePayload);
 
             // 2. Отправляем запрос на создание круиза
             const cruiseResponse = await fetch('http://localhost:8000/api/cruises', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    // Убрали Authorization, так как токен больше не нужен
                 },
                 body: JSON.stringify(cruisePayload),
             });
 
             if (!cruiseResponse.ok) {
-                throw new Error('Ошибка при создании круиза');
+                const errorText = await cruiseResponse.text();
+                throw new Error(`Ошибка при создании круиза: ${cruiseResponse.status} - ${errorText}`);
             }
 
             const createdCruise = await cruiseResponse.json();
+            console.log('Созданный круиз:', createdCruise);
 
             // 3. Формируем данные расписания
+            const totalPlaces =
+                (parseInt(scheduleData.economy_places) || 0) +
+                (parseInt(scheduleData.standard_places) || 0) +
+                (parseInt(scheduleData.luxury_places) || 0);
+
             const schedulePayload = {
-                cruise_id: createdCruise.id,
                 departure_datetime: scheduleData.departure_datetime,
                 arrival_datetime: scheduleData.arrival_datetime,
-                total_places: parseInt(scheduleData.total_places),
-                available_places: parseInt(scheduleData.available_places),
-                economy_places: parseInt(scheduleData.economy_places),
-                standard_places: parseInt(scheduleData.standard_places),
-                luxury_places: parseInt(scheduleData.luxury_places),
-                available_economy_places: parseInt(scheduleData.available_economy_places),
-                available_standard_places: parseInt(scheduleData.available_standard_places),
-                available_luxury_places: parseInt(scheduleData.available_luxury_places),
+                economy_places: parseInt(scheduleData.economy_places) || 0,
+                standard_places: parseInt(scheduleData.standard_places) || 0,
+                luxury_places: parseInt(scheduleData.luxury_places) || 0,
+                total_places: totalPlaces,
+                available_places: totalPlaces, // Изначально все места доступны
                 status: scheduleData.status,
             };
 
+            console.log('Отправляемые данные расписания:', schedulePayload);
+
             // 4. Отправляем запрос на создание расписания
-            const scheduleResponse = await fetch('http://localhost:8000/api/cruise_schedules', {
+            const scheduleResponse = await fetch(`http://localhost:8000/api/cruises/${createdCruise.id}/schedules`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    // Убрали Authorization
                 },
                 body: JSON.stringify(schedulePayload),
             });
 
             if (!scheduleResponse.ok) {
-                throw new Error('Ошибка при создании расписания');
+                const errorText = await scheduleResponse.text();
+                throw new Error(`Ошибка при создании расписания: ${scheduleResponse.status} - ${errorText}`);
             }
 
-            // 5. Очищаем форму после успешного создания
+            const createdSchedule = await scheduleResponse.json();
+            console.log('Созданное расписание:', createdSchedule);
+
+            // 5. Очищаем форму
             setCruiseData({
                 name: '',
                 description: '',
@@ -169,23 +172,18 @@ const CreateCruiseForm = ({ onSubmit }) => {
             setScheduleData({
                 departure_datetime: '',
                 arrival_datetime: '',
-                total_places: '',
-                available_places: '',
                 economy_places: '',
                 standard_places: '',
                 luxury_places: '',
-                available_economy_places: '',
-                available_standard_places: '',
-                available_luxury_places: '',
                 status: 'planned',
             });
 
-            // 6. Вызываем onSubmit для обновления списка круизов
+            // 6. Уведомляем об успехе
             onSubmit(createdCruise);
             alert('Круиз и расписание успешно созданы!');
         } catch (error) {
-            console.error(error);
-            alert('Ошибка при создании круиза или расписания');
+            console.error('Ошибка:', error);
+            alert(error.message);
         }
     };
 
@@ -257,7 +255,7 @@ const CreateCruiseForm = ({ onSubmit }) => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label>Длительность (дней)</label>
+                    <label>Длительность (км)</label>
                     <input
                         type="number"
                         name="total_distance"
@@ -292,7 +290,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
                     />
                 </div>
 
-                {/* Форма для особенностей */}
                 <div className={styles.inputGroup}>
                     <label>Особенности</label>
                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
@@ -336,7 +333,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
                     )}
                 </div>
 
-                {/* Форма для кают по классам */}
                 <div className={styles.inputGroup}>
                     <label>Каюты по классам</label>
                     {['luxury', 'economy', 'standard'].map((classType) => (
@@ -392,32 +388,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label>Общее количество мест</label>
-                    <input
-                        type="number"
-                        name="total_places"
-                        value={scheduleData.total_places}
-                        onChange={handleScheduleChange}
-                        className={styles.inputField}
-                        required
-                        min="0"
-                    />
-                </div>
-
-                <div className={styles.inputGroup}>
-                    <label>Доступно мест</label>
-                    <input
-                        type="number"
-                        name="available_places"
-                        value={scheduleData.available_places}
-                        onChange={handleScheduleChange}
-                        className={styles.inputField}
-                        required
-                        min="0"
-                    />
-                </div>
-
-                <div className={styles.inputGroup}>
                     <label>Места эконом-класса</label>
                     <input
                         type="number"
@@ -449,45 +419,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
                         type="number"
                         name="luxury_places"
                         value={scheduleData.luxury_places}
-                        onChange={handleScheduleChange}
-                        className={styles.inputField}
-                        required
-                        min="0"
-                    />
-                </div>
-
-                <div className={styles.inputGroup}>
-                    <label>Доступно мест эконом-класса</label>
-                    <input
-                        type="number"
-                        name="available_economy_places"
-                        value={scheduleData.available_economy_places}
-                        onChange={handleScheduleChange}
-                        className={styles.inputField}
-                        required
-                        min="0"
-                    />
-                </div>
-
-                <div className={styles.inputGroup}>
-                    <label>Доступно мест стандарт-класса</label>
-                    <input
-                        type="number"
-                        name="available_standard_places"
-                        value={scheduleData.available_standard_places}
-                        onChange={handleScheduleChange}
-                        className={styles.inputField}
-                        required
-                        min="0"
-                    />
-                </div>
-
-                <div className={styles.inputGroup}>
-                    <label>Доступно мест люкс-класса</label>
-                    <input
-                        type="number"
-                        name="available_luxury_places"
-                        value={scheduleData.available_luxury_places}
                         onChange={handleScheduleChange}
                         className={styles.inputField}
                         required

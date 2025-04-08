@@ -1,6 +1,6 @@
 import styles from '../../pages/admin/adminComponents.module.css';
 
-const ReviewsList = ({ reviews, error, formatDate, onEdit, onDelete }) => {
+const ReviewsList = ({ reviews, error, formatDate, onCancel, onDelete }) => {
     const safeFormatDate = (datetime) => {
         if (typeof formatDate === 'function') {
             return formatDate(datetime);
@@ -40,8 +40,8 @@ const ReviewsList = ({ reviews, error, formatDate, onEdit, onDelete }) => {
                                     <td>{safeFormatDate(review.created_at)}</td>
                                     <td>{safeFormatDate(review.updated_at)}</td>
                                     <td>
-                                        <button onClick={() => onEdit(review)} className={styles.editButton}>
-                                            Редактировать
+                                        <button onClick={() => onCancel(review.id)} className={styles.cancelButton}>
+                                            Отменить
                                         </button>
                                         <button onClick={() => onDelete(review.id)} className={styles.deleteButton}>
                                             Удалить
