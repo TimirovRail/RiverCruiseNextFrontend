@@ -5,8 +5,10 @@ const EditModal = ({ isOpen, onClose, children }) => {
 
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-                {children}
+            <div className={styles.modalContainer}>
+                <div className={styles.modalScrollableContent}>
+                    {children}
+                </div>
                 <button onClick={onClose} className={styles.modalCloseButton}>
                     Закрыть
                 </button>

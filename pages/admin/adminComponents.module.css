@@ -63,7 +63,8 @@
 /* Стили для таблиц (FeedbacksList, BookingsList, CruisesList) */
 .table {
     width: 100%;
-    min-width: 1200px; /* Минимальная ширина таблицы, чтобы всё помещалось */
+    min-width: 1200px;
+    /* Минимальная ширина таблицы, чтобы всё помещалось */
     border-collapse: collapse;
 }
 
@@ -74,7 +75,8 @@
     border-bottom: 1px solid #ddd;
     transition: background-color 0.3s ease, transform 0.3s ease;
     font-size: 14px;
-    white-space: nowrap; /* Предотвращаем перенос текста */
+    white-space: nowrap;
+    /* Предотвращаем перенос текста */
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -234,7 +236,6 @@
     text-align: center;
 }
 
-/* Стили для модального окна (EditModal) */
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -244,9 +245,26 @@
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 20px;
+    align-items: center;
     z-index: 1000;
+}
+
+.modalContainer {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.modalScrollableContent {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .modalContent {
@@ -259,18 +277,31 @@
 }
 
 .modalCloseButton {
-    margin-top: 10px;
-    padding: 5px 10px;
+    margin: 0 20px 20px 20px;
+    padding: 10px 20px;
     background-color: #f44336;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 100%;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .modalCloseButton:hover {
     background-color: #d32f2f;
+}
+
+.cancelButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
 }
 
 /* Анимация появления */
@@ -279,6 +310,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -292,6 +324,7 @@
 
 /* Медиа-запросы для адаптивности */
 @media (max-width: 1024px) {
+
     .table th,
     .table td {
         padding: 10px;

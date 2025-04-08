@@ -13,7 +13,6 @@ const BookingsList = lazy(() => import('../../components/Dashboard/BookingsList'
 const PhotosList = lazy(() => import('../../components/Dashboard/PhotosList'));
 const EditModal = lazy(() => import('../../components/Dashboard/EditModal'));
 const CruiseEditForm = lazy(() => import('../../components/Dashboard/CruiseEditForm'));
-const FeedbackEditForm = lazy(() => import('../../components/Dashboard/FeedbackEditForm')); // TODO: Переименовать в ReviewEditForm
 const CruiseScheduleEditForm = lazy(() => import('../../components/Dashboard/CruiseScheduleEditForm'));
 
 const Dashboard = () => {
@@ -38,7 +37,6 @@ const Dashboard = () => {
     // Состояния для управления модальным окном редактирования
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingCruise, setEditingCruise] = useState(null);
-    const [editingReview, setEditingReview] = useState(null);
     const [editingSchedule, setEditingSchedule] = useState(null);
 
     const router = useRouter();
@@ -69,7 +67,6 @@ const Dashboard = () => {
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
                             'Content-Type': 'application/json',
                         },
                     });
@@ -111,11 +108,11 @@ const Dashboard = () => {
         schedules: cruiseSchedules.filter(schedule => schedule.cruise_id === cruise.id),
     }));
 
-    // Убираем избыточное обогащение для reviews и bookings, так как данные уже приходят из API
+    // Убираем избыточное обогащение для reviews и bookings
     const reviewsWithDetails = reviews;
     const bookingsWithDetails = bookings;
 
-    // Обогащаем фотографии (пользователь здесь не нужен)
+    // Обогащаем фотографии
     const photosWithDetails = photos;
 
     // Функции для управления CRUD
@@ -124,7 +121,7 @@ const Dashboard = () => {
         try {
             const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
                 method: 'DELETE',
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (!response.ok) throw new Error('Ошибка при удалении фотографии');
             setPhotos(photos.filter(photo => photo.id !== photoId));
@@ -141,7 +138,6 @@ const Dashboard = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify(newCruise),
             });
@@ -157,17 +153,25 @@ const Dashboard = () => {
 
     const handleDeleteCruise = async (cruiseId) => {
         if (!cruiseId) return alert('Ошибка: ID круиза не указан');
+        const hasSchedules = cruiseSchedules.some(schedule => schedule.cruise_id === cruiseId);
+        if (hasSchedules && !confirm('У этого круиза есть расписания. Удаление приведёт к удалению всех связанных расписаний. Продолжить?')) {
+            return;
+        }
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/${cruiseId}`, {
                 method: 'DELETE',
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                headers: { 'Content-Type': 'application/json' },
             });
-            if (!response.ok) throw new Error('Ошибка при удалении круиза');
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || 'Ошибка при удалении круиза');
+            }
             setCruises(cruises.filter(cruise => cruise.id !== cruiseId));
-            alert('Круиз успешно удалён!');
+            setCruiseSchedules(cruiseSchedules.filter(schedule => schedule.cruise_id !== cruiseId));
+            alert('Круиз и связанные расписания успешно удалены!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить круиз');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -178,22 +182,31 @@ const Dashboard = () => {
 
     const handleSaveSchedule = async (updatedData) => {
         try {
+            const totalPlaces = Number(updatedData.economy_places) + Number(updatedData.standard_places) + Number(updatedData.luxury_places);
+            const payload = {
+                ...updatedData,
+                economy_places: Number(updatedData.economy_places) || 0,
+                standard_places: Number(updatedData.standard_places) || 0,
+                luxury_places: Number(updatedData.luxury_places) || 0,
+                total_places: totalPlaces,
+                available_places: totalPlaces,
+            };
             const response = await fetch(`http://localhost:8000/api/cruises/schedules/${updatedData.id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(updatedData),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
-            if (!response.ok) throw new Error('Ошибка при редактировании расписания');
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || 'Ошибка при редактировании расписания');
+            }
             const data = await response.json();
             setCruiseSchedules(cruiseSchedules.map(schedule => schedule.id === updatedData.id ? data : schedule));
             handleCloseModal();
             alert('Расписание успешно обновлено!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось обновить расписание');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -202,14 +215,33 @@ const Dashboard = () => {
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/schedules/${scheduleId}`, {
                 method: 'DELETE',
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                headers: { 'Content-Type': 'application/json' },
             });
-            if (!response.ok) throw new Error('Ошибка при удалении расписания');
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || 'Ошибка при удалении расписания');
+            }
             setCruiseSchedules(cruiseSchedules.filter(schedule => schedule.id !== scheduleId));
             alert('Расписание успешно удалено!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить расписание');
+            alert(`Ошибка: ${error.message}`);
+        }
+    };
+
+    const handleCancelReview = async (reviewId) => {
+        if (!reviewId) return alert('Ошибка: ID отзыва не указан');
+        try {
+            const response = await fetch(`http://localhost:8000/api/reviews/${reviewId}/cancel`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!response.ok) throw new Error('Ошибка при отмене отзыва');
+            setReviews(reviews.map(review => review.id === reviewId ? { ...review, is_active: false } : review));
+            alert('Отзыв успешно отменён!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось отменить отзыв');
         }
     };
 
@@ -218,7 +250,7 @@ const Dashboard = () => {
         try {
             const response = await fetch(`http://localhost:8000/api/reviews/${reviewId}`, {
                 method: 'DELETE',
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (!response.ok) throw new Error('Ошибка при удалении отзыва');
             setReviews(reviews.filter(review => review.id !== reviewId));
@@ -234,57 +266,30 @@ const Dashboard = () => {
         setIsEditModalOpen(true);
     };
 
-    const handleEditReviewClick = (review) => {
-        setEditingReview(review);
-        setIsEditModalOpen(true);
-    };
-
     const handleSaveCruise = async (updatedData) => {
         try {
             const response = await fetch(`http://localhost:8000/api/cruises/${updatedData.id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData),
             });
-            if (!response.ok) throw new Error('Ошибка при редактировании круиза');
-            const data = await response.json();
+            const responseText = await response.text();
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status} - ${responseText}`);
+            }
+            const data = await JSON.parse(responseText);
             setCruises(cruises.map(cruise => cruise.id === updatedData.id ? data : cruise));
             handleCloseModal();
             alert('Круиз успешно обновлён!');
         } catch (error) {
-            console.error(error);
-            alert('Ошибка: не удалось обновить круиз');
-        }
-    };
-
-    const handleSaveReview = async (updatedData) => {
-        try {
-            const response = await fetch(`http://localhost:8000/api/reviews/${updatedData.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(updatedData),
-            });
-            if (!response.ok) throw new Error('Ошибка при редактировании отзыва');
-            const data = await response.json();
-            setReviews(reviews.map(review => review.id === updatedData.id ? data : review));
-            handleCloseModal();
-            alert('Отзыв успешно обновлён!');
-        } catch (error) {
-            console.error(error);
-            alert('Ошибка: не удалось обновить отзыв');
+            console.error('Ошибка:', error);
+            alert(error.message);
         }
     };
 
     const handleCloseModal = () => {
         setIsEditModalOpen(false);
         setEditingCruise(null);
-        setEditingReview(null);
         setEditingSchedule(null);
     };
 
@@ -298,13 +303,6 @@ const Dashboard = () => {
                         <CruiseEditForm
                             cruise={editingCruise}
                             onSave={handleSaveCruise}
-                            onCancel={handleCloseModal}
-                        />
-                    )}
-                    {editingReview && (
-                        <FeedbackEditForm // TODO: Переименовать в ReviewEditForm
-                            feedback={editingReview}
-                            onSave={handleSaveReview}
                             onCancel={handleCloseModal}
                         />
                     )}
@@ -383,7 +381,7 @@ const Dashboard = () => {
                             reviews={reviewsWithDetails}
                             error={errors['http://localhost:8000/api/reviews']}
                             formatDate={formatDate}
-                            onEdit={handleEditReviewClick}
+                            onCancel={handleCancelReview}
                             onDelete={handleDeleteReview}
                         />
                     </CollapsibleSection>
