@@ -245,7 +245,41 @@
     background-color: #1e2a4b;
     transform: translateY(-2px);
 }
+/* Стили для обертки изображения каюты */
+.cabinImageWrapper {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
 
+.cabinImageWrapper:hover {
+    transform: scale(1.05);
+}
+
+/* Стили для модального окна */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    max-width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+}
+
+.modalImage {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
 /* Адаптивность */
 
 /* Для мониторов (1280px и выше) */

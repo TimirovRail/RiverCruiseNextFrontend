@@ -13,6 +13,7 @@ const CruiseDetail = () => {
     const { id } = query;
     const [cruise, setCruise] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedImage, setSelectedImage] = useState(null); // Состояние для выбранного изображения
 
     useEffect(() => {
         if (!id) return;
@@ -31,6 +32,16 @@ const CruiseDetail = () => {
 
         fetchCruise();
     }, [id]);
+
+    // Функция для открытия изображения
+    const openImage = (src) => {
+        setSelectedImage(src);
+    };
+
+    // Функция для закрытия изображения
+    const closeImage = () => {
+        setSelectedImage(null);
+    };
 
     if (loading) return <Loading />;
     if (!cruise) return <p>Круиз не найден.</p>;
@@ -52,11 +63,16 @@ const CruiseDetail = () => {
                                             <h4>Эконом</h4>
                                             <p>Мест: {cruise.cabins_by_class.economy.places}</p>
                                             {cruise.cabins_by_class.economy.image_path && (
-                                                <img
-                                                    src={cruise.cabins_by_class.economy.image_path}
-                                                    alt="Эконом каюта"
-                                                    className={styles.cabinImage}
-                                                />
+                                                <div
+                                                    className={styles.cabinImageWrapper}
+                                                    onClick={() => openImage(cruise.cabins_by_class.economy.image_path)}
+                                                >
+                                                    <img
+                                                        src={cruise.cabins_by_class.economy.image_path}
+                                                        alt="Эконом каюта"
+                                                        className={styles.cabinImage}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     )}
@@ -65,11 +81,16 @@ const CruiseDetail = () => {
                                             <h4>Стандарт</h4>
                                             <p>Мест: {cruise.cabins_by_class.standard.places}</p>
                                             {cruise.cabins_by_class.standard.image_path && (
-                                                <img
-                                                    src={cruise.cabins_by_class.standard.image_path}
-                                                    alt="Стандарт каюта"
-                                                    className={styles.cabinImage}
-                                                />
+                                                <div
+                                                    className={styles.cabinImageWrapper}
+                                                    onClick={() => openImage(cruise.cabins_by_class.standard.image_path)}
+                                                >
+                                                    <img
+                                                        src={cruise.cabins_by_class.standard.image_path}
+                                                        alt="Стандарт каюта"
+                                                        className={styles.cabinImage}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     )}
@@ -78,11 +99,16 @@ const CruiseDetail = () => {
                                             <h4>Люкс</h4>
                                             <p>Мест: {cruise.cabins_by_class.luxury.places}</p>
                                             {cruise.cabins_by_class.luxury.image_path && (
-                                                <img
-                                                    src={cruise.cabins_by_class.luxury.image_path}
-                                                    alt="Люкс каюта"
-                                                    className={styles.cabinImage}
-                                                />
+                                                <div
+                                                    className={styles.cabinImageWrapper}
+                                                    onClick={() => openImage(cruise.cabins_by_class.luxury.image_path)}
+                                                >
+                                                    <img
+                                                        src={cruise.cabins_by_class.luxury.image_path}
+                                                        alt="Люкс каюта"
+                                                        className={styles.cabinImage}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     )}
@@ -175,6 +201,15 @@ const CruiseDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Модальное окно для увеличенного изображения */}
+            {selectedImage && (
+                <div className={styles.modal} onClick={closeImage}>
+                    <div className={styles.modalContent}>
+                        <img src={selectedImage} alt="Увеличенное изображение" className={styles.modalImage} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

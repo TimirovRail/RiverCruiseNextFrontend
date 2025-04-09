@@ -5,8 +5,9 @@ import styles from './BlogGallery.module.css';
 
 export default function PhotoGallery() {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [userPhotos, setUserPhotos] = useState([]);
-    const [newPhotos, setNewPhotos] = useState([]);
+    const [allPhotos, setAllPhotos] = useState([]); // Все фото от всех пользователей
+    const [userPhotos, setUserPhotos] = useState([]); // Фото текущего пользователя
+    const [newPhotos, setNewPhotos] = useState([]); // Новые фото для загрузки
     const [userId, setUserId] = useState(null);
     const [userName, setUserName] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,13 +34,26 @@ export default function PhotoGallery() {
             setIsAuthenticated(true);
             setUserId(user.id);
             setUserName(user.name);
-            fetchUserPhotos(user.id);
-        } else {
-            setIsLoading(false);
-            router.push('/login');
+            fetchUserPhotos(user.id); // Фото текущего пользователя
         }
+        fetchAllPhotos(); // Все фото
     }, [router]);
 
+    // Получение всех фотографий
+    const fetchAllPhotos = async () => {
+        try {
+            const res = await fetch('http://localhost:8000/api/photos');
+            if (!res.ok) throw new Error('Ошибка загрузки всех фотографий');
+            const data = await res.json();
+            setAllPhotos(data || []);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Ошибка:', error);
+            setIsLoading(false);
+        }
+    };
+
+    // Получение фото текущего пользователя
     const fetchUserPhotos = async (userId) => {
         try {
             const token = localStorage.getItem('token');
@@ -51,21 +65,13 @@ export default function PhotoGallery() {
             if (!res.ok) throw new Error('Ошибка загрузки фотографий пользователя');
             const data = await res.json();
             setUserPhotos(data.photos || []);
-            console.log('Загруженные фотографии:', data.photos);
         } catch (error) {
             console.error('Ошибка:', error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    const openImage = (src) => {
-        setSelectedImage(src);
-    };
-
-    const closeImage = () => {
-        setSelectedImage(null);
-    };
+    const openImage = (src) => setSelectedImage(src);
+    const closeImage = () => setSelectedImage(null);
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
@@ -78,13 +84,11 @@ export default function PhotoGallery() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!isAuthenticated) {
             alert('Для загрузки фотографий необходимо авторизоваться');
             router.push('/login');
             return;
         }
-
         if (!userId || isNaN(userId)) {
             alert('Ошибка: user_id не определен или некорректен');
             return;
@@ -92,37 +96,27 @@ export default function PhotoGallery() {
 
         const token = localStorage.getItem('token');
         const formData = new FormData();
-        newPhotos.forEach((photo) => {
-            formData.append('photos[]', photo);
-        });
+        newPhotos.forEach((photo) => formData.append('photos[]', photo));
         formData.append('user_id', userId);
-
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}:`, pair[1]);
-        }
 
         try {
             const response = await fetch('http://localhost:8000/api/auth/upload-photos', {
                 method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Фотографии успешно загружены:', data);
                 setUserPhotos([...userPhotos, ...data.photos]);
                 setNewPhotos([]);
-                fetchUserPhotos(userId);
+                fetchUserPhotos(userId); // Обновляем фото текущего пользователя
+                fetchAllPhotos(); // Обновляем все фото
             } else {
                 const errorData = await response.json();
-                console.error('Ошибка при загрузке:', errorData);
                 alert(`Ошибка: ${errorData.error || 'Неизвестная ошибка'}`);
             }
         } catch (error) {
-            console.error('Ошибка при загрузке:', error);
             alert('Произошла ошибка при загрузке фотографий.');
         }
     };
@@ -153,61 +147,72 @@ export default function PhotoGallery() {
 
                     <div className={styles.column}>
                         <h3>Фотки пользователей</h3>
-                        {!isAuthenticated ? (
-                            <p>Для загрузки фотографий необходимо <a href="/login">авторизоваться</a>.</p>
-                        ) : (
-                            <>
-                                <form onSubmit={handleSubmit} className={styles.uploadForm}>
-                                    <input
-                                        type="file"
-                                        multiple
-                                        accept="image/*"
-                                        onChange={handleFileChange}
+                        <div className={styles.images}>
+                            {allPhotos.map((photo, index) => (
+                                <div
+                                    key={index}
+                                    className={styles.imageWrapper}
+                                    onClick={() => openImage(`http://localhost:8000${photo.url}`)}
+                                >
+                                    <img
+                                        src={`http://localhost:8000${photo.url}`}
+                                        alt={photo.name || `Photo ${index}`}
+                                        className={styles.image}
                                     />
-                                    <div className={styles.fileList}>
-                                        {newPhotos.map((photo, index) => (
-                                            <span key={index}>{photo.name}</span>
+                                    <p>{photo.user_name || 'Аноним'}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {isAuthenticated && (
+                        <div className={styles.column}>
+                            <h3>Ваши фотографии</h3>
+                            <form onSubmit={handleSubmit} className={styles.uploadForm}>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                                <div className={styles.fileList}>
+                                    {newPhotos.map((photo, index) => (
+                                        <span key={index}>{photo.name}</span>
+                                    ))}
+                                </div>
+                                <button type="submit">Загрузить</button>
+                            </form>
+                            {userPhotos.length > 0 ? (
+                                <div>
+                                    <p>
+                                        {userName || 'Вы'} оставили {userPhotos.length} фотографий
+                                    </p>
+                                    <div className={styles.images}>
+                                        {userPhotos.map((photo, index) => (
+                                            <div
+                                                key={index}
+                                                className={styles.imageWrapper}
+                                                onClick={() => openImage(`http://localhost:8000${photo.url}`)}
+                                            >
+                                                <img
+                                                    src={`http://localhost:8000${photo.url}`}
+                                                    alt={photo.name || `User photo ${index}`}
+                                                    className={styles.image}
+                                                />
+                                            </div>
                                         ))}
                                     </div>
-                                    <button type="submit">Загрузить</button>
-                                </form>
-                                {userPhotos.length > 0 ? (
-                                    <div>
-                                        <p>
-                                            {userName || 'Пользователь'} оставил {userPhotos.length} фотографий
-                                        </p>
-                                        <div className={styles.images}>
-                                            {userPhotos.map((photo, index) => {
-                                                const imageUrl = `http://localhost:8000${photo.url}`;
-                                                console.log(`Попытка загрузить изображение: ${imageUrl}`);
-                                                return (
-                                                    <div
-                                                        key={index}
-                                                        className={styles.imageWrapper}
-                                                        onClick={() => openImage(imageUrl)}
-                                                    >
-                                                        <img
-                                                            src={imageUrl}
-                                                            alt={photo.name || `User photo ${index}`}
-                                                            className={styles.image}
-                                                            onError={() => console.error(`Не удалось загрузить изображение: ${imageUrl}`)}
-                                                        />
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <p>Вы ещё не загрузили фотографии.</p>
-                                )}
-                            </>
-                        )}
-                    </div>
+                                </div>
+                            ) : (
+                                <p>Вы ещё не загрузили фотографии.</p>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 
             {selectedImage && (
-                <div className={styles.modal} onClick={closeImage}> 
+                <div className={styles.modal} onClick={closeImage}>
                     <div className={styles.modalContent}>
                         <img src={selectedImage} alt="Selected" className={styles.modalImage} />
                     </div>
