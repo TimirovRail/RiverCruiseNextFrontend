@@ -163,19 +163,16 @@ export default function BlogContacts() {
             return;
         }
 
-        // Преобразуем все значения в числа
         const economySeats = parseInt(formData.economy_seats) || 0;
         const standardSeats = parseInt(formData.standard_seats) || 0;
         const luxurySeats = parseInt(formData.luxury_seats) || 0;
         const totalSeats = parseInt(formData.total_seats) || 0;
 
-        // Отладочная информация
         console.log('Эконом:', economySeats, 'Тип:', typeof economySeats);
         console.log('Стандарт:', standardSeats, 'Тип:', typeof standardSeats);
         console.log('Люкс:', luxurySeats, 'Тип:', typeof luxurySeats);
         console.log('Общее:', totalSeats, 'Тип:', typeof totalSeats);
 
-        // Проверяем, что сумма мест по классам совпадает с общим количеством мест
         const sumOfSeats = economySeats + standardSeats + luxurySeats;
         console.log('Сумма мест по классам:', sumOfSeats, 'Общее количество мест:', totalSeats);
 
@@ -183,8 +180,6 @@ export default function BlogContacts() {
             alert(`Сумма мест по классам (${sumOfSeats}) должна совпадать с общим количеством мест (${totalSeats})`);
             return;
         }
-
-        // Проверяем доступность мест для каждого класса
         if (economySeats > schedule.available_economy_places) {
             alert(`Недостаточно мест для класса "Эконом". Доступно: ${schedule.available_economy_places}`);
             return;
@@ -198,7 +193,6 @@ export default function BlogContacts() {
             return;
         }
 
-        // Формируем данные для отправки, явно преобразуя числовые поля
         const payload = {
             cruise_schedule_id: formData.cruise_schedule_id,
             total_seats: totalSeats,

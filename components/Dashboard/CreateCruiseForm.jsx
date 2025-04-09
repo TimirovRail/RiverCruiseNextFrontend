@@ -7,7 +7,7 @@ const CreateCruiseForm = ({ onSubmit }) => {
         description: '',
         river: '',
         cabins: '',
-        price_per_person: '', // Теперь одно поле вместо объекта
+        price_per_person: '',
         total_distance: '',
         image_path: '',
         panorama_url: '',
@@ -81,13 +81,12 @@ const CreateCruiseForm = ({ onSubmit }) => {
         e.preventDefault();
 
         try {
-            // 1. Формируем данные круиза
             const cruisePayload = {
                 name: cruiseData.name,
                 description: cruiseData.description,
                 river: cruiseData.river,
                 cabins: parseInt(cruiseData.cabins) || 0,
-                price_per_person: parseFloat(cruiseData.price_per_person) || 0, // Теперь одно число
+                price_per_person: parseFloat(cruiseData.price_per_person) || 0, 
                 total_distance: parseFloat(cruiseData.total_distance) || 0,
                 image_path: cruiseData.image_path || null,
                 panorama_url: cruiseData.panorama_url || null,
@@ -97,12 +96,10 @@ const CreateCruiseForm = ({ onSubmit }) => {
 
             console.log('Отправляемые данные круиза:', cruisePayload);
 
-            // 2. Отправляем запрос на создание круиза
             const cruiseResponse = await fetch('http://localhost:8000/api/cruises', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Убрали Authorization, так как токен больше не нужен
                 },
                 body: JSON.stringify(cruisePayload),
             });
@@ -115,7 +112,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
             const createdCruise = await cruiseResponse.json();
             console.log('Созданный круиз:', createdCruise);
 
-            // 3. Формируем данные расписания
             const totalPlaces =
                 (parseInt(scheduleData.economy_places) || 0) +
                 (parseInt(scheduleData.standard_places) || 0) +
@@ -128,18 +124,16 @@ const CreateCruiseForm = ({ onSubmit }) => {
                 standard_places: parseInt(scheduleData.standard_places) || 0,
                 luxury_places: parseInt(scheduleData.luxury_places) || 0,
                 total_places: totalPlaces,
-                available_places: totalPlaces, // Изначально все места доступны
+                available_places: totalPlaces, 
                 status: scheduleData.status,
             };
 
             console.log('Отправляемые данные расписания:', schedulePayload);
 
-            // 4. Отправляем запрос на создание расписания
             const scheduleResponse = await fetch(`http://localhost:8000/api/cruises/${createdCruise.id}/schedules`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Убрали Authorization
                 },
                 body: JSON.stringify(schedulePayload),
             });
@@ -152,7 +146,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
             const createdSchedule = await scheduleResponse.json();
             console.log('Созданное расписание:', createdSchedule);
 
-            // 5. Очищаем форму
             setCruiseData({
                 name: '',
                 description: '',
@@ -178,7 +171,6 @@ const CreateCruiseForm = ({ onSubmit }) => {
                 status: 'planned',
             });
 
-            // 6. Уведомляем об успехе
             onSubmit(createdCruise);
             alert('Круиз и расписание успешно созданы!');
         } catch (error) {

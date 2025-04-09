@@ -38,14 +38,12 @@ const CruiseScheduleEditForm = ({ schedule, onSave, onCancel }) => {
         setFormData((prev) => {
             const updatedFormData = { ...prev, [name]: value };
 
-            // Автоматически вычисляем total_places при изменении мест
             if (['economy_places', 'standard_places', 'luxury_places'].includes(name)) {
                 const totalPlaces = 
                     (Number(updatedFormData.economy_places) || 0) +
                     (Number(updatedFormData.standard_places) || 0) +
                     (Number(updatedFormData.luxury_places) || 0);
                 updatedFormData.total_places = totalPlaces;
-                // Если available_places не задано вручную, устанавливаем его равным total_places
                 if (!updatedFormData.available_places || updatedFormData.available_places > totalPlaces) {
                     updatedFormData.available_places = totalPlaces;
                 }
@@ -57,7 +55,6 @@ const CruiseScheduleEditForm = ({ schedule, onSave, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Убедимся, что все числовые поля отправляются как числа
         const payload = {
             ...formData,
             economy_places: Number(formData.economy_places) || 0,
@@ -130,7 +127,7 @@ const CruiseScheduleEditForm = ({ schedule, onSave, onCancel }) => {
                     type="number"
                     name="total_places"
                     value={formData.total_places}
-                    readOnly // Поле только для чтения, так как вычисляется автоматически
+                    readOnly 
                 />
             </div>
             <div className={styles.inputGroup}>
@@ -142,7 +139,7 @@ const CruiseScheduleEditForm = ({ schedule, onSave, onCancel }) => {
                     onChange={handleChange}
                     required
                     min="0"
-                    max={formData.total_places} // Не больше общего количества мест
+                    max={formData.total_places}
                 />
             </div>
             <div className={styles.inputGroup}>

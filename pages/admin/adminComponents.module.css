@@ -1,32 +1,32 @@
 /* Общий контейнер для компонентов */
 .componentContainer {
     background: #fff;
-    padding: 20px;
+    padding: clamp(15px, 2vw, 20px);
     border-radius: 8px;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
-    margin-top: 20px;
+    margin-top: clamp(15px, 2vw, 20px);
 }
 
 /* Стили для текста ошибок */
 .errorMessage {
     color: #e74c3c;
-    font-size: 16px;
+    font-size: clamp(14px, 1.5vw, 16px);
     text-align: center;
-    margin: 10px 0;
+    margin: clamp(8px, 1vw, 10px) 0;
 }
 
 /* Стили для CollapsibleSection */
 .collapsibleSection {
-    margin-bottom: 20px;
+    margin-bottom: clamp(15px, 2vw, 20px);
 }
 
 .sectionTitle {
-    font-size: 24px;
+    font-size: clamp(18px, 2.5vw, 24px);
     color: #3B4055;
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
     margin: 0;
-    padding: 10px 0;
+    padding: clamp(8px, 1vw, 10px) 0;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -38,7 +38,7 @@
 }
 
 .toggleIcon {
-    font-size: 20px;
+    font-size: clamp(16px, 2vw, 20px);
     transition: transform 0.3s ease;
 }
 
@@ -48,35 +48,33 @@
 
 /* Стили для UserInfo */
 .userInfo p {
-    font-size: 16px;
+    font-size: clamp(14px, 1.5vw, 16px);
     color: #555;
-    margin: 10px 0;
+    margin: clamp(8px, 1vw, 10px) 0;
 }
 
-/* Обертка для таблиц с горизонтальной прокруткой */
-.tableWrapper {
+/* Обертка для контента с горизонтальной прокруткой */
+.contentWrapper {
     overflow-x: auto;
     width: 100%;
-    margin-top: 20px;
+    margin-top: clamp(15px, 2vw, 20px);
 }
 
-/* Стили для таблиц (FeedbacksList, BookingsList, CruisesList) */
+/* Стили для таблиц */
 .table {
     width: 100%;
-    min-width: 1200px;
-    /* Минимальная ширина таблицы, чтобы всё помещалось */
+    min-width: clamp(300px, 100%, 600px);
     border-collapse: collapse;
 }
 
 .table th,
 .table td {
-    padding: 12px 15px;
+    padding: clamp(6px, 1.5vw, 12px) clamp(8px, 1.5vw, 15px);
     text-align: left;
     border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-size: 14px;
+    transition: background-color 0.3s ease;
+    font-size: clamp(11px, 1.2vw, 14px);
     white-space: nowrap;
-    /* Предотвращаем перенос текста */
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -92,51 +90,39 @@
 
 .table tbody tr:hover {
     background-color: #f1f1f1;
-    transform: scale(1.01);
 }
 
 /* Статусы в BookingsList */
-.statusConfirmed {
-    color: #2ecc71;
-    font-weight: bold;
-}
+.statusConfirmed { color: #2ecc71; font-weight: bold; }
+.statusCancelled { color: #e74c3c; font-weight: bold; }
+.statusPending { color: #f39c12; font-weight: bold; }
 
-.statusCancelled {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.statusPending {
-    color: #f39c12;
-    font-weight: bold;
-}
-
-/* Стили для форм (CreateCruiseForm, CruiseEditForm, FeedbackEditForm) */
+/* Стили для форм */
 .formContainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
+    gap: clamp(15px, 2vw, 20px);
+    padding: clamp(15px, 2vw, 20px);
 }
 
 .inputGroup {
     display: flex;
     flex-direction: column;
-    flex: 1 1 calc(33% - 20px);
-    padding: 5px;
+    flex: 1 1 clamp(200px, 33% - 20px, 400px);
+    padding: clamp(4px, 0.5vw, 5px);
 }
 
 .inputGroup label {
-    font-size: 14px;
+    font-size: clamp(12px, 1.2vw, 14px);
     font-weight: bold;
     color: #3a3a3a;
-    margin-bottom: 8px;
+    margin-bottom: clamp(6px, 1vw, 8px);
 }
 
 .inputField,
 .textareaField {
-    padding: 12px;
-    font-size: 16px;
+    padding: clamp(10px, 1.5vw, 12px);
+    font-size: clamp(12px, 1.5vw, 16px);
     border: 2px solid #ccc;
     background-color: #fff;
     color: #333;
@@ -151,7 +137,7 @@
 }
 
 .textareaField {
-    height: 100px;
+    height: clamp(80px, 10vw, 100px);
     resize: vertical;
 }
 
@@ -159,13 +145,13 @@
 .button {
     background-color: #2A376D;
     color: white;
-    padding: 12px 20px;
+    padding: clamp(10px, 1.5vw, 12px) clamp(15px, 2vw, 20px);
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: clamp(12px, 1.5vw, 16px);
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 10px;
+    margin-top: clamp(8px, 1vw, 10px);
 }
 
 .button:hover {
@@ -173,43 +159,33 @@
     transform: translateY(-2px);
 }
 
-.editButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 5px 10px;
+.editButton,
+.deleteButton,
+.cancelButton {
+    padding: clamp(4px, 1vw, 5px) clamp(8px, 1.5vw, 10px);
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: clamp(10px, 1.2vw, 14px);
     transition: background-color 0.3s ease;
-    margin-right: 5px;
+    margin-right: clamp(4px, 0.5vw, 5px);
 }
 
-.editButton:hover {
-    background-color: #45a049;
-}
+.editButton { background-color: #4CAF50; color: white; }
+.editButton:hover { background-color: #45a049; }
 
-.deleteButton {
-    background-color: #f44336;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
+.deleteButton { background-color: #f44336; color: white; }
+.deleteButton:hover { background-color: #d32f2f; }
 
-.deleteButton:hover {
-    background-color: #d32f2f;
-}
+.cancelButton { background-color: #4CAF50; color: white; }
+.cancelButton:hover { background-color: #45a049; }
 
 /* Стили для PhotosList */
 .photosGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 20vw, 200px), 1fr));
+    gap: clamp(15px, 2vw, 20px);
+    width: 100%;
 }
 
 .photoCard {
@@ -227,15 +203,16 @@
 
 .photoImage {
     width: 100%;
-    height: 150px;
+    height: clamp(100px, 20vw, 150px);
     object-fit: cover;
 }
 
 .photoActions {
-    padding: 10px;
+    padding: clamp(8px, 1vw, 10px);
     text-align: center;
 }
 
+/* Модальные окна */
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -252,8 +229,7 @@
 .modalContainer {
     background-color: white;
     border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
+    width: clamp(300px, 90%, 600px);
     max-height: 80vh;
     display: flex;
     flex-direction: column;
@@ -263,28 +239,19 @@
 
 .modalScrollableContent {
     flex: 1;
-    padding: 20px;
+    padding: clamp(15px, 2vw, 20px);
     overflow-y: auto;
 }
 
-.modalContent {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 .modalCloseButton {
-    margin: 0 20px 20px 20px;
-    padding: 10px 20px;
+    margin: 0 clamp(15px, 2vw, 20px) clamp(15px, 2vw, 20px);
+    padding: clamp(8px, 1.5vw, 10px) clamp(15px, 2vw, 20px);
     background-color: #f44336;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: clamp(14px, 1.5vw, 16px);
     transition: background-color 0.3s ease;
 }
 
@@ -292,29 +259,10 @@
     background-color: #d32f2f;
 }
 
-.cancelButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-    margin-right: 5px;
-}
-
 /* Анимация появления */
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .fade {
@@ -322,104 +270,28 @@
     animation: fadeIn 1s forwards;
 }
 
-/* Медиа-запросы для адаптивности */
+/* Медиа-запросы */
 @media (max-width: 1024px) {
-
     .table th,
     .table td {
-        padding: 10px;
-        font-size: 13px;
-    }
-
-    .editButton,
-    .deleteButton {
-        padding: 4px 8px;
-        font-size: 12px;
+        padding: clamp(8px, 1vw, 10px);
     }
 }
 
 @media (max-width: 768px) {
-    .componentContainer {
-        padding: 15px;
-    }
-
-    .sectionTitle {
-        font-size: 20px;
-    }
-
-    .table th,
-    .table td {
-        font-size: 12px;
-        padding: 8px;
-    }
-
     .formContainer {
         flex-direction: column;
-        padding: 15px;
     }
-
     .inputGroup {
         flex: 1 1 100%;
     }
-
-    .inputGroup label {
-        font-size: 14px;
-    }
-
-    .inputField,
-    .textareaField {
-        font-size: 14px;
-    }
-
-    .button,
-    .editButton,
-    .deleteButton {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
-
     .photosGrid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-
-    .photoImage {
-        height: 120px;
-    }
-
-    .modalContent {
-        width: 90%;
-        padding: 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .sectionTitle {
-        font-size: 18px;
-    }
-
-    .table th,
-    .table td {
-        font-size: 11px;
-        padding: 6px;
-    }
-
-    .editButton,
-    .deleteButton {
-        font-size: 10px;
-        padding: 3px 6px;
-    }
-
-    .inputField,
-    .textareaField {
-        font-size: 12px;
-        padding: 10px;
-    }
-
     .photosGrid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-
-    .photoImage {
-        height: 100px;
     }
 }

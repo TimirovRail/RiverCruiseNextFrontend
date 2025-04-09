@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import styles from './dashboard.module.css';
 import Loading from "@/components/Loading/Loading";
 
-// Импорт компонентов с ленивой загрузкой
 const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
 const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
 const CruisesList = lazy(() => import('../../components/Dashboard/CruisesList'));
@@ -16,7 +15,6 @@ const CruiseEditForm = lazy(() => import('../../components/Dashboard/CruiseEditF
 const CruiseScheduleEditForm = lazy(() => import('../../components/Dashboard/CruiseScheduleEditForm'));
 
 const Dashboard = () => {
-    // Состояния для данных
     const [userData, setUserData] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -25,34 +23,27 @@ const Dashboard = () => {
     const [photos, setPhotos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
-
-    // Состояния для управления открытием секций
     const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
     const [isCruisesOpen, setIsCruisesOpen] = useState(false);
     const [isCreateCruiseOpen, setIsCreateCruiseOpen] = useState(false);
     const [isReviewsOpen, setIsReviewsOpen] = useState(false);
     const [isBookingsOpen, setIsBookingsOpen] = useState(false);
     const [isPhotosOpen, setIsPhotosOpen] = useState(false);
-
-    // Состояния для управления модальным окном редактирования
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingCruise, setEditingCruise] = useState(null);
     const [editingSchedule, setEditingSchedule] = useState(null);
 
     const router = useRouter();
 
-    // Форматирование даты
     const formatDate = (datetime) => {
         if (!datetime || typeof datetime !== 'string') return '—';
         const date = new Date(datetime);
         return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
     };
 
-    // Загрузка всех данных при монтировании компонента
     useEffect(() => {
         const fetchAllData = async () => {
             setLoading(true);
-
             const urls = [
                 { url: 'http://localhost:8000/api/user', setter: setUserData, key: 'user', requiresAuth: true },
                 { url: 'http://localhost:8000/api/reviews', setter: setReviews, key: 'reviews', requiresAuth: false },
@@ -64,18 +55,12 @@ const Dashboard = () => {
 
             const fetchPromises = urls.map(async ({ url, setter, key, requiresAuth }) => {
                 try {
-                    const headers = {
-                        'Content-Type': 'application/json',
-                    };
+                    const headers = { 'Content-Type': 'application/json' };
                     if (requiresAuth) {
                         headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
                     }
 
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers,
-                    });
-
+                    const response = await fetch(url, { method: 'GET', headers });
                     if (!response.ok) {
                         const errorText = await response.text();
                         throw new Error(`Ошибка при загрузке данных с ${url}: ${errorText}`);
@@ -92,10 +77,7 @@ const Dashboard = () => {
                     setter(data);
                 } catch (err) {
                     console.error(err.message);
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        [url]: err.message,
-                    }));
+                    setErrors((prevErrors) => ({ ...prevErrors, [url]: err.message }));
                     setter(key === 'user' ? null : []);
                 }
             });
@@ -107,33 +89,33 @@ const Dashboard = () => {
         fetchAllData();
     }, []);
 
-    // Обогащаем круизы данными о расписаниях
     const cruisesWithSchedules = cruises.map(cruise => ({
         ...cruise,
         schedules: cruiseSchedules.filter(schedule => schedule.cruise_id === cruise.id),
     }));
 
-    // Убираем избыточное обогащение для reviews и bookings
     const reviewsWithDetails = reviews;
     const bookingsWithDetails = bookings;
-
-    // Обогащаем фотографии
     const photosWithDetails = photos;
 
-    // Функции для управления CRUD
     const handleDeletePhoto = async (photoId) => {
         if (!photoId) return alert('Ошибка: ID фотографии не указан');
         try {
             const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                }, 
             });
-            if (!response.ok) throw new Error('Ошибка при удалении фотографии');
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Ошибка при удалении фотографии');
+            }
             setPhotos(photos.filter(photo => photo.id !== photoId));
             alert('Фотография успешно удалена!');
         } catch (error) {
             console.error(error);
-            alert('Ошибка: не удалось удалить фотографию');
+            alert(`Ошибка: ${error.message}`);
         }
     };
 
@@ -141,9 +123,7 @@ const Dashboard = () => {
         try {
             const response = await fetch('http://localhost:8000/api/cruises', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newCruise),
             });
             if (!response.ok) throw new Error('Ошибка при создании круиза');

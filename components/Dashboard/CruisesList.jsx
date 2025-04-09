@@ -3,60 +3,34 @@ import styles from '../../pages/admin/adminComponents.module.css';
 const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDelete, onEditSchedule, onDeleteSchedule }) => {
     const renderJsonField = (field) => {
         if (!field) return 'Нет данных';
-
         try {
-            // Если поле — строка, пытаемся её распарсить как JSON
             if (typeof field === 'string') {
                 try {
                     const parsed = JSON.parse(field);
                     return renderJsonField(parsed);
                 } catch (e) {
-                    console.error('Ошибка парсинга JSON строки:', field, e);
                     return field;
                 }
             }
-
-            // Если поле — массив
             if (Array.isArray(field)) {
-                // Проверяем, состоит ли массив из объектов с полем name (как в features)
                 if (field.every(item => typeof item === 'object' && item !== null && 'name' in item)) {
-                    // Извлекаем только поле name из каждого объекта
                     return field.map(item => item.name).join(', ') || 'Нет данных';
                 }
-                // Для других массивов (например, просто список строк)
                 return field.length > 0 ? field.join(', ') : 'Нет данных';
             }
-
-            // Если поле — объект (например, price_per_person или cabins_by_class)
             if (typeof field === 'object' && field !== null) {
-                // Проверяем, является ли объект "плоским" (все значения — не объекты)
-                const isFlatObject = Object.values(field).every(
-                    value => typeof value !== 'object' || value === null
-                );
-
+                const isFlatObject = Object.values(field).every(value => typeof value !== 'object' || value === null);
                 if (isFlatObject) {
-                    // Для плоских объектов выводим только ключи, если значения — true
-                    const result = Object.entries(field)
-                        .filter(([key, value]) => typeof value === 'boolean' && value === true)
-                        .map(([key]) => key)
-                        .join(', ');
-
+                    const result = Object.entries(field).filter(([_, value]) => value === true).map(([key]) => key).join(', ');
                     return result || 'Нет данных';
                 }
-
-                // Для вложенных объектов
-                return Object.entries(field)
-                    .map(([key, value]) => {
-                        if (typeof value === 'object' && value !== null) {
-                            return `${key}: ${Object.entries(value)
-                                .map(([k, v]) => `${k}: ${v}`)
-                                .join(', ')}`;
-                        }
-                        return `${key}: ${typeof value === 'number' ? value.toFixed(2) : value}`;
-                    })
-                    .join('; ') || 'Нет данных';
+                return Object.entries(field).map(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        return `${key}: ${Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(', ')}`;
+                    }
+                    return `${key}: ${typeof value === 'number' ? value.toFixed(2) : value}`;
+                }).join('; ') || 'Нет данных';
             }
-
             return field.toString();
         } catch (e) {
             console.error('Ошибка при обработке JSON-поля:', e, 'Поле:', field);
@@ -64,7 +38,6 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
         }
     };
 
-    // Привязываем расписания к круизам
     const allSchedules = cruiseSchedules?.map(schedule => ({
         ...schedule,
         cruise_name: cruises.find(cruise => cruise.id === schedule.cruise_id)?.name || 'Неизвестный круиз'
@@ -76,9 +49,8 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                 <p className={styles.errorMessage}>Ошибка при загрузке данных</p>
             ) : (
                 <>
-                    {/* Таблица круизов */}
                     <h2>Круизы</h2>
-                    <div className={styles.tableWrapper}>
+                    <div className={styles.contentWrapper}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
@@ -114,27 +86,20 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                                             <td>{formatDate(cruise.created_at) || 'Нет данных'}</td>
                                             <td>{formatDate(cruise.updated_at) || 'Нет данных'}</td>
                                             <td>
-                                                <button onClick={() => onEdit(cruise)} className={styles.editButton}>
-                                                    Редактировать
-                                                </button>
-                                                <button onClick={() => onDelete(cruise.id)} className={styles.deleteButton}>
-                                                    Удалить
-                                                </button>
+                                                <button onClick={() => onEdit(cruise)} className={styles.editButton}>Редактировать</button>
+                                                <button onClick={() => onDelete(cruise.id)} className={styles.deleteButton}>Удалить</button>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
-                                    <tr>
-                                        <td colSpan="13">Круизы отсутствуют</td>
-                                    </tr>
+                                    <tr><td colSpan="13">Круизы отсутствуют</td></tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
 
-                    {/* Таблица расписаний */}
                     <h2>Расписания круизов</h2>
-                    <div className={styles.tableWrapper}>
+                    <div className={styles.contentWrapper}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
@@ -176,19 +141,13 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                                             <td>{formatDate(schedule.created_at) || 'Нет данных'}</td>
                                             <td>{formatDate(schedule.updated_at) || 'Нет данных'}</td>
                                             <td>
-                                                <button onClick={() => onEditSchedule(schedule)} className={styles.editButton}>
-                                                    Редактировать
-                                                </button>
-                                                <button onClick={() => onDeleteSchedule(schedule.id)} className={styles.deleteButton}>
-                                                    Удалить
-                                                </button>
+                                                <button onClick={() => onEditSchedule(schedule)} className={styles.editButton}>Редактировать</button>
+                                                <button onClick={() => onDeleteSchedule(schedule.id)} className={styles.deleteButton}>Удалить</button>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
-                                    <tr>
-                                        <td colSpan="16">Расписания отсутствуют</td>
-                                    </tr>
+                                    <tr><td colSpan="16">Расписания отсутствуют</td></tr>
                                 )}
                             </tbody>
                         </table>
