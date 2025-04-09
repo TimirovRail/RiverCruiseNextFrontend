@@ -54,21 +54,26 @@ const Dashboard = () => {
             setLoading(true);
 
             const urls = [
-                { url: 'http://localhost:8000/api/user', setter: setUserData, key: 'user' },
-                { url: 'http://localhost:8000/api/reviews', setter: setReviews, key: 'reviews' },
-                { url: 'http://localhost:8000/api/bookings', setter: setBookings, key: 'bookings' },
-                { url: 'http://localhost:8000/api/cruises', setter: setCruises, key: 'cruises' },
-                { url: 'http://localhost:8000/api/cruise_schedules', setter: setCruiseSchedules, key: 'cruise_schedules' },
-                { url: 'http://localhost:8000/api/photos', setter: setPhotos, key: 'photos' },
+                { url: 'http://localhost:8000/api/user', setter: setUserData, key: 'user', requiresAuth: true },
+                { url: 'http://localhost:8000/api/reviews', setter: setReviews, key: 'reviews', requiresAuth: false },
+                { url: 'http://localhost:8000/api/bookings', setter: setBookings, key: 'bookings', requiresAuth: true },
+                { url: 'http://localhost:8000/api/cruises', setter: setCruises, key: 'cruises', requiresAuth: false },
+                { url: 'http://localhost:8000/api/cruise_schedules', setter: setCruiseSchedules, key: 'cruise_schedules', requiresAuth: false },
+                { url: 'http://localhost:8000/api/photos', setter: setPhotos, key: 'photos', requiresAuth: false },
             ];
 
-            const fetchPromises = urls.map(async ({ url, setter, key }) => {
+            const fetchPromises = urls.map(async ({ url, setter, key, requiresAuth }) => {
                 try {
+                    const headers = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (requiresAuth) {
+                        headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+                    }
+
                     const response = await fetch(url, {
                         method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers,
                     });
 
                     if (!response.ok) {
