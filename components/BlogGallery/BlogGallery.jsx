@@ -5,9 +5,9 @@ import styles from './BlogGallery.module.css';
 
 export default function PhotoGallery() {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [allPhotos, setAllPhotos] = useState([]); // Все фото от всех пользователей
-    const [userPhotos, setUserPhotos] = useState([]); // Фото текущего пользователя
-    const [newPhotos, setNewPhotos] = useState([]); // Новые фото для загрузки
+    const [allPhotos, setAllPhotos] = useState([]); 
+    const [userPhotos, setUserPhotos] = useState([]); 
+    const [newPhotos, setNewPhotos] = useState([]); 
     const [userId, setUserId] = useState(null);
     const [userName, setUserName] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -34,12 +34,11 @@ export default function PhotoGallery() {
             setIsAuthenticated(true);
             setUserId(user.id);
             setUserName(user.name);
-            fetchUserPhotos(user.id); // Фото текущего пользователя
+            fetchUserPhotos(user.id); 
         }
-        fetchAllPhotos(); // Все фото
+        fetchAllPhotos();
     }, [router]);
 
-    // Получение всех фотографий
     const fetchAllPhotos = async () => {
         try {
             const res = await fetch('http://localhost:8000/api/photos');
@@ -53,7 +52,6 @@ export default function PhotoGallery() {
         }
     };
 
-    // Получение фото текущего пользователя
     const fetchUserPhotos = async (userId) => {
         try {
             const token = localStorage.getItem('token');
@@ -110,8 +108,8 @@ export default function PhotoGallery() {
                 const data = await response.json();
                 setUserPhotos([...userPhotos, ...data.photos]);
                 setNewPhotos([]);
-                fetchUserPhotos(userId); // Обновляем фото текущего пользователя
-                fetchAllPhotos(); // Обновляем все фото
+                fetchUserPhotos(userId); 
+                fetchAllPhotos();
             } else {
                 const errorData = await response.json();
                 alert(`Ошибка: ${errorData.error || 'Неизвестная ошибка'}`);

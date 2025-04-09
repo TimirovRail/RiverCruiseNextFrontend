@@ -110,7 +110,6 @@ export default function Profile() {
             .finally(() => setLoading(false));
     }, [router]);
 
-    // Генерация QR-кодов после получения bookings и user
     useEffect(() => {
         if (bookings && user) {
             const purchasedTickets = bookings.filter(b => b.user_id === user.id && b.is_paid) || [];

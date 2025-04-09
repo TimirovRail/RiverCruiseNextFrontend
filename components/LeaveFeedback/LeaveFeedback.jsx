@@ -8,7 +8,7 @@ export default function LeaveFeedback() {
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState('5');
     const [cruiseId, setCruiseId] = useState('');
-    const [bookingId, setBookingId] = useState(''); // Добавляем booking_id
+    const [bookingId, setBookingId] = useState(''); 
     const [cruises, setCruises] = useState([]);
     const [submitted, setSubmitted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,7 +39,7 @@ export default function LeaveFeedback() {
                 throw new Error(`Ошибка загрузки круизов: ${errorData.error || res.statusText}`);
             }
             const data = await res.json();
-            console.log('Полученные круизы:', data); // Логируем данные
+            console.log('Полученные круизы:', data); 
             setCruises(data);
         } catch (error) {
             console.error('Ошибка:', error);
@@ -53,7 +53,7 @@ export default function LeaveFeedback() {
         const selectedCruise = cruises.find(cruise => cruise.cruise_id === parseInt(e.target.value));
         if (selectedCruise) {
             setCruiseId(selectedCruise.cruise_id);
-            setBookingId(selectedCruise.booking_id); // Устанавливаем booking_id
+            setBookingId(selectedCruise.booking_id); 
         } else {
             setCruiseId('');
             setBookingId('');

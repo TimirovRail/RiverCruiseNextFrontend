@@ -13,7 +13,7 @@ const CruiseDetail = () => {
     const { id } = query;
     const [cruise, setCruise] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedImage, setSelectedImage] = useState(null); // Состояние для выбранного изображения
+    const [selectedImage, setSelectedImage] = useState(null); 
 
     useEffect(() => {
         if (!id) return;
@@ -33,12 +33,10 @@ const CruiseDetail = () => {
         fetchCruise();
     }, [id]);
 
-    // Функция для открытия изображения
     const openImage = (src) => {
         setSelectedImage(src);
     };
 
-    // Функция для закрытия изображения
     const closeImage = () => {
         setSelectedImage(null);
     };
@@ -53,7 +51,6 @@ const CruiseDetail = () => {
                 <div className={styles.cruiseContainer}>
                     <div className={styles.imageSection}>
                         <img src={cruise.image_path} alt={cruise.name} className={styles.cruiseImage} />
-                        {/* Классы кают */}
                         {cruise.cabins_by_class && (
                             <div className={styles.cabinClasses}>
                                 <h3>Классы кают</h3>
@@ -115,7 +112,6 @@ const CruiseDetail = () => {
                                 </div>
                             </div>
                         )}
-                        {/* Услуги на борту */}
                         {cruise.features && Array.isArray(cruise.features) && cruise.features.length > 0 && (
                             <div className={styles.features}>
                                 <h3>Услуги на борту</h3>
@@ -142,7 +138,6 @@ const CruiseDetail = () => {
                             </p>
                         </div>
 
-                        {/* Расписание */}
                         {cruise.schedules && cruise.schedules.length > 0 ? (
                             <div className={styles.schedules}>
                                 <h3>Расписание</h3>
@@ -202,7 +197,6 @@ const CruiseDetail = () => {
                 </div>
             </div>
 
-            {/* Модальное окно для увеличенного изображения */}
             {selectedImage && (
                 <div className={styles.modal} onClick={closeImage}>
                     <div className={styles.modalContent}>

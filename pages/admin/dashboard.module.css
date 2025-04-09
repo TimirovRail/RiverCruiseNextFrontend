@@ -1,8 +1,8 @@
 /* Общие стили для layout */
 .layout {
-    max-width: 1520px;
+    max-width: clamp(320px, 100%, 1520px);
     margin: 0 auto;
-    padding: 20px;
+    padding: clamp(10px, 2vw, 20px);
     box-sizing: border-box;
     background-color: #f5f5f5;
     min-height: 100vh;
@@ -12,7 +12,7 @@
 .dashboardContainer {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: clamp(15px, 2vw, 20px);
 }
 
 /* Заголовок */
@@ -22,11 +22,11 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: clamp(15px, 2vw, 20px);
 }
 
 .h1Title {
-    font-size: 48px;
+    font-size: clamp(28px, 5vw, 48px);
     color: #3B4055;
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
@@ -36,19 +36,21 @@
 /* Группа кнопок */
 .buttonGroup {
     display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: clamp(8px, 1vw, 10px);
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: clamp(15px, 2vw, 20px);
 }
 
 .homeButton,
 .logoutButton {
-    padding: 10px 20px;
+    padding: clamp(8px, 1.5vw, 10px) clamp(15px, 2vw, 20px);
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: clamp(14px, 1.5vw, 16px);
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
+    width: clamp(120px, 100%, 200px);
 }
 
 .homeButton {
@@ -73,6 +75,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -86,29 +89,14 @@
 
 /* Медиа-запросы */
 @media (max-width: 768px) {
-    .layout {
-        padding: 10px;
-    }
-
-    .h1Title {
-        font-size: 36px;
-    }
-
     .buttonGroup {
         flex-direction: column;
-        gap: 10px;
-    }
-
-    .homeButton,
-    .logoutButton {
-        width: 100%;
-        padding: 12px;
-        font-size: 14px;
+        align-items: center;
     }
 }
 
 @media (max-width: 480px) {
-    .h1Title {
-        font-size: 28px;
+    .layout {
+        padding: clamp(8px, 1.5vw, 10px);
     }
 }
