@@ -4,7 +4,7 @@ import styles from './login.module.css';
 import { useRouter } from 'next/router';
 import QRCode from 'qrcode';
 import speakeasy from 'speakeasy';
-import base32 from 'base32.js'; // Для работы с base32
+import base32 from 'base32.js';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -16,18 +16,17 @@ const LoginPage = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);  // Для отслеживания успешной авторизации
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [secret, setSecret] = useState('');
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [code, setCode] = useState('');
-    const [isVerified, setIsVerified] = useState(false);  // Для отслеживания верификации кода
+    const [isVerified, setIsVerified] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         if (isAuthenticated) {
             const generateSecret = speakeasy.generateSecret({ length: 20 });
             setSecret(generateSecret.base32);
-            console.log('Секретный ключ:', generateSecret.base32); // Логируем сгенерированный секретный ключ
 
             QRCode.toDataURL(generateSecret.otpauth_url, (err, url) => {
                 if (err) console.error('Ошибка генерации QR-кода:', err);
@@ -36,7 +35,6 @@ const LoginPage = () => {
         }
     }, [isAuthenticated]);
 
-    // Для переключения между формой входа и регистрации
     const toggleForm = () => {
         setIsLogin(!isLogin);
         setError(null);
@@ -75,17 +73,13 @@ const LoginPage = () => {
             const data = await res.json();
 
             if (res.ok) {
-                console.log('Успешный ответ:', data);
-
                 if (isLogin) {
-                    // Сохраняем токен и данные пользователя в localStorage
                     localStorage.setItem('token', data.access_token);
                     localStorage.setItem('role', data.role);
-                    localStorage.setItem('user', JSON.stringify(data.user)); // Сохраняем данные пользователя
+                    localStorage.setItem('user', JSON.stringify(data.user));
 
-                    setIsAuthenticated(true); // Отмечаем успешную авторизацию
+                    setIsAuthenticated(true);
 
-                    // Генерация секретного ключа для двухфакторной аутентификации
                     const generateSecret = speakeasy.generateSecret({ length: 20 });
                     setSecret(generateSecret.base32);
 
@@ -106,13 +100,9 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
+
     const handleVerifyCode = () => {
         try {
-            // Логируем переданные данные для отладки
-            console.log('Секрет:', secret);
-            console.log('Код:', code);
-
-            // Проверка, что секрет и код имеют правильный формат
             if (typeof secret !== 'string' || !secret) {
                 throw new Error('Секрет должен быть строкой');
             }
@@ -120,30 +110,26 @@ const LoginPage = () => {
                 throw new Error('Код должен быть строкой');
             }
 
-            // Декодируем секрет в base32 с использованием base32.js
             const secretBuffer = base32.decode(secret);
-            console.log('Декодированный секрет (в буфере):', secretBuffer);
 
-            // Проверяем код
             const isValid = speakeasy.totp.verify({
-                secret: secretBuffer, // Используем буфер
-                encoding: 'ascii', // Убираем base32, т.к. мы передаем уже декодированную строку
-                token: code.trim()  // Убираем пробелы из кода
+                secret: secretBuffer,
+                encoding: 'ascii',
+                token: code.trim()
             });
 
             if (isValid) {
                 setIsVerified(true);
                 alert('Код подтвержден!');
 
-                // Получаем данные пользователя из localStorage
-                const user = JSON.parse(localStorage.getItem('user')); // Извлекаем данные пользователя
+                const user = JSON.parse(localStorage.getItem('user'));
+                const role = (user?.role || localStorage.getItem('role') || '').trim().toLowerCase();
 
-                // Проверяем роль пользователя
-                if (user && user.role === 'admin') {
-                    // Перенаправляем администратора на страницу /admin/dashboard
+                if (role === 'admin') {
                     router.push('/admin/dashboard');
+                } else if (role === 'manager') {
+                    router.push('/manager/profile');
                 } else {
-                    // Перенаправляем обычного пользователя на главную страницу
                     router.push('/');
                 }
             } else {
