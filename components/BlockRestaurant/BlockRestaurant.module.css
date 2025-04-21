@@ -291,3 +291,50 @@
         font-size: 10px;
     }
 }
+
+/* Стили для панели сортировки */
+.filterSortContainer {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0px;
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filterGroup label {
+    font-size: 1rem;
+    color: #2A376D;
+    font-weight: bold;
+}
+
+.filterGroup select {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    transition: border-color 0.3s ease;
+}
+
+.filterGroup select:focus {
+    border-color: #2A376D;
+    outline: none;
+}
+
+/* Адаптивность для панели сортировки */
+@media (max-width: 767px) {
+    .filterSortContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .filterGroup select {
+        width: 100%;
+        max-width: 300px;
+    }
+}

@@ -8,7 +8,7 @@ export default function LeaveFeedback() {
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState('5');
     const [cruiseId, setCruiseId] = useState('');
-    const [bookingId, setBookingId] = useState(''); 
+    const [bookingId, setBookingId] = useState('');
     const [cruises, setCruises] = useState([]);
     const [submitted, setSubmitted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,7 +39,7 @@ export default function LeaveFeedback() {
                 throw new Error(`Ошибка загрузки круизов: ${errorData.error || res.statusText}`);
             }
             const data = await res.json();
-            console.log('Полученные круизы:', data); 
+            console.log('Полученные круизы:', data);
             setCruises(data);
         } catch (error) {
             console.error('Ошибка:', error);
@@ -53,7 +53,7 @@ export default function LeaveFeedback() {
         const selectedCruise = cruises.find(cruise => cruise.cruise_id === parseInt(e.target.value));
         if (selectedCruise) {
             setCruiseId(selectedCruise.cruise_id);
-            setBookingId(selectedCruise.booking_id); 
+            setBookingId(selectedCruise.booking_id);
         } else {
             setCruiseId('');
             setBookingId('');
@@ -122,7 +122,9 @@ export default function LeaveFeedback() {
                             {!isAuthenticated ? (
                                 <p>Для отправки отзыва необходимо <a href="/login">авторизоваться</a>.</p>
                             ) : cruises.length === 0 ? (
-                                <p>У вас нет завершённых круизов, о которых можно оставить отзыв.</p>
+                                <p className={styles.noCruisesMessage}>
+                                    У вас нет завершённых круизов, о которых можно оставить отзыв.
+                                </p>
                             ) : (
                                 <form onSubmit={handleSubmit} className={styles.feedbackForm}>
                                     <div className={styles.inputGroup}>

@@ -74,7 +74,7 @@ const Header = () => {
                 <Link href="/Reviews">Отзывы</Link>
                 <Link href="/Contacts">Контакты</Link>
                 <Link href="/Blog">Блог</Link>
-                <Link href="/Shop">Магазин</Link>
+                {/* <Link href="/Shop">Магазин</Link> */}
             </nav>
 
             <div className={styles.profile}>
