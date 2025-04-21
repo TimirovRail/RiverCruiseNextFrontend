@@ -93,9 +93,20 @@
 }
 
 /* Статусы в BookingsList */
-.statusConfirmed { color: #2ecc71; font-weight: bold; }
-.statusCancelled { color: #e74c3c; font-weight: bold; }
-.statusPending { color: #f39c12; font-weight: bold; }
+.statusConfirmed {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.statusCancelled {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.statusPending {
+    color: #f39c12;
+    font-weight: bold;
+}
 
 /* Стили для форм */
 .formContainer {
@@ -171,14 +182,32 @@
     margin-right: clamp(4px, 0.5vw, 5px);
 }
 
-.editButton { background-color: #4CAF50; color: white; }
-.editButton:hover { background-color: #45a049; }
+.editButton {
+    background-color: #4CAF50;
+    color: white;
+}
 
-.deleteButton { background-color: #f44336; color: white; }
-.deleteButton:hover { background-color: #d32f2f; }
+.editButton:hover {
+    background-color: #45a049;
+}
 
-.cancelButton { background-color: #4CAF50; color: white; }
-.cancelButton:hover { background-color: #45a049; }
+.deleteButton {
+    background-color: #f44336;
+    color: white;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
+
+.cancelButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancelButton:hover {
+    background-color: #45a049;
+}
 
 /* Стили для PhotosList */
 .photosGrid {
@@ -261,8 +290,15 @@
 
 /* Анимация появления */
 @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .fade {
@@ -272,6 +308,7 @@
 
 /* Медиа-запросы */
 @media (max-width: 1024px) {
+
     .table th,
     .table td {
         padding: clamp(8px, 1vw, 10px);
@@ -282,9 +319,11 @@
     .formContainer {
         flex-direction: column;
     }
+
     .inputGroup {
         flex: 1 1 100%;
     }
+
     .photosGrid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
@@ -293,5 +332,158 @@
 @media (max-width: 480px) {
     .photosGrid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+.sortWrapper {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sortWrapper label {
+    font-weight: bold;
+    color: #333;
+}
+
+.sortWrapper select {
+    padding: 8px;
+    border: 1px solid #2A376D;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.sortWrapper select:focus {
+    border-color: #1a2550;
+    outline: none;
+}
+
+/* Для больших мониторов (1920px и выше) */
+@media (min-width: 1920px) {
+    .sortWrapper {
+        margin-bottom: 24px;
+        gap: 12px;
+    }
+
+    .sortWrapper label {
+        font-size: 16px;
+    }
+
+    .sortWrapper select {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+}
+
+/* Для стандартных мониторов (1280px - 1919px) */
+@media (max-width: 1919px) and (min-width: 1280px) {
+    .sortWrapper {
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .sortWrapper label {
+        font-size: 15px;
+    }
+
+    .sortWrapper select {
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+}
+
+/* Для нетбуков и небольших мониторов (1024px - 1279px) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .sortWrapper {
+        margin-bottom: 18px;
+        gap: 8px;
+    }
+
+    .sortWrapper label {
+        font-size: 14px;
+    }
+
+    .sortWrapper select {
+        padding: 7px;
+        font-size: 13px;
+        border-radius: 4px;
+    }
+}
+
+/* Для планшетов (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .sortWrapper {
+        margin-bottom: 16px;
+        gap: 8px;
+        flex-wrap: wrap;
+        /* Перенос элементов на следующую строку, если не помещаются */
+    }
+
+    .sortWrapper label {
+        font-size: 13px;
+    }
+
+    .sortWrapper select {
+        padding: 6px;
+        font-size: 12px;
+        border-radius: 3px;
+        width: 100%;
+        /* Растягиваем select на всю ширину для удобства */
+        max-width: 200px;
+        /* Ограничиваем ширину для эстетики */
+    }
+}
+
+/* Для смартфонов (480px - 767px) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .sortWrapper {
+        margin-bottom: 14px;
+        gap: 6px;
+        flex-direction: column;
+        /* Располагаем элементы вертикально */
+        align-items: flex-start;
+    }
+
+    .sortWrapper label {
+        font-size: 12px;
+    }
+
+    .sortWrapper select {
+        padding: 6px;
+        font-size: 11px;
+        border-radius: 3px;
+        width: 100%;
+        /* Полная ширина для удобства на маленьких экранах */
+        max-width: none;
+        /* Убираем ограничение ширины */
+    }
+}
+
+/* Для маленьких смартфонов (менее 480px, например 320px) */
+@media (max-width: 479px) {
+    .sortWrapper {
+        margin-bottom: 12px;
+        gap: 5px;
+        flex-direction: column;
+        /* Вертикальное расположение */
+        align-items: flex-start;
+    }
+
+    .sortWrapper label {
+        font-size: 11px;
+    }
+
+    .sortWrapper select {
+        padding: 5px;
+        font-size: 10px;
+        border-radius: 3px;
+        width: 100%;
+        /* Полная ширина */
+        max-width: none;
     }
 }
