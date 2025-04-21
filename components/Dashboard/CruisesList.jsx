@@ -1,6 +1,11 @@
+import { useState } from 'react'; // Добавляем useState для управления сортировкой
 import styles from '../../pages/admin/adminComponents.module.css';
 
 const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDelete, onEditSchedule, onDeleteSchedule }) => {
+    // Состояния для сортировки
+    const [cruiseSort, setCruiseSort] = useState({ field: 'name', order: 'asc' });
+    const [scheduleSort, setScheduleSort] = useState({ field: 'departure_datetime', order: 'asc' });
+
     const renderJsonField = (field) => {
         if (!field) return 'Нет данных';
         try {
@@ -43,6 +48,73 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
         cruise_name: cruises.find(cruise => cruise.id === schedule.cruise_id)?.name || 'Неизвестный круиз'
     })) || [];
 
+    // Функция сортировки для круизов
+    const sortCruises = (cruises) => {
+        return [...cruises].sort((a, b) => {
+            let fieldA = a[cruiseSort.field];
+            let fieldB = b[cruiseSort.field];
+
+            // Обработка числовых полей (например, price_per_person)
+            if (cruiseSort.field === 'price_per_person') {
+                fieldA = parseFloat(fieldA) || 0;
+                fieldB = parseFloat(fieldB) || 0;
+            }
+
+            // Обработка дат (например, created_at)
+            if (cruiseSort.field === 'created_at') {
+                fieldA = new Date(fieldA).getTime();
+                fieldB = new Date(fieldB).getTime();
+            }
+
+            if (cruiseSort.order === 'asc') {
+                return fieldA > fieldB ? 1 : -1;
+            } else {
+                return fieldA < fieldB ? 1 : -1;
+            }
+        });
+    };
+
+    // Функция сортировки для расписаний
+    const sortSchedules = (schedules) => {
+        return [...schedules].sort((a, b) => {
+            let fieldA = a[scheduleSort.field];
+            let fieldB = b[scheduleSort.field];
+
+            // Для поля cruise_name
+            if (scheduleSort.field === 'cruise_name') {
+                fieldA = fieldA || '';
+                fieldB = fieldB || '';
+            }
+
+            // Для дат (departure_datetime)
+            if (scheduleSort.field === 'departure_datetime') {
+                fieldA = new Date(fieldA).getTime();
+                fieldB = new Date(fieldB).getTime();
+            }
+
+            if (scheduleSort.order === 'asc') {
+                return fieldA > fieldB ? 1 : -1;
+            } else {
+                return fieldA < fieldB ? 1 : -1;
+            }
+        });
+    };
+
+    // Обработчики изменения сортировки
+    const handleCruiseSortChange = (e) => {
+        const [field, order] = e.target.value.split('-');
+        setCruiseSort({ field, order });
+    };
+
+    const handleScheduleSortChange = (e) => {
+        const [field, order] = e.target.value.split('-');
+        setScheduleSort({ field, order });
+    };
+
+    // Отсортированные данные
+    const sortedCruises = sortCruises(cruises);
+    const sortedSchedules = sortSchedules(allSchedules);
+
     return (
         <div className={styles.componentContainer}>
             {error ? (
@@ -50,6 +122,17 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
             ) : (
                 <>
                     <h2>Круизы</h2>
+                    <div className={styles.sortWrapper}>
+                        <label>Сортировать по: </label>
+                        <select onChange={handleCruiseSortChange} value={`${cruiseSort.field}-${cruiseSort.order}`}>
+                            <option value="name-asc">Названию (А-Я)</option>
+                            <option value="name-desc">Названию (Я-А)</option>
+                            <option value="price_per_person-asc">Цене (по возрастанию)</option>
+                            <option value="price_per_person-desc">Цене (по убыванию)</option>
+                            <option value="created_at-asc">Дате создания (сначала старые)</option>
+                            <option value="created_at-desc">Дате создания (сначала новые)</option>
+                        </select>
+                    </div>
                     <div className={styles.contentWrapper}>
                         <table className={styles.table}>
                             <thead>
@@ -70,8 +153,8 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                                 </tr>
                             </thead>
                             <tbody>
-                                {Array.isArray(cruises) && cruises.length > 0 ? (
-                                    cruises.map((cruise) => (
+                                {Array.isArray(sortedCruises) && sortedCruises.length > 0 ? (
+                                    sortedCruises.map((cruise) => (
                                         <tr key={cruise.id}>
                                             <td>{cruise.id || 'Нет данных'}</td>
                                             <td>{cruise.name || 'Нет данных'}</td>
@@ -99,6 +182,17 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                     </div>
 
                     <h2>Расписания круизов</h2>
+                    <div className={styles.sortWrapper}>
+                        <label>Сортировать по: </label>
+                        <select onChange={handleScheduleSortChange} value={`${scheduleSort.field}-${scheduleSort.order}`}>
+                            <option value="departure_datetime-asc">Дате отправления (сначала старые)</option>
+                            <option value="departure_datetime-desc">Дате отправления (сначала новые)</option>
+                            <option value="cruise_name-asc">Круизу (А-Я)</option>
+                            <option value="cruise_name-desc">Круизу (Я-А)</option>
+                            <option value="status-asc">Статусу (А-Я)</option>
+                            <option value="status-desc">Статусу (Я-А)</option>
+                        </select>
+                    </div>
                     <div className={styles.contentWrapper}>
                         <table className={styles.table}>
                             <thead>
@@ -122,8 +216,8 @@ const CruisesList = ({ cruises, cruiseSchedules, error, formatDate, onEdit, onDe
                                 </tr>
                             </thead>
                             <tbody>
-                                {Array.isArray(allSchedules) && allSchedules.length > 0 ? (
-                                    allSchedules.map((schedule) => (
+                                {Array.isArray(sortedSchedules) && sortedSchedules.length > 0 ? (
+                                    sortedSchedules.map((schedule) => (
                                         <tr key={schedule.id}>
                                             <td>{schedule.id || 'Нет данных'}</td>
                                             <td>{schedule.cruise_name || 'Нет данных'}</td>

@@ -1,10 +1,48 @@
+import { useState } from 'react'; // Добавляем useState для управления сортировкой
 import styles from '../../pages/admin/adminComponents.module.css';
 
 const ReviewsList = ({ reviews, error, formatDate, onCancel, onDelete }) => {
+    // Состояние для сортировки
+    const [sort, setSort] = useState({ field: 'created_at', order: 'desc' });
+
     const safeFormatDate = (datetime) => {
         if (typeof formatDate === 'function') return formatDate(datetime);
         return datetime ? new Date(datetime).toLocaleDateString('ru-RU') : '—';
     };
+
+    // Функция сортировки отзывов
+    const sortReviews = (reviews) => {
+        return [...reviews].sort((a, b) => {
+            let fieldA, fieldB;
+
+            // Определяем поля для сортировки
+            if (sort.field === 'rating') {
+                fieldA = parseFloat(a.rating) || 0;
+                fieldB = parseFloat(b.rating) || 0;
+            } else if (sort.field === 'created_at') {
+                fieldA = new Date(a.created_at).getTime();
+                fieldB = new Date(b.created_at).getTime();
+            } else if (sort.field === 'cruise.name') {
+                fieldA = a.cruise ? a.cruise.name : '';
+                fieldB = b.cruise ? b.cruise.name : '';
+            }
+
+            if (sort.order === 'asc') {
+                return fieldA > fieldB ? 1 : -1;
+            } else {
+                return fieldA < fieldB ? 1 : -1;
+            }
+        });
+    };
+
+    // Обработчик изменения сортировки
+    const handleSortChange = (e) => {
+        const [field, order] = e.target.value.split('-');
+        setSort({ field, order });
+    };
+
+    // Отсортированные отзывы
+    const sortedReviews = sortReviews(reviews);
 
     return (
         <div className={styles.componentContainer}>
@@ -12,6 +50,17 @@ const ReviewsList = ({ reviews, error, formatDate, onCancel, onDelete }) => {
                 <p className={styles.errorMessage}>Ошибка при загрузке отзывов</p>
             ) : (
                 <div className={styles.contentWrapper}>
+                    <div className={styles.sortWrapper}>
+                        <label>Сортировать по: </label>
+                        <select onChange={handleSortChange} value={`${sort.field}-${sort.order}`}>
+                            <option value="created_at-desc">Дате создания (сначала новые)</option>
+                            <option value="created_at-asc">Дате создания (сначала старые)</option>
+                            <option value="rating-desc">Оценке (по убыванию)</option>
+                            <option value="rating-asc">Оценке (по возрастанию)</option>
+                            <option value="cruise.name-asc">Круизу (А-Я)</option>
+                            <option value="cruise.name-desc">Круизу (Я-А)</option>
+                        </select>
+                    </div>
                     <table className={styles.table}>
                         <thead>
                             <tr>
@@ -27,8 +76,8 @@ const ReviewsList = ({ reviews, error, formatDate, onCancel, onDelete }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {Array.isArray(reviews) && reviews.length > 0 ? (
-                                reviews.map((review) => (
+                            {Array.isArray(sortedReviews) && sortedReviews.length > 0 ? (
+                                sortedReviews.map((review) => (
                                     <tr key={review.id}>
                                         <td>{review.id || '—'}</td>
                                         <td>{review.user ? review.user.name : '—'}</td>
