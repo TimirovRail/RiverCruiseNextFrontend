@@ -7,8 +7,10 @@ import Loading from "@/components/Loading/Loading";
 
 const BlockRestaurant = () => {
     const [services, setServices] = useState([]);
+    const [sortedServices, setSortedServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sortOption, setSortOption] = useState('title-asc');
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -19,6 +21,7 @@ const BlockRestaurant = () => {
                 }
                 const data = await response.json();
                 setServices(data);
+                setSortedServices(data); // Изначально отображаем все услуги
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -29,6 +32,30 @@ const BlockRestaurant = () => {
         fetchServices();
     }, []);
 
+    // Логика сортировки
+    useEffect(() => {
+        let updatedServices = [...services];
+
+        updatedServices.sort((a, b) => {
+            if (sortOption === 'title-asc') {
+                return a.title.localeCompare(b.title);
+            } else if (sortOption === 'title-desc') {
+                return b.title.localeCompare(a.title);
+            } else if (sortOption === 'description-asc') {
+                return a.description.localeCompare(b.description);
+            } else if (sortOption === 'description-desc') {
+                return b.description.localeCompare(a.description);
+            } else if (sortOption === 'price-asc') {
+                return a.price - b.price;
+            } else if (sortOption === 'price-desc') {
+                return b.price - a.price;
+            }
+            return 0;
+        });
+
+        setSortedServices(updatedServices);
+    }, [sortOption, services]);
+
     if (loading) return <Loading />;
     if (error) return <p>Ошибка: {error}</p>;
 
@@ -37,8 +64,24 @@ const BlockRestaurant = () => {
             <div className='title'>
                 <h2 className='h1-title'>УСЛУГИ</h2>
             </div>
+
+            {/* Панель сортировки */}
+            <div className={styles.filterSortContainer}>
+                <div className={styles.filterGroup}>
+                    <label>Сортировать по:</label>
+                    <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                        <option value="title-asc">Название (А-Я)</option>
+                        <option value="title-desc">Название (Я-А)</option>
+                        <option value="description-asc">Описание (А-Я)</option>
+                        <option value="description-desc">Описание (Я-А)</option>
+                        <option value="price-asc">Цена (по возрастанию)</option>
+                        <option value="price-desc">Цена (по убыванию)</option>
+                    </select>
+                </div>
+            </div>
+
             <div className={styles.wrapper}>
-                {services.map((item) => (
+                {sortedServices.map((item) => (
                     <div key={item.id} className={styles.card}>
                         <div className={styles.productImg}>
                             <img src={item.img} alt={item.title} />

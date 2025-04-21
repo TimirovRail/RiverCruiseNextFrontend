@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import QRCode from "qrcode";
@@ -17,17 +17,20 @@ const PaymentForm = ({ booking, onClose }) => {
         e.preventDefault();
         if (!stripe || !elements) return;
 
-        const { error, paymentMethod } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: elements.getElement(CardElement),
-        });
+        try {
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: elements.getElement(CardElement),
+            });
 
-        if (error) {
-            console.error("Ошибка оплаты:", error);
-        } else {
+            if (error) throw error;
+
             await axios.post(`http://localhost:8000/api/bookings/${booking.id}/mark-as-paid`, {});
-            alert('Оплата успешно выполнена (тестовый режим)');
+            alert('Оплата успешно выполнена!');
             onClose();
+        } catch (error) {
+            console.error("Ошибка оплаты:", error);
+            alert(`Ошибка оплаты: ${error.message}`);
         }
     };
 
@@ -35,9 +38,9 @@ const PaymentForm = ({ booking, onClose }) => {
         <form onSubmit={handleSubmit} className="payment-form">
             <CardElement options={{ style: { base: { fontSize: '16px' } } }} />
             <button type="submit" className="pay-now-button" disabled={!stripe}>
-                Оплатить {booking.total_price} руб.
+                Оплатить {booking.total_price || 0} руб.
             </button>
-            <button onClick={onClose} className="close-button">
+            <button type="button" onClick={onClose} className="close-button">
                 Закрыть
             </button>
         </form>
@@ -59,188 +62,153 @@ export default function Profile() {
 
     const router = useRouter();
 
-    useEffect(() => {
+    const fetchData = useCallback(async () => {
         const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);
-
         if (!token) {
-            setError("Токен отсутствует. Пожалуйста, войдите в систему.");
             router.push("/login");
             return;
         }
 
-        const config = {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
-        };
-
-        setLoading(true);
-
-        Promise.all([
-            axios.get("http://localhost:8000/api/auth/profile", config)
-                .then(response => {
-                    setUser(response.data.user);
-                    console.log("Profile data:", response.data);
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки профиля:", error.response?.data || error.message);
-                    setError("Ошибка загрузки профиля. Возможно, токен недействителен.");
+        try {
+            const [profileRes, dataRes, bookingsRes] = await Promise.all([
+                axios.get("http://localhost:8000/api/auth/profile", {
+                    headers: { Authorization: `Bearer ${token}` }
                 }),
-
-            axios.get("http://localhost:8000/api/all-data", config)
-                .then(response => {
-                    setData(response.data);
-                    console.log("Data from /api/all-data:", response.data);
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки данных:", error.response?.data || error.message);
-                    setError("Ошибка загрузки данных");
+                axios.get("http://localhost:8000/api/all-data", {
+                    headers: { Authorization: `Bearer ${token}` }
                 }),
+                axios.get("http://localhost:8000/api/bookings", {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            ]);
 
-            axios.get("http://localhost:8000/api/bookings", config)
-                .then(response => {
-                    setBookings(response.data);
-                    console.log("Bookings response:", response.data);
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки бронирований:", error.response?.data || error.message);
-                    setError("Ошибка загрузки бронирований");
-                })
-        ])
-            .finally(() => setLoading(false));
+            setUser(profileRes.data.user);
+            setData(dataRes.data);
+            setBookings(bookingsRes.data);
+        } catch (error) {
+            console.error("Ошибка загрузки данных:", error);
+            setError(error.response?.data?.message || "Ошибка загрузки данных");
+        } finally {
+            setLoading(false);
+        }
     }, [router]);
 
     useEffect(() => {
-        if (bookings && user) {
-            const purchasedTickets = bookings.filter(b => b.user_id === user.id && b.is_paid) || [];
-            console.log("Purchased tickets after filter:", purchasedTickets);
+        fetchData();
+    }, [fetchData]);
 
-            purchasedTickets.forEach(b => {
-                const qrData = JSON.stringify({
-                    booking_id: b.id,
-                    user_id: b.user_id,
-                    cruise_schedule_id: b.cruise_schedule_id,
-                    economy_seats: b.economy_seats,
-                    standard_seats: b.standard_seats,
-                    luxury_seats: b.luxury_seats,
-                });
-                console.log("Generating QR for booking:", b.id, "with data:", qrData);
-                QRCode.toDataURL(qrData, { width: 128 }, (err, url) => {
-                    if (err) {
-                        console.error("QRCode generation error for booking", b.id, ":", err);
-                    } else {
-                        console.log("QRCode generated for booking", b.id, ":", url);
-                        setQrCodes(prev => ({ ...prev, [b.id]: url }));
-                    }
-                });
+    const generateQrCodes = useCallback((bookingsList) => {
+        const newQrCodes = {};
+        bookingsList.forEach(b => {
+            const qrData = JSON.stringify({
+                booking_id: b.id,
+                user_id: b.user_id,
+                cruise_schedule_id: b.cruise_schedule_id,
+                economy_seats: b.economy_seats || 0,
+                standard_seats: b.standard_seats || 0,
+                luxury_seats: b.luxury_seats || 0,
             });
-        }
-    }, [bookings, user]);
+
+            QRCode.toDataURL(qrData, { width: 128 }, (err, url) => {
+                if (!err) newQrCodes[b.id] = url;
+            });
+        });
+        setQrCodes(prev => ({ ...prev, ...newQrCodes }));
+    }, []);
 
     useEffect(() => {
-        if (user) {
-            const token = localStorage.getItem("token");
-            axios.get(`http://localhost:8000/api/user/photos/${user.id}`, {
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => {
-                    setUserPhotos(response.data.photos);
-                    console.log("User photos:", response.data);
-                })
-                .catch(error => console.error("Ошибка загрузки фотографий:", error.response?.data || error.message));
+        if (bookings && user) {
+            const purchasedTickets = bookings.filter(b =>
+                b.user_id === user.id && b.is_paid
+            );
+            generateQrCodes(purchasedTickets);
         }
-    }, [user]);
+    }, [bookings, user, generateQrCodes]);
 
-    const handlePaymentClick = (booking) => {
-        console.log("Selected booking:", booking);
-        setSelectedBooking(booking);
-        setSelectedSeats({ economy: [], standard: [], luxury: [] });
-        setSeatError(null);
-        const token = localStorage.getItem("token");
-        axios.get(`http://localhost:8000/api/cruise-schedule/${booking.cruise_schedule_id}/seats`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
-                setSelectedBooking({ ...booking, seats: response.data });
-                console.log("Seats data:", response.data);
-            })
-            .catch(error => console.error("Ошибка загрузки мест:", error.response?.data || error.message));
-    };
+    const handlePaymentClick = useCallback(async (booking) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get(
+                `http://localhost:8000/api/cruise-schedule/${booking.cruise_schedule_id}/seats`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-    const toggleSeat = (category, seatNumber) => {
+            setSelectedBooking({
+                ...booking,
+                seats: response.data
+            });
+            setSelectedSeats({ economy: [], standard: [], luxury: [] });
+            setSeatError(null);
+        } catch (error) {
+            console.error("Ошибка загрузки мест:", error);
+            setError("Не удалось загрузить информацию о местах");
+        }
+    }, []);
+
+    const toggleSeat = useCallback((category, seatNumber) => {
         setSelectedSeats(prev => {
             const seats = prev[category];
-            const available = selectedBooking.seats[category].available;
+            const available = selectedBooking?.seats?.[category]?.available || 0;
+
             if (seats.includes(seatNumber)) {
                 return { ...prev, [category]: seats.filter(s => s !== seatNumber) };
-            } else if (seats.length < available && !selectedBooking.seats[category].taken.includes(seatNumber)) {
+            }
+
+            if (seats.length < available) {
                 return { ...prev, [category]: [...seats, seatNumber] };
             }
+
             return prev;
         });
-    };
+    }, [selectedBooking]);
 
-    const confirmSeats = () => {
-        const selectedEconomy = selectedSeats.economy.length;
-        const selectedStandard = selectedSeats.standard.length;
-        const selectedLuxury = selectedSeats.luxury.length;
+    const confirmSeats = useCallback(async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("token");
 
-        const bookedEconomy = selectedBooking.economy_seats || 0;
-        const bookedStandard = selectedBooking.standard_seats || 0;
-        const bookedLuxury = selectedBooking.luxury_seats || 0;
-
-        console.log("Выбрано:", { economy: selectedEconomy, standard: selectedStandard, luxury: selectedLuxury });
-        console.log("Забронировано:", { economy: bookedEconomy, standard: bookedStandard, luxury: bookedLuxury });
-
-        if (
-            selectedEconomy !== bookedEconomy ||
-            selectedStandard !== bookedStandard ||
-            selectedLuxury !== bookedLuxury
-        ) {
-            setSeatError(
-                `Количество выбранных мест не совпадает с забронированными. ` +
-                `Ожидается: Эконом: ${bookedEconomy}, Стандарт: ${bookedStandard}, Люкс: ${bookedLuxury}. ` +
-                `Выбрано: Эконом: ${selectedEconomy}, Стандарт: ${selectedStandard}, Люкс: ${selectedLuxury}.`
+            const { data } = await axios.post(
+                `http://localhost:8000/api/bookings/${selectedBooking.id}/reserve-seats`,
+                { seats: selectedSeats },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            return;
-        }
 
-        const token = localStorage.getItem("token");
-        setLoading(true);
-        axios.post(`http://localhost:8000/api/bookings/${selectedBooking.id}/reserve-seats`, {
-            seats: selectedSeats
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
-                setSelectedBooking(response.data.booking);
-                setShowPayment(true);
-                axios.get("http://localhost:8000/api/bookings", {
-                    headers: { Authorization: `Bearer ${token}` }
-                }).then(response => {
-                    setBookings(response.data);
-                    console.log("Updated bookings:", response.data);
-                    const qrData = JSON.stringify({
-                        booking_id: response.data.id,
-                        user_id: response.data.user_id,
-                        cruise_schedule_id: response.data.cruise_schedule_id,
-                        economy_seats: response.data.economy_seats,
-                        standard_seats: response.data.standard_seats,
-                        luxury_seats: response.data.luxury_seats,
-                    });
-                    QRCode.toDataURL(qrData, { width: 128 }, (err, url) => {
-                        if (err) console.error("QRCode generation error:", err);
-                        setQrCodes(prev => ({ ...prev, [response.data.id]: url }));
-                    });
-                });
-            })
-            .catch(error => console.error("Ошибка сохранения мест:", error.response?.data || error.message))
-            .finally(() => setLoading(false));
-    };
+            const updatedBooking = data.booking;
+            setShowPayment(true);
+
+            // Обновление QR-кода
+            const qrData = JSON.stringify({
+                booking_id: updatedBooking.id,
+                user_id: updatedBooking.user_id,
+                cruise_schedule_id: updatedBooking.cruise_schedule_id,
+                economy_seats: updatedBooking.economy_seats || 0,
+                standard_seats: updatedBooking.standard_seats || 0,
+                luxury_seats: updatedBooking.luxury_seats || 0,
+            });
+
+            QRCode.toDataURL(qrData, { width: 128 }, (err, url) => {
+                if (!err) {
+                    setQrCodes(prev => ({ ...prev, [updatedBooking.id]: url }));
+                }
+            });
+
+            // Обновление списка бронирований
+            const { data: newBookings } = await axios.get(
+                "http://localhost:8000/api/bookings",
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setBookings(newBookings);
+
+        } catch (error) {
+            console.error("Ошибка сохранения мест:", error);
+            setError(error.response?.data?.message || "Ошибка сохранения мест");
+        } finally {
+            setLoading(false);
+        }
+    }, [selectedBooking, selectedSeats]);
 
     if (error) return <p className="error-message">{error}</p>;
-    if (loading) return <Loading />;
+    if (loading || !user || !bookings) return <Loading />;
 
     const userReviews = data?.reviews?.filter(fb => fb.user_id === user.id) || [];
     const userBookings = bookings?.filter(b => b.user_id === user.id && !b.is_paid) || [];
@@ -345,7 +313,24 @@ export default function Profile() {
                                 <div>
                                     <h4>QR-код билета</h4>
                                     {qrCodes[b.id] ? (
-                                        <img src={qrCodes[b.id]} alt="QR Code" style={{ width: 128, height: 128 }} />
+                                        <>
+                                            <img src={qrCodes[b.id]} alt="QR Code" style={{ width: 128, height: 128 }} />
+                                            <p>Данные QR-кода:</p>
+                                            <pre>
+                                                {JSON.stringify(
+                                                    {
+                                                        booking_id: b.id,
+                                                        user_id: b.user_id,
+                                                        cruise_schedule_id: b.cruise_schedule_id,
+                                                        economy_seats: b.economy_seats,
+                                                        standard_seats: b.standard_seats,
+                                                        luxury_seats: b.luxury_seats,
+                                                    },
+                                                    null,
+                                                    2
+                                                )}
+                                            </pre>
+                                        </>
                                     ) : (
                                         <p>Generating QR code...</p>
                                     )}

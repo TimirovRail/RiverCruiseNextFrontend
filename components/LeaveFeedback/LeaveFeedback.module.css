@@ -320,3 +320,112 @@
         font-size: 11px;
     }
 }
+/* Стили для сообщения об отсутствии круизов */
+.noCruisesMessage {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); /* Легкий градиент для глубины */
+    border: 2px solid #2A376D; /* Темно-синяя рамка */
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Более выразительная тень */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeInMessage 0.8s ease-in-out forwards; /* Анимация появления */
+}
+
+/* Псевдоэлемент для иконки */
+.noCruisesMessage::before {
+    content: '⚠️'; /* Иконка предупреждения (можно заменить на другую) */
+    font-size: 24px;
+    color: #2A376D;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Анимация появления сообщения */
+@keyframes fadeInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность для сообщения */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .noCruisesMessage {
+        font-size: 18px;
+        padding: 20px 40px;
+    }
+
+    .noCruisesMessage::before {
+        font-size: 24px;
+        left: 15px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .noCruisesMessage {
+        font-size: 16px;
+        padding: 15px 35px;
+    }
+
+    .noCruisesMessage::before {
+        font-size: 22px;
+        left: 12px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .noCruisesMessage {
+        font-size: 14px;
+        padding: 12px 30px;
+    }
+
+    .noCruisesMessage::before {
+        font-size: 20px;
+        left: 10px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .noCruisesMessage {
+        font-size: 13px;
+        padding: 10px 25px;
+    }
+
+    .noCruisesMessage::before {
+        font-size: 18px;
+        left: 8px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .noCruisesMessage {
+        font-size: 12px;
+        padding: 8px 20px;
+    }
+
+    .noCruisesMessage::before {
+        font-size: 16px;
+        left: 6px;
+    }
+}

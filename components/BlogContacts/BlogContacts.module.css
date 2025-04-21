@@ -1,248 +1,880 @@
-/* Основной контейнер */
 .bookingForm {
-    padding: 30px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #e9ecef 100%);
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Контейнер формы */
 .formContainer {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Сетка круизов */
 .cruiseGrid {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .cruiseGrid label {
     display: block;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     color: #2A376D;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .cruiseGridInner {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    /* 2 карточки в ряд */
-    gap: 15px;
-    /* Уменьшим отступ между карточками */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
-/* Карточка круиза */
 .cruiseCard {
-    background-color: #fff;
+    background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
     border: 2px solid #2A376D;
-    border-radius: 8px;
-    padding: 10px;
-    /* Уменьшим внутренние отступы */
-    transition: transform 0.2s ease;
+    border-radius: 10px;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .cruiseCard:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(42, 55, 109, 0.3);
+    border-color: #1a2550;
 }
 
 .cruiseCard h3 {
-    margin: 0 0 8px;
-    font-size: 16px;
-    /* Уменьшим заголовок */
+    margin: 0 0 10px;
+    font-size: 18px;
     color: #2A376D;
     text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .cruiseCard img {
     width: 100%;
-    height: 100px;
-    /* Уменьшим высоту картинки */
+    height: 120px;
     object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 8px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+    border: none;
 }
 
-/* Сетка расписаний */
+.cruiseCard:hover img {
+    transform: scale(1.05);
+}
+
 .scheduleGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    /* Уменьшим минимальную ширину карточек расписания */
-    gap: 8px;
-    /* Уменьшим отступы */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
 }
 
-/* Карточка расписания */
 .scheduleCard {
-    background-color: #fff;
-    border: 2px solid #2A376D;
-    border-radius: 6px;
-    padding: 8px;
-    /* Уменьшим внутренние отступы */
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.2s, background-color 0.2s;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .scheduleCard:hover {
-    background-color: #e6f0fa;
+    background: linear-gradient(145deg, #e6f0fa 0%, #d9e4f5 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(42, 55, 109, 0.2);
 }
 
 .scheduleCard.selected {
-    border-color: #28a745;
-    /* Зелёная обводка для выбранного рейса */
-    background-color: #e6f7e6;
-    /* Лёгкий зелёный фон */
+    background: linear-gradient(145deg, #e6f7e6 0%, #d4f0d4 100%);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    transform: translateY(-2px);
 }
 
 .scheduleCard p {
-    margin: 3px 0;
-    /* Уменьшим отступы между строками */
-    font-size: 12px;
-    /* Уменьшим шрифт */
+    margin: 4px 0;
+    font-size: 13px;
+    color: #333;
 }
 
-/* Группа ввода */
 .inputGroup {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .inputGroup label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: bold;
     color: #2A376D;
     font-size: 16px;
+    text-transform: uppercase;
 }
 
 .inputGroup input,
 .inputGroup select,
 .inputGroup textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 2px solid #2A376D;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.2s;
+    background-color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inputGroup input:focus,
 .inputGroup select:focus,
 .inputGroup textarea:focus {
     border-color: #1a2550;
+    box-shadow: 0 0 8px rgba(26, 37, 80, 0.2);
 }
 
 .inputGroup textarea {
-    resize: none;
-    height: 80px;
+    resize: vertical;
+    height: 100px;
 }
 
-/* Чекбоксы */
 .checkboxes {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
 }
 
 .checkboxes label {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 16px;
     color: #333;
     cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.checkboxes label:hover {
+    color: #2A376D;
 }
 
 .checkboxes input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     accent-color: #2A376D;
+    cursor: pointer;
 }
 
-/* Кнопка */
 .submitButton {
     width: 100%;
-    padding: 12px;
-    background-color: #2A376D;
+    padding: 15px;
+    background: linear-gradient(90deg, #2A376D 0%, #1a2550 100%);
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    text-transform: uppercase;
 }
 
 .submitButton:hover {
-    background-color: #1a2550;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 37, 80, 0.3);
 }
 
-/* Итоговая сумма */
 .totalPrice {
-    margin-top: 20px;
+    margin-top: 25px;
     text-align: right;
+    padding: 15px;
+    background-color: #e6f0fa;
+    border-radius: 8px;
+    border: 1px solid #2A376D;
 }
 
 .totalPrice h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 20px;
     color: #2A376D;
-    font-weight: bold;
+    font-weight: 600;
 }
 
-/* Сообщение об авторизации */
 .authMessage {
     text-align: center;
-    padding: 20px;
-    background-color: #fff;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border: 2px solid #2A376D;
-    border-radius: 6px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .authMessage p {
     margin: 0;
-    font-size: 16px;
+    font-size: 18px;
     color: #333;
 }
 
 .authMessage a {
     color: #2A376D;
-    text-decoration: underline;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 .authMessage a:hover {
     color: #1a2550;
+    text-decoration: underline;
 }
 
 .cabinClassGroup {
     display: flex;
-    gap: 20px;
-    margin-top: 10px;
+    gap: 25px;
+    margin-top: 15px;
+    flex-wrap: wrap;
 }
 
 .cabinClassInput {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
+    min-width: 120px;
 }
 
 .cabinClassInput label {
     font-size: 14px;
-    color: #333;
+    color: #2A376D;
+    font-weight: bold;
 }
 
 .cabinClassInput input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100px;
+    padding: 10px;
+    border: 2px solid #2A376D;
+    border-radius: 6px;
+    width: 100%;
     font-size: 14px;
+    transition: border-color 0.3s ease;
 }
 
 .cabinClassInput input:focus {
-    outline: none;
-    border-color: #007bff;
+    border-color: #1a2550;
+    box-shadow: 0 0 6px rgba(26, 37, 80, 0.2);
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .bookingForm {
+        padding: 40px;
+        max-width: 1400px;
+    }
+
+    .formContainer {
+        max-width: 1200px;
+    }
+
+    .cruiseGrid label {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .cruiseGridInner {
+        gap: 20px;
+    }
+
+    .cruiseCard {
+        padding: 15px;
+    }
+
+    .cruiseCard h3 {
+        font-size: 18px;
+    }
+
+    .cruiseCard img {
+        height: 120px;
+    }
+
+    .scheduleGrid {
+        gap: 10px;
+    }
+
+    .scheduleCard {
+        padding: 10px;
+    }
+
+    .scheduleCard p {
+        font-size: 13px;
+    }
+
+    .inputGroup {
+        margin-bottom: 25px;
+    }
+
+    .inputGroup label {
+        font-size: 16px;
+    }
+
+    .inputGroup input,
+    .inputGroup select,
+    .inputGroup textarea {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .inputGroup textarea {
+        height: 100px;
+    }
+
+    .checkboxes {
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .checkboxes label {
+        font-size: 16px;
+        gap: 12px;
+    }
+
+    .checkboxes input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+
+    .submitButton {
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    .totalPrice {
+        margin-top: 25px;
+        padding: 15px;
+    }
+
+    .totalPrice h3 {
+        font-size: 20px;
+    }
+
+    .authMessage {
+        padding: 25px;
+    }
+
+    .authMessage p {
+        font-size: 18px;
+    }
+
+    .cabinClassGroup {
+        gap: 25px;
+        margin-top: 15px;
+    }
+
+    .cabinClassInput {
+        gap: 8px;
+        min-width: 120px;
+    }
+
+    .cabinClassInput label {
+        font-size: 14px;
+    }
+
+    .cabinClassInput input {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .bookingForm {
+        padding: 30px;
+        max-width: 1000px;
+    }
+
+    .formContainer {
+        max-width: 900px;
+    }
+
+    .cruiseGrid label {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .cruiseGridInner {
+        gap: 15px;
+    }
+
+    .cruiseCard {
+        padding: 12px;
+    }
+
+    .cruiseCard h3 {
+        font-size: 16px;
+    }
+
+    .cruiseCard img {
+        height: 100px;
+    }
+
+    .scheduleGrid {
+        gap: 8px;
+    }
+
+    .scheduleCard {
+        padding: 8px;
+    }
+
+    .scheduleCard p {
+        font-size: 12px;
+    }
+
+    .inputGroup {
+        margin-bottom: 20px;
+    }
+
+    .inputGroup label {
+        font-size: 15px;
+    }
+
+    .inputGroup input,
+    .inputGroup select,
+    .inputGroup textarea {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .inputGroup textarea {
+        height: 90px;
+    }
+
+    .checkboxes {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .checkboxes label {
+        font-size: 15px;
+        gap: 10px;
+    }
+
+    .checkboxes input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    .submitButton {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .totalPrice {
+        margin-top: 20px;
+        padding: 12px;
+    }
+
+    .totalPrice h3 {
+        font-size: 18px;
+    }
+
+    .authMessage {
+        padding: 20px;
+    }
+
+    .authMessage p {
+        font-size: 16px;
+    }
+
+    .cabinClassGroup {
+        gap: 20px;
+        margin-top: 12px;
+    }
+
+    .cabinClassInput {
+        gap: 6px;
+        min-width: 100px;
+    }
+
+    .cabinClassInput label {
+        font-size: 13px;
+    }
+
+    .cabinClassInput input {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .bookingForm {
+        padding: 25px;
+        max-width: 700px;
+    }
+
+    .formContainer {
+        max-width: 650px;
+    }
+
+    .cruiseGrid label {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .cruiseGridInner {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .cruiseCard {
+        padding: 10px;
+    }
+
+    .cruiseCard h3 {
+        font-size: 15px;
+    }
+
+    .cruiseCard img {
+        height: 90px;
+    }
+
+    .scheduleGrid {
+        gap: 6px;
+    }
+
+    .scheduleCard {
+        padding: 6px;
+    }
+
+    .scheduleCard p {
+        font-size: 11px;
+    }
+
+    .inputGroup {
+        margin-bottom: 15px;
+    }
+
+    .inputGroup label {
+        font-size: 14px;
+    }
+
+    .inputGroup input,
+    .inputGroup select,
+    .inputGroup textarea {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .inputGroup textarea {
+        height: 80px;
+    }
+
+    .checkboxes {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .checkboxes label {
+        font-size: 14px;
+        gap: 8px;
+    }
+
+    .checkboxes input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+
+    .submitButton {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .totalPrice {
+        margin-top: 15px;
+        padding: 10px;
+    }
+
+    .totalPrice h3 {
+        font-size: 16px;
+    }
+
+    .authMessage {
+        padding: 15px;
+    }
+
+    .authMessage p {
+        font-size: 15px;
+    }
+
+    .cabinClassGroup {
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .cabinClassInput {
+        gap: 5px;
+        min-width: 90px;
+    }
+
+    .cabinClassInput label {
+        font-size: 12px;
+    }
+
+    .cabinClassInput input {
+        padding: 6px;
+        font-size: 12px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .bookingForm {
+        padding: 20px;
+        max-width: 450px;
+    }
+
+    .formContainer {
+        max-width: 400px;
+    }
+
+    .cruiseGrid label {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    .cruiseGridInner {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .cruiseCard {
+        padding: 8px;
+    }
+
+    .cruiseCard h3 {
+        font-size: 14px;
+    }
+
+    .cruiseCard img {
+        height: 80px;
+    }
+
+    .scheduleGrid {
+        gap: 5px;
+    }
+
+    .scheduleCard {
+        padding: 5px;
+    }
+
+    .scheduleCard p {
+        font-size: 10px;
+    }
+
+    .inputGroup {
+        margin-bottom: 12px;
+    }
+
+    .inputGroup label {
+        font-size: 13px;
+    }
+
+    .inputGroup input,
+    .inputGroup select,
+    .inputGroup textarea {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .inputGroup textarea {
+        height: 70px;
+    }
+
+    .checkboxes {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .checkboxes label {
+        font-size: 13px;
+        gap: 6px;
+    }
+
+    .checkboxes input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+    }
+
+    .submitButton {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .totalPrice {
+        margin-top: 12px;
+        padding: 8px;
+    }
+
+    .totalPrice h3 {
+        font-size: 15px;
+    }
+
+    .authMessage {
+        padding: 12px;
+    }
+
+    .authMessage p {
+        font-size: 14px;
+    }
+
+    .cabinClassGroup {
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .cabinClassInput {
+        gap: 4px;
+        min-width: 80px;
+    }
+
+    .cabinClassInput label {
+        font-size: 11px;
+    }
+
+    .cabinClassInput input {
+        padding: 5px;
+        font-size: 11px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .bookingForm {
+        padding: 15px;
+        max-width: 300px;
+    }
+
+    .formContainer {
+        max-width: 280px;
+    }
+
+    .cruiseGrid label {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .cruiseGridInner {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .cruiseCard {
+        padding: 6px;
+    }
+
+    .cruiseCard h3 {
+        font-size: 13px;
+    }
+
+    .cruiseCard img {
+        height: 70px;
+    }
+
+    .scheduleGrid {
+        gap: 4px;
+    }
+
+    .scheduleCard {
+        padding: 4px;
+    }
+
+    .scheduleCard p {
+        font-size: 9px;
+    }
+
+    .inputGroup {
+        margin-bottom: 10px;
+    }
+
+    .inputGroup label {
+        font-size: 12px;
+    }
+
+    .inputGroup input,
+    .inputGroup select,
+    .inputGroup textarea {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .inputGroup textarea {
+        height: 60px;
+    }
+
+    .checkboxes {
+        gap: 5px;
+        padding: 6px;
+    }
+
+    .checkboxes label {
+        font-size: 12px;
+        gap: 5px;
+    }
+
+    .checkboxes input[type="checkbox"] {
+        width: 12px;
+        height: 12px;
+    }
+
+    .submitButton {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .totalPrice {
+        margin-top: 10px;
+        padding: 6px;
+    }
+
+    .totalPrice h3 {
+        font-size: 14px;
+    }
+
+    .authMessage {
+        padding: 10px;
+    }
+
+    .authMessage p {
+        font-size: 13px;
+    }
+
+    .cabinClassGroup {
+        gap: 10px;
+        margin-top: 6px;
+    }
+
+    .cabinClassInput {
+        gap: 3px;
+        min-width: 70px;
+    }
+
+    .cabinClassInput label {
+        font-size: 10px;
+    }
+
+    .cabinClassInput input {
+        padding: 4px;
+        font-size: 10px;
+    }
 }
