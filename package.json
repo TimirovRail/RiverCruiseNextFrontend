@@ -19,6 +19,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^11.15.0",
     "leaflet": "^1.9.4",
+    "leaflet.marker.slideto": "^0.3.0",
     "mapbox-gl": "^3.9.3",
     "next": "^15.0.3",
     "node-fetch": "^3.3.2",
