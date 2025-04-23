@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
+import styles from './CruiseRoutes.module.css';
 
 // Компонент для карты
 const CruiseRoutes = () => {
@@ -20,9 +21,6 @@ const CruiseRoutes = () => {
           'Accept': 'application/json',
         },
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       const data = await response.json();
       // Преобразуем координаты в числа
       const parsedData = data.map(point => ({
@@ -183,13 +181,15 @@ const CruiseRoutes = () => {
       <div className="title">
         <h2 className="h1-title">КАРТА МАРШРУТОВ</h2>
       </div>
-      <div className="cruiseSelector">
-        <label htmlFor="cruise-select">Выберите круиз для отслеживания: </label>
+      <div className={styles.cruiseSelector}>
+        <label htmlFor="cruise-select" className={styles.selectorLabel}>
+          Выберите круиз для отслеживания:
+        </label>
         <select
           id="cruise-select"
           value={selectedCruiseId || ''}
           onChange={(e) => focusOnCruise(parseInt(e.target.value))}
-          className="cruiseSelect"
+          className={styles.cruiseSelect}
         >
           <option value="">Все круизы</option>
           {cruiseData.map(cruise => (

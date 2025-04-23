@@ -1,5 +1,4 @@
 import Header from '../../components/Header/Header';
-import BlogContacts from '../../components/BlogContacts/BlogContacts';
 import ContactInfo from '../../components/ContactInfo/ContactInfo';
 import FAQquestions from '../../components/FAQquestions/FAQquestions'; 
 
@@ -8,7 +7,6 @@ export default function Contacts() {
     <>
       <Header />
       <ContactInfo />
-      <BlogContacts />
       <FAQquestions /> 
     </>
   );

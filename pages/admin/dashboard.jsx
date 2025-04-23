@@ -2,11 +2,14 @@ import { useEffect, useState, Suspense, lazy } from 'react';
 import { useRouter } from 'next/router';
 import styles from './dashboard.module.css';
 import Loading from "@/components/Loading/Loading";
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
 const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
 const CruisesList = lazy(() => import('../../components/Dashboard/CruisesList'));
 const CreateCruiseForm = lazy(() => import('../../components/Dashboard/CreateCruiseForm'));
+const CreateCruiseScheduleForm = lazy(() => import('../../components/Dashboard/CreateCruiseScheduleForm')); // Новый импорт
 const ReviewsList = lazy(() => import('../../components/Dashboard/ReviewsList'));
 const BookingsList = lazy(() => import('../../components/Dashboard/BookingsList'));
 const PhotosList = lazy(() => import('../../components/Dashboard/PhotosList'));
@@ -26,6 +29,7 @@ const Dashboard = () => {
     const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
     const [isCruisesOpen, setIsCruisesOpen] = useState(false);
     const [isCreateCruiseOpen, setIsCreateCruiseOpen] = useState(false);
+    const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false); // Новое состояние
     const [isReviewsOpen, setIsReviewsOpen] = useState(false);
     const [isBookingsOpen, setIsBookingsOpen] = useState(false);
     const [isPhotosOpen, setIsPhotosOpen] = useState(false);
@@ -105,7 +109,7 @@ const Dashboard = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }, 
+                },
             });
             if (!response.ok) {
                 const errorText = await response.text();
@@ -129,10 +133,27 @@ const Dashboard = () => {
             if (!response.ok) throw new Error('Ошибка при создании круиза');
             const data = await response.json();
             setCruises([...cruises, data]);
-            alert('Круиз успешно добавлен!');
+            alert('Круиз успешно добавлен! Теперь создайте расписание для этого круиза.');
         } catch (error) {
             console.error(error);
             alert('Ошибка: не удалось создать круиз');
+        }
+    };
+
+    const handleCreateSchedule = async (newSchedule) => {
+        try {
+            const response = await fetch('http://localhost:8000/api/cruise_schedules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newSchedule),
+            });
+            if (!response.ok) throw new Error('Ошибка при создании расписания');
+            const data = await response.json();
+            setCruiseSchedules([...cruiseSchedules, data]);
+            alert('Расписание успешно добавлено!');
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка: не удалось создать расписание');
         }
     };
 
@@ -281,127 +302,143 @@ const Dashboard = () => {
     if (loading) return <Loading />;
 
     return (
-        <div className={styles.layout}>
-            <Suspense fallback={<Loading />}>
-                <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
-                    {editingCruise && (
-                        <CruiseEditForm
-                            cruise={editingCruise}
-                            onSave={handleSaveCruise}
-                            onCancel={handleCloseModal}
-                        />
-                    )}
-                    {editingSchedule && (
-                        <CruiseScheduleEditForm
-                            schedule={editingSchedule}
-                            onSave={handleSaveSchedule}
-                            onCancel={handleCloseModal}
-                        />
-                    )}
-                </EditModal>
-            </Suspense>
+        <>
+            <Header user={userData} onBack={() => router.push('/')} />
 
-            <div className={styles.dashboardContainer}>
-                <div className={styles.title}>
-                    <h2 className={styles.h1Title}>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
+            <div className={styles.layout}>
+                <Suspense fallback={<Loading />}>
+                    <EditModal isOpen={isEditModalOpen} onClose={handleCloseModal}>
+                        {editingCruise && (
+                            <CruiseEditForm
+                                cruise={editingCruise}
+                                onSave={handleSaveCruise}
+                                onCancel={handleCloseModal}
+                            />
+                        )}
+                        {editingSchedule && (
+                            <CruiseScheduleEditForm
+                                schedule={editingSchedule}
+                                onSave={handleSaveSchedule}
+                                onCancel={handleCloseModal}
+                            />
+                        )}
+                    </EditModal>
+                </Suspense>
+
+                <div className={styles.dashboardContainer}>
+                    <div className={styles.title}>
+                        <h2 className={styles.h1Title}>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
+                    </div>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ"
+                            isOpen={isUserInfoOpen}
+                            onToggle={() => setIsUserInfoOpen(!isUserInfoOpen)}
+                        >
+                            <UserInfo
+                                userData={userData}
+                                error={errors['http://localhost:8000/api/user']}
+                            />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <div className={styles.buttonGroup}>
+                        <button onClick={() => router.push('/')} className={styles.homeButton}>На главную</button>
+                        <button onClick={() => {
+                            localStorage.removeItem('token');
+                            router.push('/login');
+                        }} className={styles.logoutButton}>Выйти</button>
+                    </div>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="СПИСОК КРУИЗОВ"
+                            isOpen={isCruisesOpen}
+                            onToggle={() => setIsCruisesOpen(!isCruisesOpen)}
+                        >
+                            <CruisesList
+                                cruises={cruisesWithSchedules}
+                                cruiseSchedules={cruiseSchedules}
+                                error={errors['http://localhost:8000/api/cruises']}
+                                formatDate={formatDate}
+                                onEdit={handleEditCruiseClick}
+                                onDelete={handleDeleteCruise}
+                                onEditSchedule={handleEditScheduleClick}
+                                onDeleteSchedule={handleDeleteSchedule}
+                            />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА"
+                            isOpen={isCreateCruiseOpen}
+                            onToggle={() => setIsCreateCruiseOpen(!isCreateCruiseOpen)}
+                        >
+                            <CreateCruiseForm onSubmit={handleCreateCruise} />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="ФОРМА ДЛЯ СОЗДАНИЯ РАСПИСАНИЯ КРУИЗА"
+                            isOpen={isCreateScheduleOpen}
+                            onToggle={() => setIsCreateScheduleOpen(!isCreateScheduleOpen)}
+                        >
+                            <CreateCruiseScheduleForm cruises={cruises} onSubmit={handleCreateSchedule} />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="ОТЗЫВЫ КЛИЕНТОВ"
+                            isOpen={isReviewsOpen}
+                            onToggle={() => setIsReviewsOpen(!isReviewsOpen)}
+                        >
+                            <ReviewsList
+                                reviews={reviewsWithDetails}
+                                error={errors['http://localhost:8000/api/reviews']}
+                                formatDate={formatDate}
+                                onCancel={handleCancelReview}
+                                onDelete={handleDeleteReview}
+                            />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="БРОНИРОВАННЫЕ БИЛЕТЫ"
+                            isOpen={isBookingsOpen}
+                            onToggle={() => setIsBookingsOpen(!isBookingsOpen)}
+                        >
+                            <BookingsList
+                                bookings={bookingsWithDetails}
+                                error={errors['http://localhost:8000/api/bookings']}
+                                formatDate={formatDate}
+                            />
+                        </CollapsibleSection>
+                    </Suspense>
+
+                    <Suspense fallback={<Loading />}>
+                        <CollapsibleSection
+                            title="ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ"
+                            isOpen={isPhotosOpen}
+                            onToggle={() => setIsPhotosOpen(!isPhotosOpen)}
+                        >
+                            <PhotosList
+                                photos={photosWithDetails}
+                                error={errors['http://localhost:8000/api/photos']}
+                                formatDate={formatDate}
+                                onDelete={handleDeletePhoto}
+                            />
+                        </CollapsibleSection>
+                    </Suspense>
                 </div>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ"
-                        isOpen={isUserInfoOpen}
-                        onToggle={() => setIsUserInfoOpen(!isUserInfoOpen)}
-                    >
-                        <UserInfo
-                            userData={userData}
-                            error={errors['http://localhost:8000/api/user']}
-                        />
-                    </CollapsibleSection>
-                </Suspense>
-
-                <div className={styles.buttonGroup}>
-                    <button onClick={() => router.push('/')} className={styles.homeButton}>На главную</button>
-                    <button onClick={() => {
-                        localStorage.removeItem('token');
-                        router.push('/login');
-                    }} className={styles.logoutButton}>Выйти</button>
-                </div>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="СПИСОК КРУИЗОВ"
-                        isOpen={isCruisesOpen}
-                        onToggle={() => setIsCruisesOpen(!isCruisesOpen)}
-                    >
-                        <CruisesList
-                            cruises={cruisesWithSchedules}
-                            cruiseSchedules={cruiseSchedules}
-                            error={errors['http://localhost:8000/api/cruises']}
-                            formatDate={formatDate}
-                            onEdit={handleEditCruiseClick}
-                            onDelete={handleDeleteCruise}
-                            onEditSchedule={handleEditScheduleClick}
-                            onDeleteSchedule={handleDeleteSchedule}
-                        />
-                    </CollapsibleSection>
-                </Suspense>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА"
-                        isOpen={isCreateCruiseOpen}
-                        onToggle={() => setIsCreateCruiseOpen(!isCreateCruiseOpen)}
-                    >
-                        <CreateCruiseForm onSubmit={handleCreateCruise} />
-                    </CollapsibleSection>
-                </Suspense>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="ОТЗЫВЫ КЛИЕНТОВ"
-                        isOpen={isReviewsOpen}
-                        onToggle={() => setIsReviewsOpen(!isReviewsOpen)}
-                    >
-                        <ReviewsList
-                            reviews={reviewsWithDetails}
-                            error={errors['http://localhost:8000/api/reviews']}
-                            formatDate={formatDate}
-                            onCancel={handleCancelReview}
-                            onDelete={handleDeleteReview}
-                        />
-                    </CollapsibleSection>
-                </Suspense>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="БРОНИРОВАННЫЕ БИЛЕТЫ"
-                        isOpen={isBookingsOpen}
-                        onToggle={() => setIsBookingsOpen(!isBookingsOpen)}
-                    >
-                        <BookingsList
-                            bookings={bookingsWithDetails}
-                            error={errors['http://localhost:8000/api/bookings']}
-                            formatDate={formatDate}
-                        />
-                    </CollapsibleSection>
-                </Suspense>
-
-                <Suspense fallback={<Loading />}>
-                    <CollapsibleSection
-                        title="ФОТОГРАФИИ ПОЛЬЗОВАТЕЛЕЙ"
-                        isOpen={isPhotosOpen}
-                        onToggle={() => setIsPhotosOpen(!isPhotosOpen)}
-                    >
-                        <PhotosList
-                            photos={photosWithDetails}
-                            error={errors['http://localhost:8000/api/photos']}
-                            formatDate={formatDate}
-                            onDelete={handleDeletePhoto}
-                        />
-                    </CollapsibleSection>
-                </Suspense>
             </div>
-        </div>
+
+            <Footer />
+        </>
     );
 };
 

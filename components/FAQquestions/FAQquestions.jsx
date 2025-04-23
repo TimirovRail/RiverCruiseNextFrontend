@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from './FAQquestions.module.css';
 
 const FAQquestions = () => {
-    const [openIndexes, setOpenIndexes] = useState([]);
+    const [openIndex, setOpenIndex] = useState(null); // Храним только один активный индекс
 
     const faqData = [
         {
@@ -50,10 +50,10 @@ const FAQquestions = () => {
     ];
 
     const toggleAnswer = (index) => {
-        if (openIndexes.includes(index)) {
-            setOpenIndexes(openIndexes.filter((i) => i !== index));
+        if (openIndex === index) {
+            setOpenIndex(null);
         } else {
-            setOpenIndexes([...openIndexes, index]);
+            setOpenIndex(index);
         }
     };
 
@@ -71,10 +71,10 @@ const FAQquestions = () => {
                         >
                             {item.question}
                             <span className={styles.arrow}>
-                                {openIndexes.includes(index) ? '▲' : '▼'}
+                                {openIndex === index ? '▲' : '▼'}
                             </span>
                         </div>
-                        {openIndexes.includes(index) && (
+                        {openIndex === index && (
                             <div className={styles.faqAnswer}>{item.answer}</div>
                         )}
                     </div>

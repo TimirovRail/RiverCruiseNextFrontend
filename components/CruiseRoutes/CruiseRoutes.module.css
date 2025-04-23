@@ -1,3 +1,153 @@
+/* Селектор круизов */
+.cruiseSelector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 0 auto 25px auto;
+    max-width: 600px;
+    padding: 12px 20px;
+    background: linear-gradient(145deg, #ffffff, #f0f4ff);
+    border: 1px solid #e0e7ff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.cruiseSelector:hover {
+    background: linear-gradient(145deg, #f0f4ff, #e6f0ff);
+    border-color: #b3c5ff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.selectorLabel {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2a376d;
+    transition: color 0.3s ease;
+}
+
+.selectorLabel:hover {
+    color: #1a2a5d;
+}
+
+.cruiseSelect {
+    padding: 10px 35px 10px 15px;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 1px solid #e0e7ff;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #2a376d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%232a376d" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.cruiseSelect:hover {
+    background-color: #f8faff;
+    border-color: #b3c5ff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.cruiseSelect:focus {
+    outline: none;
+    border-color: #2a376d;
+    box-shadow: 0 0 6px rgba(42, 55, 109, 0.3);
+}
+
+/* Анимация для селектора */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cruiseSelector {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Тёмная тема */
+@media (prefers-color-scheme: dark) {
+    .cruiseSelector {
+        background: linear-gradient(145deg, #2a376d, #1e2a44);
+        border-color: #3a4a7d;
+    }
+
+    .cruiseSelector:hover {
+        background: linear-gradient(145deg, #3a4a7d, #2a376d);
+        border-color: #5a6aa9;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .selectorLabel {
+        color: #e6f0ff;
+    }
+
+    .selectorLabel:hover {
+        color: #c9d8ff;
+    }
+
+    .cruiseSelect {
+        background-color: #2a376d;
+        color: #e6f0ff;
+        border-color: #3a4a7d;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23e6f0ff" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+
+    .cruiseSelect:hover {
+        background-color: #3a4a7d;
+        border-color: #5a6aa9;
+    }
+
+    .cruiseSelect:focus {
+        border-color: #e6f0ff;
+        box-shadow: 0 0 6px rgba(230, 240, 255, 0.3);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .cruiseSelector {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .selectorLabel {
+        font-size: 1rem;
+    }
+
+    .cruiseSelect {
+        width: 100%;
+        padding: 8px 30px 8px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .selectorLabel {
+        font-size: 0.9rem;
+    }
+
+    .cruiseSelect {
+        font-size: 0.9rem;
+        padding: 8px 25px 8px 10px;
+    }
+}
+
+/* Стили для карты (оставлены без изменений) */
 .mapContainer {
     margin: 20px auto;
     border: 2px solid #2A376D;
@@ -10,110 +160,5 @@
     justify-content: center;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Стили для селектора круизов */
-.cruiseSelector {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    background-color: #f9fbfd;
-    border: 1px solid #d4e2ff;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-}
-
-.cruiseSelector:hover {
-    background-color: #f0f4ff;
-    border-color: #a3c1ff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.cruiseSelector label {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #1a3c6d;
-    transition: color 0.3s ease;
-}
-
-.cruiseSelector label:hover {
-    color: #0f2a4f;
-}
-
-.cruiseSelect {
-    padding: 10px 35px 10px 15px;
-    font-size: 1rem;
-    border: 1px solid #d4e2ff;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #1a3c6d;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%231a3c6d" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-}
-
-.cruiseSelect:hover {
-    background-color: #f0f4ff;
-    border-color: #a3c1ff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.cruiseSelect:focus {
-    outline: none;
-    border-color: #1a3c6d;
-    box-shadow: 0 0 6px rgba(26, 60, 109, 0.3);
-}
-
-/* Анимация для селектора при загрузке */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.cruiseSelector {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .cruiseSelector {
-        flex-direction: column;
-        gap: 8px;
-        padding: 10px;
-    }
-
-    .cruiseSelector label {
-        font-size: 1rem;
-    }
-
-    .cruiseSelect {
-        width: 100%;
-        padding: 8px 30px 8px 12px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .cruiseSelector label {
-        font-size: 0.9rem;
-    }
-
-    .cruiseSelect {
-        font-size: 0.85rem;
-    }
+    border-radius: 30px;
 }

@@ -8,7 +8,7 @@ const BuyTicket = () => {
     const router = useRouter();
 
     const handleBuyTicket = () => {
-        router.push('/Contacts');
+        router.push('/BuyTicket');
     };
 
     return (
