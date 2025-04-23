@@ -1,7 +1,11 @@
+
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { BrowserQRCodeReader } from '@zxing/library';
 import styles from './ManagerProfile.module.css';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 class ErrorBoundary extends React.Component {
     state = { error: null };
@@ -190,6 +194,7 @@ const ManagerProfile = () => {
 
     return (
         <ErrorBoundary>
+            <Header onBack={() => router.push('/')} />
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1>Профиль менеджера</h1>
@@ -252,6 +257,7 @@ const ManagerProfile = () => {
                     )}
                 </div>
             </div>
+            <Footer />
         </ErrorBoundary>
     );
 };

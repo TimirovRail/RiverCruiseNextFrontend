@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from '../../pages/admin/adminComponents.module.css';
 
-const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
+const CreateCruiseForm = ({ onSubmit }) => {
     const [formData, setFormData] = useState({
-        id: '',
         name: '',
         description: '',
         river: '',
         cabins: '',
         total_distance: '',
         features: [],
-        price_per_person: '', // Теперь одно число
+        price_per_person: '',
         cabins_by_class: {
             luxury: { places: '', image_path: '' },
             economy: { places: '', image_path: '' },
@@ -18,27 +17,6 @@ const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
         },
         image_path: '',
     });
-
-    useEffect(() => {
-        if (cruise) {
-            setFormData({
-                id: cruise.id || '',
-                name: cruise.name || '',
-                description: cruise.description || '',
-                river: cruise.river || '',
-                cabins: cruise.cabins || '',
-                total_distance: cruise.total_distance || '',
-                features: Array.isArray(cruise.features) ? cruise.features : [],
-                price_per_person: cruise.price_per_person || '', // Ожидаем число
-                cabins_by_class: cruise.cabins_by_class || {
-                    luxury: { places: '', image_path: '' },
-                    economy: { places: '', image_path: '' },
-                    standard: { places: '', image_path: '' },
-                },
-                image_path: cruise.image_path || '',
-            });
-        }
-    }, [cruise]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -81,11 +59,11 @@ const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const updatedData = {
+        const newCruise = {
             ...formData,
             cabins: parseInt(formData.cabins) || 0,
             total_distance: parseFloat(formData.total_distance) || 0,
-            price_per_person: parseFloat(formData.price_per_person) || 0, // Отправляем как число
+            price_per_person: parseFloat(formData.price_per_person) || 0,
             cabins_by_class: {
                 luxury: {
                     places: parseInt(formData.cabins_by_class.luxury.places) || 0,
@@ -101,7 +79,23 @@ const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
                 },
             },
         };
-        onSave(updatedData);
+        onSubmit(newCruise);
+        // Сбрасываем форму после отправки
+        setFormData({
+            name: '',
+            description: '',
+            river: '',
+            cabins: '',
+            total_distance: '',
+            features: [],
+            price_per_person: '',
+            cabins_by_class: {
+                luxury: { places: '', image_path: '' },
+                economy: { places: '', image_path: '' },
+                standard: { places: '', image_path: '' },
+            },
+            image_path: '',
+        });
     };
 
     return (
@@ -191,11 +185,10 @@ const CruiseEditForm = ({ cruise, onSave, onCancel }) => {
                 ))}
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button type="submit" className={styles.button}>Сохранить</button>
-                <button type="button" onClick={onCancel} className={styles.deleteButton}>Отмена</button>
+                <button type="submit" className={styles.button}>Создать круиз</button>
             </div>
         </form>
     );
 };
 
-export default CruiseEditForm;
+export default CreateCruiseForm;

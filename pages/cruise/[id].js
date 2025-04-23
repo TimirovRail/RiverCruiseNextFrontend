@@ -176,12 +176,6 @@ const CruiseDetail = () => {
                                                     {schedule.luxury_places}
                                                 </p>
                                             </div>
-                                            <div className={styles.scheduleStatus}>
-                                                <p>
-                                                    <strong>Статус:</strong>{' '}
-                                                    <span className={styles.statusBadge}>{schedule.status}</span>
-                                                </p>
-                                            </div>
                                         </div>
                                     ))}
                                 </div>

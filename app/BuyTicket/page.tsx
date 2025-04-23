@@ -1,11 +1,11 @@
 import Header from '../../components/Header/Header';
-import BlockShop from '../../components/BlockShop/BlockShop';
+import BlogContacts from '../../components/BlogContacts/BlogContacts';
 
 export default function Shop() {
     return (
         <>
             <Header />
-            <BlockShop />
+            <BlogContacts />
         </>
     );
 }

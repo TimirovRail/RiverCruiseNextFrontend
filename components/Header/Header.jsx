@@ -69,12 +69,12 @@ const Header = () => {
             {/* Навигация */}
             <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
                 <Link href="/">Главная</Link>
+                <Link href="/BuyTicket">Купить билет</Link>
                 <Link href="/Cruises">Круизы</Link>
                 <Link href="/Restaurant">Услуги</Link>
                 <Link href="/Reviews">Отзывы</Link>
                 <Link href="/Contacts">Контакты</Link>
                 <Link href="/Blog">Блог</Link>
-                {/* <Link href="/Shop">Магазин</Link> */}
             </nav>
 
             <div className={styles.profile}>
