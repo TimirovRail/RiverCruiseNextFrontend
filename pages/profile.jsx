@@ -113,7 +113,7 @@ export default function Profile() {
                 luxury_seats: b.luxury_seats || 0,
             });
 
-            QRCode.toDataURL(qrData, { width: 128 }, (err, url) => {
+            QRCode.toDataURL(qrData, { width: 256 }, (err, url) => {
                 if (!err) newQrCodes[b.id] = url;
             });
         });
@@ -254,10 +254,22 @@ export default function Profile() {
             const token = localStorage.getItem("token");
             console.log("Attempting to cancel booking with ID:", bookingId);
             try {
+                const booking = bookings.find(b => b.id === bookingId);
+                if (!booking) {
+                    throw new Error("Бронирование не найдено");
+                }
+
+                if (booking.is_paid) {
+                    alert("Это оплаченный билет. Отмена может потребовать возврата средств. Пожалуйста, свяжитесь с поддержкой.");
+                    return;
+                }
+
                 await axios.delete(`http://localhost:8000/api/bookings/${bookingId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+
                 setBookings(prev => prev.filter(b => b.id !== bookingId));
+                await fetchData(); // Обновляем данные
                 alert('Бронь успешно отменена!');
             } catch (error) {
                 console.error("Ошибка отмены брони:", error.response?.data || error.message);

@@ -21,6 +21,7 @@ export default function BlogContacts() {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [error, setError] = useState(null);
     const router = useRouter();
 
     const cruiseImages = {
@@ -59,10 +60,11 @@ export default function BlogContacts() {
             });
             if (!res.ok) throw new Error('Ошибка загрузки круизов');
             const data = await res.json();
-            console.log('Имена круизов:', data.map(cruise => cruise.name));
             setCruises(data);
+            setError(null);
         } catch (error) {
             console.error('Ошибка:', error);
+            setError('Не удалось загрузить данные о круизах');
         } finally {
             setIsLoading(false);
         }
@@ -78,6 +80,7 @@ export default function BlogContacts() {
             setServices(data);
         } catch (error) {
             console.error('Ошибка:', error);
+            setError('Не удалось загрузить данные об услугах');
         }
     };
 
@@ -88,10 +91,9 @@ export default function BlogContacts() {
     };
 
     const handleScheduleSelect = (scheduleId, cruiseName) => {
-        console.log('Выбранный scheduleId:', scheduleId, 'Тип:', typeof scheduleId);
-        console.log('Текущий cruise_schedule_id:', formData.cruise_schedule_id, 'Тип:', typeof formData.cruise_schedule_id);
-        setFormData((prev) => ({ ...prev, cruise_schedule_id: String(scheduleId) }));
-        calculateTotal({ ...formData, cruise_schedule_id: String(scheduleId) });
+        const scheduleIdStr = String(scheduleId);
+        setFormData((prev) => ({ ...prev, cruise_schedule_id: scheduleIdStr }));
+        calculateTotal({ ...formData, cruise_schedule_id: scheduleIdStr });
     };
 
     const handleExtrasChange = (e) => {
@@ -130,24 +132,9 @@ export default function BlogContacts() {
         setTotalPrice(price);
     };
 
-    const getAvailablePlacesForClass = (schedule, cabinClass) => {
-        switch (cabinClass) {
-            case 'Эконом':
-                return schedule.available_economy_places;
-            case 'Стандарт':
-                return schedule.available_standard_places;
-            case 'Люкс':
-                return schedule.available_luxury_places;
-            default:
-                return 0;
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
-        console.log('Отправляемые данные (до преобразования):', { ...formData, user_id: user.id });
-
         if (!token || !user) {
             alert('Токен или данные пользователя отсутствуют. Авторизуйтесь.');
             router.push('/login');
@@ -168,14 +155,7 @@ export default function BlogContacts() {
         const luxurySeats = parseInt(formData.luxury_seats) || 0;
         const totalSeats = parseInt(formData.total_seats) || 0;
 
-        console.log('Эконом:', economySeats, 'Тип:', typeof economySeats);
-        console.log('Стандарт:', standardSeats, 'Тип:', typeof standardSeats);
-        console.log('Люкс:', luxurySeats, 'Тип:', typeof luxurySeats);
-        console.log('Общее:', totalSeats, 'Тип:', typeof totalSeats);
-
         const sumOfSeats = economySeats + standardSeats + luxurySeats;
-        console.log('Сумма мест по классам:', sumOfSeats, 'Общее количество мест:', totalSeats);
-
         if (sumOfSeats !== totalSeats) {
             alert(`Сумма мест по классам (${sumOfSeats}) должна совпадать с общим количеством мест (${totalSeats})`);
             return;
@@ -204,8 +184,6 @@ export default function BlogContacts() {
             user_id: user.id,
         };
 
-        console.log('Отправляемые данные (после преобразования):', payload);
-
         try {
             const response = await fetch('http://localhost:8000/api/auth/bookings', {
                 method: 'POST',
@@ -218,7 +196,6 @@ export default function BlogContacts() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Ответ сервера:', data);
                 alert('Спасибо за бронирование!');
                 setFormData({
                     cruise_schedule_id: '',
@@ -233,7 +210,6 @@ export default function BlogContacts() {
                 fetchCruises(token);
             } else {
                 const errorData = await response.json();
-                console.log('Ошибка от сервера:', errorData);
                 alert(`Ошибка: ${errorData.error || errorData.message}`);
             }
         } catch (error) {
@@ -257,6 +233,8 @@ export default function BlogContacts() {
                     <div className={styles.formContainer}>
                         {isLoading ? (
                             <p>Загрузка рейсов...</p>
+                        ) : error ? (
+                            <p className={styles.error}>{error}</p>
                         ) : (
                             <form onSubmit={handleSubmit}>
                                 <div className={styles.cruiseGrid}>
@@ -274,8 +252,8 @@ export default function BlogContacts() {
                                                         <div
                                                             key={schedule.id}
                                                             className={`${styles.scheduleCard} ${String(formData.cruise_schedule_id) === String(schedule.id)
-                                                                    ? styles.selected
-                                                                    : ''
+                                                                ? styles.selected
+                                                                : ''
                                                                 }`}
                                                             onClick={() => handleScheduleSelect(schedule.id, cruise.name)}
                                                         >

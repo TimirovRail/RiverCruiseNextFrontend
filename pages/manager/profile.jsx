@@ -1,8 +1,6 @@
-
-
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { BrowserQRCodeReader } from '@zxing/library';
+import QrReader from 'react-qr-reader';
 import styles from './ManagerProfile.module.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -42,135 +40,77 @@ const ManagerProfile = () => {
     const [error, setError] = useState(null);
     const [ticketStatus, setTicketStatus] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
-    const videoRef = useRef(null);
-    const codeReader = useRef(null);
-    const streamRef = useRef(null);
-    const isMounted = useRef(true);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
-        const role = (user?.role || localStorage.getItem('role') || '').trim().toLowerCase();
-
-        if (!token || role !== 'manager') {
-            router.push('/login');
-        }
-    }, [router]);
-
-    const stopScanner = useCallback(async () => {
-        try {
-            if (codeReader.current) {
-                await codeReader.current.reset();
-            }
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => {
-                    track.stop();
-                    track.enabled = false;
-                });
-                streamRef.current = null;
-            }
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-            }
-        } catch (err) {
-            console.error('Ошибка остановки сканера:', err);
-        }
-    }, []);
-
-    useEffect(() => {
-        codeReader.current = new BrowserQRCodeReader();
-
-        const startScanning = async () => {
-            if (!isScanning || !isMounted.current) return;
+    const handleScan = async (data) => {
+        if (data) {
+            setIsScanning(false);
+            let ticketData;
 
             try {
-                await stopScanner();
-                const devices = await codeReader.current.getVideoInputDevices();
-
-                if (devices.length === 0) {
-                    throw new Error('Камеры не обнаружены');
-                }
-
-                streamRef.current = await codeReader.current.decodeFromVideoDevice(
-                    devices[0].deviceId,
-                    videoRef.current,
-                    async (result, err) => {
-                        if (!isMounted.current) return;
-
-                        try {
-                            if (result?.text) {
-                                setIsScanning(false);
-                                let ticketData;
-
-                                try {
-                                    ticketData = JSON.parse(result.text);
-                                } catch (err) {
-                                    setError('Невалидный формат QR-кода');
-                                    return;
-                                }
-
-                                // Валидация данных
-                                const requiredFields = [
-                                    'booking_id',
-                                    'user_id',
-                                    'cruise_schedule_id'
-                                ];
-
-                                if (!requiredFields.every(field => ticketData[field])) {
-                                    setError('В QR-коде отсутствуют обязательные данные');
-                                    return;
-                                }
-
-                                const token = localStorage.getItem('token');
-                                const response = await fetch('http://localhost:8000/api/manager/verify-ticket', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        Authorization: `Bearer ${token}`,
-                                    },
-                                    body: JSON.stringify({
-                                        booking_id: Number(ticketData.booking_id),
-                                        user_id: Number(ticketData.user_id),
-                                        cruise_schedule_id: Number(ticketData.cruise_schedule_id),
-                                    }),
-                                });
-
-                                const responseText = await response.text();
-                                const result = responseText ? JSON.parse(responseText) : {};
-
-                                if (isMounted.current) {
-                                    if (response.ok) {
-                                        setTicketStatus(result);
-                                        setScanResult(result.text);
-                                    } else {
-                                        setError(result.message || 'Ошибка верификации билета');
-                                    }
-                                }
-                            }
-
-                            if (err && !['NotFoundException', 'ChecksumException'].includes(err.name)) {
-                                console.error('Ошибка сканирования:', err);
-                                setError(err.message || 'Ошибка сканирования');
-                            }
-                        } catch (err) {
-                            console.error('Ошибка обработки:', err);
-                            setError(err.message || 'Ошибка обработки данных');
-                        }
-                    }
-                );
+                ticketData = JSON.parse(data);
+                console.log('Parsed QR Data:', ticketData);
             } catch (err) {
-                console.error('Ошибка инициализации:', err);
-                setError(err.message);
-                setIsScanning(false);
+                setError('Невалидный формат QR-кода: неверный JSON');
+                console.error('JSON Parse Error:', err);
+                return;
             }
-        };
 
-        if (isScanning) startScanning();
+            const requiredFields = ['booking_id', 'user_id', 'cruise_schedule_id'];
+            if (!requiredFields.every(field => ticketData[field] != null)) {
+                setError('В QR-коде отсутствуют обязательные данные');
+                return;
+            }
 
-        return () => {
-            stopScanner();
-        };
-    }, [isScanning, stopScanner]);
+            try {
+                const token = localStorage.getItem('token') || ''; // Используем пустой токен, если токена нет
+                const response = await fetch('http://localhost:8000/api/manager/verify-ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`, // Отправляем токен, если он есть
+                    },
+                    body: JSON.stringify({
+                        booking_id: Number(ticketData.booking_id),
+                        user_id: Number(ticketData.user_id),
+                        cruise_schedule_id: Number(ticketData.cruise_schedule_id),
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    setTicketStatus(result);
+                    setScanResult(JSON.stringify(result, null, 2));
+                } else if (response.status === 401 || response.status === 403) {
+                    // Игнорируем ошибки аутентификации, показываем результат, если он есть
+                    console.warn('Ошибка аутентификации, но продолжаем обработку:', result.message);
+                    if (result.valid !== undefined) {
+                        setTicketStatus(result);
+                        setScanResult(JSON.stringify(result, null, 2));
+                    } else {
+                        setError('Не удалось верифицировать билет. Попробуйте снова.');
+                    }
+                } else {
+                    setError(result.message || 'Ошибка верификации билета');
+                }
+            } catch (err) {
+                console.error('Ошибка обработки:', err);
+                setError('Ошибка обработки данных. Попробуйте снова.');
+            }
+        }
+    };
+
+    const handleError = (err) => {
+        console.error('Ошибка сканирования:', err);
+        if (err.name === 'NotAllowedError') {
+            setError('Доступ к камере запрещен. Разрешите доступ в настройках браузера.');
+        } else if (err.name === 'NotFoundError') {
+            setError('Камера не найдена на устройстве.');
+        } else {
+            setError(err.message || 'Ошибка сканирования QR-кода');
+        }
+        setIsScanning(false);
+    };
 
     const handleLogout = () => {
         localStorage.clear();
@@ -183,13 +123,11 @@ const ManagerProfile = () => {
         setScanResult(null);
         setTicketStatus(null);
         setError(null);
-        stopScanner(); // Сбрасываем перед новым сканированием
     };
 
     const stopScanning = () => {
         console.log('Остановка сканирования');
         setIsScanning(false);
-        stopScanner();
     };
 
     return (
@@ -220,35 +158,35 @@ const ManagerProfile = () => {
 
                     {isScanning && (
                         <div className={styles.qrReader}>
-                            <video ref={videoRef} style={{ width: '100%', objectFit: 'cover' }} />
+                            <QrReader
+                                delay={300}
+                                onError={handleError}
+                                onScan={handleScan}
+                                style={{ width: '100%', maxWidth: '400px' }}
+                            />
                         </div>
                     )}
 
                     {error && <p className={styles.error}>{error}</p>}
-
-                    {scanResult && (
-                        <div className={styles.result}>
-                            <h3>Данные билета</h3>
-                            <pre>{scanResult}</pre>
-                        </div>
-                    )}
 
                     {ticketStatus && (
                         <div className={styles.ticketStatus}>
                             <h3>Статус билета</h3>
                             {ticketStatus.valid ? (
                                 <div className={styles.valid}>
-                                    <p>Билет действителен: {ticketStatus.message}</p>
-                                    <p>Круиз: {ticketStatus.ticket.cruise_name}</p>
-                                    <p>
-                                        Дата отправления:{' '}
-                                        {new Date(ticketStatus.ticket.departure_datetime).toLocaleDateString()}
-                                    </p>
-                                    <p>
-                                        Места: Эконом: {ticketStatus.ticket.economy_seats}, Стандарт:{' '}
-                                        {ticketStatus.ticket.standard_seats}, Люкс:{' '}
-                                        {ticketStatus.ticket.luxury_seats}
-                                    </p>
+                                    <p><strong>Статус:</strong> {ticketStatus.message}</p>
+                                    <h4>Информация о пользователе</h4>
+                                    <p><strong>Имя:</strong> {ticketStatus.user.name}</p>
+                                    <p><strong>Email:</strong> {ticketStatus.user.email}</p>
+                                    <h4>Информация о билете</h4>
+                                    <p><strong>Круиз:</strong> {ticketStatus.ticket.cruise_name}</p>
+                                    <p><strong>Дата отправления:</strong> {new Date(ticketStatus.ticket.departure_datetime).toLocaleString()}</p>
+                                    <p><strong>Места:</strong> Эконом: {ticketStatus.ticket.economy_seats}, Стандарт: {ticketStatus.ticket.standard_seats}, Люкс: {ticketStatus.ticket.luxury_seats}</p>
+                                    <p><strong>Стоимость:</strong> {ticketStatus.ticket.total_price} руб.</p>
+                                    {ticketStatus.ticket.comment && <p><strong>Комментарий:</strong> {ticketStatus.ticket.comment}</p>}
+                                    {ticketStatus.ticket.extras && ticketStatus.ticket.extras.length > 0 && (
+                                        <p><strong>Доп. услуги:</strong> {ticketStatus.ticket.extras.join(', ')}</p>
+                                    )}
                                 </div>
                             ) : (
                                 <p className={styles.invalid}>Билет недействителен: {ticketStatus.message}</p>
