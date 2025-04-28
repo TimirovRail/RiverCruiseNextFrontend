@@ -40,7 +40,11 @@ export default function LeaveFeedback() {
             }
             const data = await res.json();
             console.log('Полученные круизы:', data);
-            setCruises(data);
+            // Удаляем дубликаты по cruise_id
+            const uniqueCruises = Array.from(
+                new Map(data.map(cruise => [cruise.cruise_id, cruise])).values()
+            );
+            setCruises(uniqueCruises);
         } catch (error) {
             console.error('Ошибка:', error);
             alert(error.message);
