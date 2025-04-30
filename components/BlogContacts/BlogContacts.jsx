@@ -331,15 +331,31 @@ export default function BlogContacts() {
                                     <label>Дополнительные услуги</label>
                                     <div className={styles.checkboxes}>
                                         {services.map((service) => (
-                                            <label key={service.id}>
-                                                <input
-                                                    type="checkbox"
-                                                    value={service.title}
-                                                    onChange={handleExtrasChange}
-                                                    checked={formData.extras.includes(service.title)}
-                                                />
-                                                {service.title} ({service.price} руб.)
-                                            </label>
+                                            <div key={service.id} className={styles.serviceItem}>
+                                                <label className={styles.serviceLabel}>
+                                                    <input
+                                                        type="checkbox"
+                                                        value={service.title}
+                                                        onChange={handleExtrasChange}
+                                                        checked={formData.extras.includes(service.title)}
+                                                    />
+                                                    {service.title} ({service.price} руб.)
+                                                </label>
+                                                <div className={styles.serviceTooltip}>
+                                                    <img
+                                                        src={service.img || '/images/default-service.jpg'}
+                                                        alt={service.title}
+                                                        className={styles.tooltipImage}
+                                                    />
+                                                    <div className={styles.tooltipContent}>
+                                                        <h4>{service.title}</h4>
+                                                        <p>{service.description}</p>
+                                                        <p className={styles.tooltipPrice}>
+                                                            Цена: {service.price} руб.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>

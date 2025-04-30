@@ -1,12 +1,13 @@
 /* Базовые стили */
 .serviceDetail {
-    width: 100%;
+    width: 95%;
     background-color: #f8f8f8;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
     max-width: 1500px;
     margin: 0 auto;
     padding: 20px;
     border-radius: 8px;
+    margin-top: 70px;
 }
 
 .content {

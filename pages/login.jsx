@@ -3,8 +3,6 @@ import Link from "next/link";
 import styles from './login.module.css';
 import { useRouter } from 'next/router';
 import QRCode from 'qrcode';
-import speakeasy from 'speakeasy';
-import base32 from 'base32.js';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -17,23 +15,11 @@ const LoginPage = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [secret, setSecret] = useState('');
+    const [twoFactorSecret, setTwoFactorSecret] = useState('');
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [code, setCode] = useState('');
     const [isVerified, setIsVerified] = useState(false);
     const router = useRouter();
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            const generateSecret = speakeasy.generateSecret({ length: 20 });
-            setSecret(generateSecret.base32);
-
-            QRCode.toDataURL(generateSecret.otpauth_url, (err, url) => {
-                if (err) console.error('Ошибка генерации QR-кода:', err);
-                setQrCodeUrl(url);
-            });
-        }
-    }, [isAuthenticated]);
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
@@ -43,7 +29,7 @@ const LoginPage = () => {
     const handleChange = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     };
 
@@ -71,7 +57,7 @@ const LoginPage = () => {
             });
 
             const data = await res.json();
-
+            handleVerifyCode
             if (res.ok) {
                 if (isLogin) {
                     localStorage.setItem('token', data.access_token);
@@ -80,15 +66,43 @@ const LoginPage = () => {
 
                     setIsAuthenticated(true);
 
-                    const generateSecret = speakeasy.generateSecret({ length: 20 });
-                    setSecret(generateSecret.base32);
+                    // Если есть секретный ключ, отображаем его
+                    if (data.user.two_factor_secret) {
+                        setTwoFactorSecret(data.user.two_factor_secret);
 
-                    QRCode.toDataURL(generateSecret.otpauth_url, (err, url) => {
-                        if (err) console.error('Ошибка генерации QR-кода:', err);
-                        setQrCodeUrl(url);
-                    });
+                        // Генерируем otpauth_url для QR-кода
+                        const otpauthUrl = `otpauth://totp/${encodeURIComponent(
+                            data.user.email
+                        )}?secret=${data.user.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
+
+                        // Генерируем QR-код на клиенте
+                        QRCode.toDataURL(otpauthUrl, (err, url) => {
+                            if (err) {
+                                console.error('Ошибка генерации QR-кода:', err);
+                                return;
+                            }
+                            setQrCodeUrl(url);
+                        });
+                    }
                 } else {
                     setIsLogin(true);
+                    if (data.two_factor_secret) {
+                        setTwoFactorSecret(data.two_factor_secret);
+
+                        // Генерируем otpauth_url для QR-кода
+                        const otpauthUrl = `otpauth://totp/${encodeURIComponent(
+                            data.user.email
+                        )}?secret=${data.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
+
+                        // Генерируем QR-код на клиенте
+                        QRCode.toDataURL(otpauthUrl, (err, url) => {
+                            if (err) {
+                                console.error('Ошибка генерации QR-кода:', err);
+                                return;
+                            }
+                            setQrCodeUrl(url);
+                        });
+                    }
                 }
             } else {
                 setError(data.message || 'Произошла ошибка');
@@ -100,25 +114,23 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
-
-    const handleVerifyCode = () => {
+    const handleVerifyCode = async () => {
+        const cleanedCode = code.replace(/\s/g, ''); // Удаляем все пробелы
+        console.log('Отправляемый код:', cleanedCode);
         try {
-            if (typeof secret !== 'string' || !secret) {
-                throw new Error('Секрет должен быть строкой');
-            }
-            if (typeof code !== 'string' || !code) {
-                throw new Error('Код должен быть строкой');
-            }
-
-            const secretBuffer = base32.decode(secret);
-
-            const isValid = speakeasy.totp.verify({
-                secret: secretBuffer,
-                encoding: 'ascii',
-                token: code.trim()
+            const res = await fetch('http://localhost:8000/api/auth/verify-two-factor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({ code: cleanedCode }),
             });
 
-            if (isValid) {
+            const data = await res.json();
+            console.log('Ответ сервера:', data);
+
+            if (res.ok) {
                 setIsVerified(true);
                 alert('Код подтвержден!');
 
@@ -133,13 +145,13 @@ const LoginPage = () => {
                     router.push('/');
                 }
             } else {
-                alert('Неверный код');
+                alert(data.error || 'Неверный код');
             }
         } catch (error) {
             console.error('Ошибка при верификации кода:', error);
             alert('Произошла ошибка при проверке кода');
         }
-    };
+    };;
 
     return (
         <div className={styles.container}>
@@ -242,12 +254,14 @@ const LoginPage = () => {
                 )}
             </div>
 
-            {isAuthenticated && !isVerified && (
+            {isAuthenticated && !isVerified && twoFactorSecret && (
                 <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
                     <div className={styles.qrCodeWrapper}>
-                        <p>Сканируйте QR-код в приложении Google Authenticator</p>
+                        <p>Сканируйте QR-код в приложении Google Authenticator или введите ключ вручную:</p>
                         {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
+                        <p><strong>Секретный ключ:</strong> {twoFactorSecret}</p>
+                        <p>Сохраните этот ключ в надежном месте. Он потребуется для восстановления доступа.</p>
                     </div>
 
                     <div className={styles.codeInputWrapper}>
