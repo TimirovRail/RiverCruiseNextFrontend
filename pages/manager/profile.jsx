@@ -62,41 +62,81 @@ const ManagerProfile = () => {
             }
 
             try {
-                const token = localStorage.getItem('token') || ''; // Используем пустой токен, если токена нет
                 const response = await fetch('http://localhost:8000/api/manager/verify-ticket', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`, // Отправляем токен, если он есть
                     },
                     body: JSON.stringify({
                         booking_id: Number(ticketData.booking_id),
                         user_id: Number(ticketData.user_id),
                         cruise_schedule_id: Number(ticketData.cruise_schedule_id),
+                        economy_seats: ticketData.economy_seats || 0,
+                        standard_seats: ticketData.standard_seats || 0,
+                        luxury_seats: ticketData.luxury_seats || 0,
                     }),
                 });
 
                 const result = await response.json();
 
-                if (response.ok) {
-                    setTicketStatus(result);
-                    setScanResult(JSON.stringify(result, null, 2));
-                } else if (response.status === 401 || response.status === 403) {
-                    // Игнорируем ошибки аутентификации, показываем результат, если он есть
-                    console.warn('Ошибка аутентификации, но продолжаем обработку:', result.message);
-                    if (result.valid !== undefined) {
-                        setTicketStatus(result);
-                        setScanResult(JSON.stringify(result, null, 2));
-                    } else {
-                        setError('Не удалось верифицировать билет. Попробуйте снова.');
-                    }
-                } else {
-                    setError(result.message || 'Ошибка верификации билета');
+                if (!response.ok) {
+                    // Устанавливаем сообщение об ошибке вместо выброса исключения
+                    setError(result.message || `Ошибка HTTP: ${response.status}`);
+                    setTicketStatus(null); // Сбрасываем статус билета
+                    setScanResult(null);
+                    return;
                 }
+
+                // Если запрос успешен, сбрасываем ошибку
+                setError(null);
+                setTicketStatus(result);
+                setScanResult(JSON.stringify(result, null, 2));
             } catch (err) {
                 console.error('Ошибка обработки:', err);
-                setError('Ошибка обработки данных. Попробуйте снова.');
+                setError(err.message || 'Ошибка обработки данных. Попробуйте снова.');
+                setTicketStatus(null);
+                setScanResult(null);
             }
+        }
+    };
+
+    const handleMarkAsAttended = async () => {
+        if (!ticketStatus || !ticketStatus.valid) return;
+
+        const ticketData = JSON.parse(scanResult);
+        try {
+            const response = await fetch('http://localhost:8000/api/manager/mark-as-attended', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    booking_id: Number(ticketData.ticket.booking_id),
+                    user_id: Number(ticketData.ticket.user_id),
+                    cruise_schedule_id: Number(ticketData.ticket.cruise_schedule_id),
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                setError(result.message || `Ошибка HTTP: ${response.status}`);
+                return;
+            }
+
+            setError(null); // Сбрасываем ошибку при успехе
+            setTicketStatus({
+                ...ticketStatus,
+                ticket: {
+                    ...ticketStatus.ticket,
+                    attended: true,
+                },
+            });
+            setScanResult(JSON.stringify({ ...ticketStatus, ticket: { ...ticketStatus.ticket, attended: true } }, null, 2));
+            alert('Участие в круизе успешно отмечено!');
+        } catch (err) {
+            console.error('Ошибка при отметке участия:', err);
+            setError(err.message || 'Ошибка при отметке участия. Попробуйте снова.');
         }
     };
 
@@ -175,6 +215,7 @@ const ManagerProfile = () => {
                             {ticketStatus.valid ? (
                                 <div className={styles.valid}>
                                     <p><strong>Статус:</strong> {ticketStatus.message}</p>
+                                    <p><strong>Участие:</strong> {ticketStatus.ticket.attended ? 'Посетил круиз' : 'Не посетил круиз'}</p>
                                     <h4>Информация о пользователе</h4>
                                     <p><strong>Имя:</strong> {ticketStatus.user.name}</p>
                                     <p><strong>Email:</strong> {ticketStatus.user.email}</p>
@@ -186,6 +227,14 @@ const ManagerProfile = () => {
                                     {ticketStatus.ticket.comment && <p><strong>Комментарий:</strong> {ticketStatus.ticket.comment}</p>}
                                     {ticketStatus.ticket.extras && ticketStatus.ticket.extras.length > 0 && (
                                         <p><strong>Доп. услуги:</strong> {ticketStatus.ticket.extras.join(', ')}</p>
+                                    )}
+                                    {!ticketStatus.ticket.attended && (
+                                        <button
+                                            className={styles.attendButton}
+                                            onClick={handleMarkAsAttended}
+                                        >
+                                            Отметить участие
+                                        </button>
                                     )}
                                 </div>
                             ) : (

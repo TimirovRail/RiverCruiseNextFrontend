@@ -31,8 +31,16 @@ const ProfilePopup = ({ onClose }) => {
         return <Loading />;
     }
 
-    // Определяем, куда перенаправлять
-    const profileLink = user.role === 'admin' ? '/admin/dashboard' : '/profile';
+    // Определяем, куда перенаправлять в зависимости от роли
+    let profileLink = '/profile'; // По умолчанию для обычных пользователей
+    if (user.role) {
+        const role = user.role.toLowerCase();
+        if (role === 'admin') {
+            profileLink = '/admin/dashboard';
+        } else if (role === 'manager') {
+            profileLink = '/manager/profile'; // Для менеджера
+        }
+    }
 
     return (
         <div className={styles.overlay}>
