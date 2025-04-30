@@ -40,11 +40,7 @@ export default function LeaveFeedback() {
             }
             const data = await res.json();
             console.log('Полученные круизы:', data);
-            // Удаляем дубликаты по cruise_id
-            const uniqueCruises = Array.from(
-                new Map(data.map(cruise => [cruise.cruise_id, cruise])).values()
-            );
-            setCruises(uniqueCruises);
+            setCruises(data); // Данные уже уникальны, так как фильтрация происходит на бэкенде
         } catch (error) {
             console.error('Ошибка:', error);
             alert(error.message);
@@ -106,6 +102,9 @@ export default function LeaveFeedback() {
             setBookingId('');
             setSubmitted(true);
             setTimeout(() => setSubmitted(false), 3000);
+
+            // Обновляем список доступных круизов после отправки отзыва
+            fetchAvailableCruises(token);
         } catch (error) {
             alert(error.message);
         }
@@ -128,6 +127,7 @@ export default function LeaveFeedback() {
                             ) : cruises.length === 0 ? (
                                 <p className={styles.noCruisesMessage}>
                                     У вас нет завершённых круизов, о которых можно оставить отзыв.
+                                    Убедитесь, что круиз завершён, билет оплачен, и менеджер отметил ваше участие.
                                 </p>
                             ) : (
                                 <form onSubmit={handleSubmit} className={styles.feedbackForm}>
