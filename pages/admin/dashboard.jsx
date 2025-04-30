@@ -8,7 +8,7 @@ import Footer from '../../components/Footer/Footer';
 const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
 const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
 const CruisesList = lazy(() => import('../../components/Dashboard/CruisesList'));
-const CreateCruiseForm = lazy(() => import('../../components/Dashboard/CreateCruiseForm'));
+// const CreateCruiseForm = lazy(() => import('../../components/Dashboard/CreateCruiseForm'));
 const CreateCruiseScheduleForm = lazy(() => import('../../components/Dashboard/CreateCruiseScheduleForm')); // Новый импорт
 const ReviewsList = lazy(() => import('../../components/Dashboard/ReviewsList'));
 const BookingsList = lazy(() => import('../../components/Dashboard/BookingsList'));
@@ -370,7 +370,7 @@ const Dashboard = () => {
                         </CollapsibleSection>
                     </Suspense>
 
-                    <Suspense fallback={<Loading />}>
+                    {/* <Suspense fallback={<Loading />}>
                         <CollapsibleSection
                             title="ФОРМА ДЛЯ СОЗДАНИЯ КРУИЗА"
                             isOpen={isCreateCruiseOpen}
@@ -378,7 +378,7 @@ const Dashboard = () => {
                         >
                             <CreateCruiseForm onSubmit={handleCreateCruise} />
                         </CollapsibleSection>
-                    </Suspense>
+                    </Suspense> */}
 
                     <Suspense fallback={<Loading />}>
                         <CollapsibleSection

@@ -36,6 +36,7 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
 
         const url = isLogin
             ? 'http://localhost:8000/api/login'
@@ -57,7 +58,7 @@ const LoginPage = () => {
             });
 
             const data = await res.json();
-            handleVerifyCode
+
             if (res.ok) {
                 if (isLogin) {
                     localStorage.setItem('token', data.access_token);
@@ -66,19 +67,17 @@ const LoginPage = () => {
 
                     setIsAuthenticated(true);
 
-                    // Если есть секретный ключ, отображаем его
                     if (data.user.two_factor_secret) {
                         setTwoFactorSecret(data.user.two_factor_secret);
 
-                        // Генерируем otpauth_url для QR-кода
                         const otpauthUrl = `otpauth://totp/${encodeURIComponent(
                             data.user.email
                         )}?secret=${data.user.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
 
-                        // Генерируем QR-код на клиенте
                         QRCode.toDataURL(otpauthUrl, (err, url) => {
                             if (err) {
                                 console.error('Ошибка генерации QR-кода:', err);
+                                setError('Не удалось сгенерировать QR-код. Попробуйте снова.');
                                 return;
                             }
                             setQrCodeUrl(url);
@@ -89,15 +88,14 @@ const LoginPage = () => {
                     if (data.two_factor_secret) {
                         setTwoFactorSecret(data.two_factor_secret);
 
-                        // Генерируем otpauth_url для QR-кода
                         const otpauthUrl = `otpauth://totp/${encodeURIComponent(
                             data.user.email
                         )}?secret=${data.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
 
-                        // Генерируем QR-код на клиенте
                         QRCode.toDataURL(otpauthUrl, (err, url) => {
                             if (err) {
                                 console.error('Ошибка генерации QR-кода:', err);
+                                setError('Не удалось сгенерировать QR-код. Попробуйте снова.');
                                 return;
                             }
                             setQrCodeUrl(url);
@@ -105,18 +103,33 @@ const LoginPage = () => {
                     }
                 }
             } else {
-                setError(data.message || 'Произошла ошибка');
+                // Обрабатываем ошибки от сервера
+                if (data.message) {
+                    setError(data.message);
+                } else if (data.errors) {
+                    // Если сервер вернул ошибки валидации
+                    const errorMessages = Object.values(data.errors).flat().join(', ');
+                    setError(errorMessages);
+                } else {
+                    setError(isLogin ? 'Не удалось войти. Проверьте email и пароль.' : 'Не удалось зарегистрироваться. Проверьте введенные данные.');
+                }
             }
         } catch (err) {
             console.error('Ошибка запроса:', err);
-            setError('Произошла ошибка при отправке запроса');
+            setError('Не удалось подключиться к серверу. Проверьте ваше интернет-соединение и попробуйте снова.');
         } finally {
             setLoading(false);
         }
     };
+
     const handleVerifyCode = async () => {
-        const cleanedCode = code.replace(/\s/g, ''); // Удаляем все пробелы
-        console.log('Отправляемый код:', cleanedCode);
+        const cleanedCode = code.replace(/\s/g, '');
+        if (!cleanedCode) {
+            setError('Пожалуйста, введите код из Google Authenticator.');
+            return;
+        }
+
+        setError(null);
         try {
             const res = await fetch('http://localhost:8000/api/auth/verify-two-factor', {
                 method: 'POST',
@@ -128,10 +141,10 @@ const LoginPage = () => {
             });
 
             const data = await res.json();
-            console.log('Ответ сервера:', data);
 
             if (res.ok) {
                 setIsVerified(true);
+                setError(null);
                 alert('Код подтвержден!');
 
                 const user = JSON.parse(localStorage.getItem('user'));
@@ -145,13 +158,20 @@ const LoginPage = () => {
                     router.push('/');
                 }
             } else {
-                alert(data.error || 'Неверный код');
+                // Обрабатываем ошибки верификации
+                if (data.error === 'Invalid two-factor code') {
+                    setError('Неверный код двухфакторной аутентификации. Попробуйте снова.');
+                } else if (data.error === 'Two-factor authentication not enabled') {
+                    setError('Двухфакторная аутентификация не включена для этого пользователя.');
+                } else {
+                    setError(data.error || 'Не удалось подтвердить код. Попробуйте снова.');
+                }
             }
         } catch (error) {
             console.error('Ошибка при верификации кода:', error);
-            alert('Произошла ошибка при проверке кода');
+            setError('Не удалось подключиться к серверу для проверки кода. Проверьте интернет-соединение.');
         }
-    };;
+    };
 
     return (
         <div className={styles.container}>
@@ -257,6 +277,7 @@ const LoginPage = () => {
             {isAuthenticated && !isVerified && twoFactorSecret && (
                 <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
+                    {error && <div className={styles.error}>{error}</div>}
                     <div className={styles.qrCodeWrapper}>
                         <p>Сканируйте QR-код в приложении Google Authenticator или введите ключ вручную:</p>
                         {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
