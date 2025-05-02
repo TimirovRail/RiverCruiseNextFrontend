@@ -7,7 +7,7 @@
     margin: 0 auto;
     padding: 20px;
     border-radius: 8px;
-    margin-top: 70px;
+    margin-top: 80px;
 }
 
 .content {
@@ -64,6 +64,111 @@
     background-color: #1E2A4B;
 }
 
+/* Новые стили для анимаций */
+.fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.priceIcon {
+    margin-right: 5px;
+    font-weight: 600;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.shareButton {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+.shareButton:hover {
+    background-color: #218838;
+}
+
+/* Стили для раздела "Похожие услуги" */
+.relatedServices {
+    margin-top: 40px;
+}
+
+.relatedServices h2 {
+    font-size: 1.8rem;
+    color: #29376D;
+    margin-bottom: 20px;
+}
+
+.relatedGrid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.relatedCard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    flex-shrink: 0;
+    text-align: center;
+    padding: 15px;
+}
+
+.relatedImage {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.relatedCard h3 {
+    font-size: 1.2rem;
+    color: #29376D;
+    margin: 10px 0;
+}
+
+.relatedCard p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.relatedButton {
+    padding: 8px 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #2A376D;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.relatedButton:hover {
+    background-color: #1E2A4B;
+}
+
 /* Адаптивность */
 
 /* Для мониторов (1280px, 1600px, 1920px и выше) */
@@ -103,6 +208,19 @@
         padding: 12px 20px;
         font-size: 1.1rem;
     }
+
+    .shareButton {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+    }
+
+    .relatedGrid {
+        gap: 20px;
+    }
+
+    .relatedCard {
+        width: 250px;
+    }
 }
 
 /* Для нетбуков (1024px и выше) */
@@ -141,6 +259,15 @@
     .backButton {
         padding: 10px 18px;
         font-size: 1rem;
+    }
+
+    .shareButton {
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+
+    .relatedCard {
+        width: 200px;
     }
 }
 
@@ -183,6 +310,15 @@
         padding: 8px 16px;
         font-size: 0.9rem;
     }
+
+    .shareButton {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .relatedCard {
+        width: 180px;
+    }
 }
 
 /* Для смартфонов (480px и выше) */
@@ -224,6 +360,15 @@
         padding: 6px 14px;
         font-size: 0.85rem;
     }
+
+    .shareButton {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+
+    .relatedCard {
+        width: 150px;
+    }
 }
 
 /* Для маленьких смартфонов (320px) */
@@ -264,5 +409,14 @@
     .backButton {
         padding: 5px 12px;
         font-size: 0.8rem;
+    }
+
+    .shareButton {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+
+    .relatedCard {
+        width: 120px;
     }
 }

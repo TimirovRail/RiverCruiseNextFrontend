@@ -14,6 +14,16 @@
     position: relative;
 }
 
+.subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 200;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+}
+
 .overlay {
     display: flex;
     flex-direction: column;
@@ -68,6 +78,10 @@
         height: 100vh;
     }
 
+    .subtitle {
+        font-size: 24px;
+    }
+
     .title {
         font-size: 64px;
         margin-bottom: 400px;
@@ -93,6 +107,10 @@
 
     .hero {
         height: 90vh;
+    }
+
+    .subtitle {
+        font-size: 20px;
     }
 
     .title {
@@ -122,6 +140,10 @@
         height: 80vh;
     }
 
+    .subtitle {
+        font-size: 18px;
+    }
+
     .title {
         font-size: 48px;
         margin-bottom: 200px;
@@ -149,6 +171,10 @@
         height: 70vh;
     }
 
+    .subtitle {
+        font-size: 16px;
+    }
+
     .title {
         font-size: 36px;
         margin-bottom: 150px;
@@ -174,6 +200,10 @@
 
     .hero {
         height: 60vh;
+    }
+
+    .subtitle {
+        font-size: 14px;
     }
 
     .title {

@@ -7,9 +7,10 @@ const Home = () => {
             <main className={styles.main}>
                 <section className={styles.hero}>
                     <div className={styles.overlay}>
-                        <h1 className={styles.title}>КРУИЗ ПО РЕКАМ РОССИИ</h1>
+                        <h2 className={styles.subtitle}>ПОКОРИТЕ ВОДНЫЕ ГОРИЗОНТЫ РОССИИ</h2>
+                        <h1 className={styles.title}>С РЕЧНЫМ КРУИЗОМ</h1>
                         <div>
-                            <button><img src="/images/anchor.png" alt=""/></button>
+                            <button><img src="/images/anchor.png" alt="Якорь"/></button>
                         </div>
                     </div>
                 </section>

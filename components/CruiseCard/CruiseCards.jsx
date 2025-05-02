@@ -96,7 +96,7 @@ const CruiseCards = () => {
                                 <h1>{cruise.name}</h1>
                                 <p>{cruise.description}</p>
                                 <p><strong>Место круиза:</strong> {cruise.river}</p>
-                                <p><strong>Цена:</strong> {cruise.price_per_person} $</p>
+                                <p><strong>Цена:</strong> {cruise.price_per_person} руб.</p>
                                 <div className={styles.buttons}>
                                     <a href={`/cruise/${cruise.id}`} className={styles.readMore}>Читать больше</a>
                                 </div>

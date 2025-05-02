@@ -11,6 +11,12 @@
     align-items: center;
     padding: 15px 60px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: top 0.3s ease-in-out;
+    box-sizing: border-box;
+}
+
+.header.hidden {
+    top: -100px;
 }
 
 .logo img {
@@ -69,7 +75,7 @@
 
 /* Стили для бургер-меню */
 .burgerMenu {
-    display: none; /* Скрываем на больших экранах */
+    display: none;
     background: none;
     border: none;
     cursor: pointer;
@@ -121,8 +127,6 @@
 }
 
 /* Адаптивность */
-
-/* Для мониторов (1280px, 1600px, 1920px и выше) */
 @media (min-width: 1280px) {
     .header {
         padding: 15px 60px;
@@ -148,7 +152,6 @@
     }
 }
 
-/* Для нетбуков (1024px и выше) */
 @media (max-width: 1279px) and (min-width: 1024px) {
     .header {
         padding: 15px 40px;
@@ -173,7 +176,6 @@
     }
 }
 
-/* Для планшетов (768px и выше) */
 @media (max-width: 1023px) and (min-width: 768px) {
     .header {
         padding: 10px 30px;
@@ -198,7 +200,6 @@
     }
 }
 
-/* Для смартфонов (480px и выше) */
 @media (max-width: 767px) and (min-width: 480px) {
     .header {
         padding: 10px 20px;
@@ -210,11 +211,11 @@
     }
 
     .burgerMenu {
-        display: block; /* Показываем бургер-меню */
+        display: block;
     }
 
     .nav {
-        display: none; /* Скрываем навигацию по умолчанию */
+        display: none;
         flex-direction: column;
         align-items: center;
         gap: 20px;
@@ -224,10 +225,11 @@
         position: absolute;
         top: 100%;
         left: 0;
+        box-sizing: border-box;
     }
 
     .navOpen {
-        display: flex; /* Показываем навигацию, если меню открыто */
+        display: flex;
     }
 
     .nav a {
@@ -244,7 +246,6 @@
     }
 }
 
-/* Для маленьких смартфонов (320px) */
 @media (max-width: 479px) {
     .header {
         padding: 8px 15px;
@@ -256,11 +257,11 @@
     }
 
     .burgerMenu {
-        display: block; /* Показываем бургер-меню */
+        display: block;
     }
 
     .nav {
-        display: none; /* Скрываем навигацию по умолчанию */
+        display: none;
         flex-direction: column;
         align-items: center;
         gap: 15px;
@@ -270,10 +271,11 @@
         position: absolute;
         top: 100%;
         left: 0;
+        box-sizing: border-box;
     }
 
     .navOpen {
-        display: flex; /* Показываем навигацию, если меню открыто */
+        display: flex;
     }
 
     .nav a {
