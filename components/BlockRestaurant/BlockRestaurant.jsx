@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import styles from './BlockRestaurant.module.css';
 import Link from 'next/link';
 import Loading from "@/components/Loading/Loading";
+import { API_BASE_URL } from '../../src/config';
 
 const BlockRestaurant = () => {
     const [services, setServices] = useState([]);
@@ -15,7 +16,7 @@ const BlockRestaurant = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/services');
+                const response = await fetch(`${API_BASE_URL}/api/services`);
                 if (!response.ok) {
                     throw new Error('Ошибка при загрузке данных');
                 }

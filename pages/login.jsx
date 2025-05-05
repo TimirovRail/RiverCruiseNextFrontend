@@ -3,6 +3,7 @@ import Link from "next/link";
 import styles from './login.module.css';
 import { useRouter } from 'next/router';
 import QRCode from 'qrcode';
+import { API_BASE_URL } from '../src/config';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -39,8 +40,8 @@ const LoginPage = () => {
         setError(null);
 
         const url = isLogin
-            ? 'http://localhost:8000/api/login'
-            : 'http://localhost:8000/api/register';
+            ? `${API_BASE_URL}/api/login`
+            : `${API_BASE_URL}/api/register`;
 
         const body = JSON.stringify({
             email: formData.email,
@@ -131,7 +132,7 @@ const LoginPage = () => {
 
         setError(null);
         try {
-            const res = await fetch('http://localhost:8000/api/auth/verify-two-factor', {
+            const res = await fetch(`${API_BASE_URL}/api/auth/verify-two-factor`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

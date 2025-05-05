@@ -5,6 +5,8 @@ import styles from './BlockShop.module.css';
 import { useRouter } from 'next/navigation';
 import Loading from "@/components/Loading/Loading";
 import CartModal from './CartModal'; 
+import { API_BASE_URL } from '../../src/config';
+
 const BlockShop = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -38,7 +40,7 @@ const BlockShop = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/cart/add', {
+            const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +66,7 @@ const BlockShop = () => {
 
     const fetchSouvenirs = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/souvenirs', {
+            const response = await fetch(`${API_BASE_URL}/api/souvenirs`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

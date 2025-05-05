@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CartModal.module.css';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../src/config';
 
 const CartModal = ({ isOpen, onClose }) => {
     const [cartItems, setCartItems] = useState([]);
@@ -19,7 +20,7 @@ const CartModal = ({ isOpen, onClose }) => {
     const fetchCart = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/cart', {
+            const response = await fetch(`${API_BASE_URL}/api/cart`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ const CartModal = ({ isOpen, onClose }) => {
     const updateQuantity = async (cartId, action) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/cart/update', {
+            const response = await fetch(`${API_BASE_URL}/api/cart/update`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ const CartModal = ({ isOpen, onClose }) => {
     const removeItem = async (cartId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/cart/remove', {
+            const response = await fetch(`${API_BASE_URL}/api/cart/remove`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

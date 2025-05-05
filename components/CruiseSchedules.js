@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './CruiseSchedules.module.css'; // Создай CSS-модуль
+import { API_BASE_URL } from '../../src/config';
 
 export default function CruiseSchedules() {
     const [cruises, setCruises] = useState([]);
@@ -16,7 +17,7 @@ export default function CruiseSchedules() {
     }, []);
 
     const fetchCruises = async (token) => {
-        const res = await fetch('http://localhost:8000/api/cruises', {
+        const res = await fetch(`${API_BASE_URL}/api/cruises`, {
             headers: { 'Authorization': `Bearer ${token}` },
         });
         const data = await res.json();

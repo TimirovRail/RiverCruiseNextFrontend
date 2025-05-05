@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./SliderReviewsClient.module.css";
+import { API_BASE_URL } from '../../src/config';
 
 export default function SliderReviewsClient() {
     const [reviews, setReviews] = useState([]);
@@ -30,7 +31,7 @@ export default function SliderReviewsClient() {
 
     // Загружаем отзывы из /api/reviews
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/reviews")
+        fetch(`${API_BASE_URL}/api/reviews`)
             .then((response) => response.json())
             .then((data) => {
                 setReviews(data);

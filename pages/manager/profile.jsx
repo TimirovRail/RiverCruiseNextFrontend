@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import QrReader from 'react-qr-reader';
+import { Html5Qrcode } from 'html5-qrcode';
 import styles from './ManagerProfile.module.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import { API_BASE_URL } from '../../src/config';
 
 class ErrorBoundary extends React.Component {
     state = { error: null };
@@ -40,10 +41,59 @@ const ManagerProfile = () => {
     const [error, setError] = useState(null);
     const [ticketStatus, setTicketStatus] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
+    const html5QrCodeRef = useRef(null);
+
+    const startScanning = async () => {
+        console.log('Начало нового сканирования');
+        setIsScanning(true);
+        setScanResult(null);
+        setTicketStatus(null);
+        setError(null);
+
+        try {
+            const devices = await Html5Qrcode.getCameras();
+            if (devices.length === 0) {
+                setError('Камера не найдена на устройстве.');
+                setIsScanning(false);
+                return;
+            }
+
+            html5QrCodeRef.current = new Html5Qrcode('qr-reader');
+            await html5QrCodeRef.current.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    handleScan(decodedText);
+                },
+                (err) => {
+                    console.warn('Ошибка сканирования:', err);
+                }
+            );
+        } catch (err) {
+            handleError(err);
+        }
+    };
+
+    const stopScanning = () => {
+        console.log('Остановка сканирования');
+        if (html5QrCodeRef.current) {
+            html5QrCodeRef.current
+                .stop()
+                .then(() => {
+                    html5QrCodeRef.current = null;
+                    setIsScanning(false);
+                })
+                .catch(err => {
+                    console.error('Ошибка при остановке сканирования:', err);
+                    setError('Не удалось остановить сканирование');
+                    setIsScanning(false);
+                });
+        }
+    };
 
     const handleScan = async (data) => {
         if (data) {
-            setIsScanning(false);
+            stopScanning();
             let ticketData;
 
             try {
@@ -62,10 +112,12 @@ const ManagerProfile = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:8000/api/manager/verify-ticket', {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/api/manager/verify-ticket`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify({
                         booking_id: Number(ticketData.booking_id),
@@ -80,14 +132,12 @@ const ManagerProfile = () => {
                 const result = await response.json();
 
                 if (!response.ok) {
-                    // Устанавливаем сообщение об ошибке вместо выброса исключения
                     setError(result.message || `Ошибка HTTP: ${response.status}`);
-                    setTicketStatus(null); // Сбрасываем статус билета
+                    setTicketStatus(null);
                     setScanResult(null);
                     return;
                 }
 
-                // Если запрос успешен, сбрасываем ошибку
                 setError(null);
                 setTicketStatus(result);
                 setScanResult(JSON.stringify(result, null, 2));
@@ -105,10 +155,12 @@ const ManagerProfile = () => {
 
         const ticketData = JSON.parse(scanResult);
         try {
-            const response = await fetch('http://localhost:8000/api/manager/mark-as-attended', {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE_URL}/api/manager/mark-as-attended`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     booking_id: Number(ticketData.ticket.booking_id),
@@ -124,7 +176,7 @@ const ManagerProfile = () => {
                 return;
             }
 
-            setError(null); // Сбрасываем ошибку при успехе
+            setError(null);
             setTicketStatus({
                 ...ticketStatus,
                 ticket: {
@@ -146,28 +198,18 @@ const ManagerProfile = () => {
             setError('Доступ к камере запрещен. Разрешите доступ в настройках браузера.');
         } else if (err.name === 'NotFoundError') {
             setError('Камера не найдена на устройстве.');
+        } else if (err.name === 'NotSupportedError') {
+            setError('Браузер не поддерживает доступ к камере.');
         } else {
             setError(err.message || 'Ошибка сканирования QR-кода');
         }
         setIsScanning(false);
+        stopScanning();
     };
 
     const handleLogout = () => {
         localStorage.clear();
         router.push('/login');
-    };
-
-    const startScanning = () => {
-        console.log('Начало нового сканирования');
-        setIsScanning(true);
-        setScanResult(null);
-        setTicketStatus(null);
-        setError(null);
-    };
-
-    const stopScanning = () => {
-        console.log('Остановка сканирования');
-        setIsScanning(false);
     };
 
     return (
@@ -186,7 +228,11 @@ const ManagerProfile = () => {
                     <p className={styles.welcomeMessage}>Используйте камеру для проверки билетов</p>
 
                     <div className={styles.buttonGroup}>
-                        <button className={styles.scanButton} onClick={startScanning} disabled={isScanning}>
+                        <button
+                            className={styles.scanButton}
+                            onClick={startScanning}
+                            disabled={isScanning}
+                        >
                             {isScanning ? 'Сканирование...' : 'Начать сканирование'}
                         </button>
                         {isScanning && (
@@ -198,12 +244,7 @@ const ManagerProfile = () => {
 
                     {isScanning && (
                         <div className={styles.qrReader}>
-                            <QrReader
-                                delay={300}
-                                onError={handleError}
-                                onScan={handleScan}
-                                style={{ width: '100%', maxWidth: '400px' }}
-                            />
+                            <div id="qr-reader" style={{ width: '100%', maxWidth: '400px' }} />
                         </div>
                     )}
 
@@ -215,19 +256,37 @@ const ManagerProfile = () => {
                             {ticketStatus.valid ? (
                                 <div className={styles.valid}>
                                     <p><strong>Статус:</strong> {ticketStatus.message}</p>
-                                    <p><strong>Участие:</strong> {ticketStatus.ticket.attended ? 'Посетил круиз' : 'Не посетил круиз'}</p>
+                                    <p>
+                                        <strong>Участие:</strong>{' '}
+                                        {ticketStatus.ticket.attended ? 'Посетил круиз' : 'Не посетил круиз'}
+                                    </p>
                                     <h4>Информация о пользователе</h4>
                                     <p><strong>Имя:</strong> {ticketStatus.user.name}</p>
                                     <p><strong>Email:</strong> {ticketStatus.user.email}</p>
                                     <h4>Информация о билете</h4>
                                     <p><strong>Круиз:</strong> {ticketStatus.ticket.cruise_name}</p>
-                                    <p><strong>Дата отправления:</strong> {new Date(ticketStatus.ticket.departure_datetime).toLocaleString()}</p>
-                                    <p><strong>Места:</strong> Эконом: {ticketStatus.ticket.economy_seats}, Стандарт: {ticketStatus.ticket.standard_seats}, Люкс: {ticketStatus.ticket.luxury_seats}</p>
-                                    <p><strong>Стоимость:</strong> {ticketStatus.ticket.total_price} руб.</p>
-                                    {ticketStatus.ticket.comment && <p><strong>Комментарий:</strong> {ticketStatus.ticket.comment}</p>}
-                                    {ticketStatus.ticket.extras && ticketStatus.ticket.extras.length > 0 && (
-                                        <p><strong>Доп. услуги:</strong> {ticketStatus.ticket.extras.join(', ')}</p>
+                                    <p>
+                                        <strong>Дата отправления:</strong>{' '}
+                                        {new Date(ticketStatus.ticket.departure_datetime).toLocaleString()}
+                                    </p>
+                                    <p>
+                                        <strong>Места:</strong> Эконом: {ticketStatus.ticket.economy_seats},{' '}
+                                        Стандарт: {ticketStatus.ticket.standard_seats},{' '}
+                                        Люкс: {ticketStatus.ticket.luxury_seats}
+                                    </p>
+                                    <p>
+                                        <strong>Стоимость:</strong> {ticketStatus.ticket.total_price} руб.
+                                    </p>
+                                    {ticketStatus.ticket.comment && (
+                                        <p><strong>Комментарий:</strong> {ticketStatus.ticket.comment}</p>
                                     )}
+                                    {ticketStatus.ticket.extras &&
+                                        ticketStatus.ticket.extras.length > 0 && (
+                                            <p>
+                                                <strong>Доп. услуги:</strong>{' '}
+                                                {ticketStatus.ticket.extras.join(', ')}
+                                            </p>
+                                        )}
                                     {!ticketStatus.ticket.attended && (
                                         <button
                                             className={styles.attendButton}
@@ -238,7 +297,9 @@ const ManagerProfile = () => {
                                     )}
                                 </div>
                             ) : (
-                                <p className={styles.invalid}>Билет недействителен: {ticketStatus.message}</p>
+                                <p className={styles.invalid}>
+                                    Билет недействителен: {ticketStatus.message}
+                                </p>
                             )}
                         </div>
                     )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from '../../pages/admin/adminComponents.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 const EditCruiseForm = ({ cruise, onSubmit }) => {
     const [formData, setFormData] = useState({
@@ -110,7 +111,7 @@ const EditCruiseForm = ({ cruise, onSubmit }) => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8000/api/cruises/${cruise.id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/${cruise.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

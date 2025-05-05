@@ -1,5 +1,6 @@
 import { useState } from 'react'; // Добавляем useState для управления сортировкой
 import styles from '../../pages/admin/adminComponents.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 const PhotosList = ({ photos, error, formatDate, onDelete }) => {
     // Состояние для сортировки
@@ -74,11 +75,11 @@ const PhotosList = ({ photos, error, formatDate, onDelete }) => {
                             sortedPhotos.map((photo) => (
                                 <div key={photo.id} className={styles.photoCard}>
                                     <img
-                                        src={`http://localhost:8000${photo.url}`}
+                                        src={`${API_BASE_URL}${photo.url}`}
                                         alt={`Фото от ${photo.user_name || 'пользователя'}`}
                                         className={styles.photoImage}
                                         onError={(e) => {
-                                            console.error(`Не удалось загрузить изображение: http://localhost:8000${photo.url}`);
+                                            console.error(`Не удалось загрузить изображение: ${API_BASE_URL}${photo.url}`);
                                             e.target.src = '/images/placeholder.jpg';
                                         }}
                                     />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from '../../pages/admin/adminComponents.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 const CreateCruiseScheduleForm = ({ onSubmit }) => {
     const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const CreateCruiseScheduleForm = ({ onSubmit }) => {
 
             console.log('Отправляемые данные расписания:', newSchedule);
 
-            const response = await fetch(`http://localhost:8000/api/cruises/${formData.cruise_id}/schedules`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/${formData.cruise_id}/schedules`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

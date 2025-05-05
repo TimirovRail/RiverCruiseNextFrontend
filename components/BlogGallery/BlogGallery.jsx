@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './BlogGallery.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 export default function PhotoGallery() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -41,7 +42,7 @@ export default function PhotoGallery() {
 
     const fetchAllPhotos = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/photos');
+            const res = await fetch(`${API_BASE_URL}/api/photos`);
             if (!res.ok) throw new Error('Ошибка загрузки всех фотографий');
             const data = await res.json();
             setAllPhotos(data || []);
@@ -55,7 +56,7 @@ export default function PhotoGallery() {
     const fetchUserPhotos = async (userId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:8000/api/user/photos/${userId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/user/photos/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -98,7 +99,7 @@ export default function PhotoGallery() {
         formData.append('user_id', userId);
 
         try {
-            const response = await fetch('http://localhost:8000/api/auth/upload-photos', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/upload-photos`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData,
@@ -150,10 +151,10 @@ export default function PhotoGallery() {
                                 <div
                                     key={index}
                                     className={styles.imageWrapper}
-                                    onClick={() => openImage(`http://localhost:8000${photo.url}`)}
+                                    onClick={() => openImage(`${API_BASE_URL}${photo.url}`)}
                                 >
                                     <img
-                                        src={`http://localhost:8000${photo.url}`}
+                                        src={`${API_BASE_URL}${photo.url}`}
                                         alt={photo.name || `Photo ${index}`}
                                         className={styles.image}
                                     />
@@ -190,10 +191,10 @@ export default function PhotoGallery() {
                                             <div
                                                 key={index}
                                                 className={styles.imageWrapper}
-                                                onClick={() => openImage(`http://localhost:8000${photo.url}`)}
+                                                onClick={() => openImage(`${API_BASE_URL}${photo.url}`)}
                                             >
                                                 <img
-                                                    src={`http://localhost:8000${photo.url}`}
+                                                    src={`${API_BASE_URL}${photo.url}`}
                                                     alt={photo.name || `User photo ${index}`}
                                                     className={styles.image}
                                                 />
