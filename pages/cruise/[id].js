@@ -7,6 +7,7 @@ import Loading from '@/components/Loading/Loading';
 import Header from '@/components/Header/Header';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { API_BASE_URL } from '../../src/config';
 
 const CruiseDetail = () => {
     const { query } = useRouter();
@@ -20,7 +21,7 @@ const CruiseDetail = () => {
 
         const fetchCruise = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/cruise/${id}`);
+                const response = await fetch(`${API_BASE_URL}/api/cruise/${id}`);
                 const data = await response.json();
                 setCruise(data);
             } catch (error) {

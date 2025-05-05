@@ -4,6 +4,7 @@ import styles from './dashboard.module.css';
 import Loading from "@/components/Loading/Loading";
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import { API_BASE_URL } from '../../src/config';
 
 const CollapsibleSection = lazy(() => import('../../components/Dashboard/CollapsibleSection'));
 const UserInfo = lazy(() => import('../../components/Dashboard/UserInfo'));
@@ -49,12 +50,12 @@ const Dashboard = () => {
         const fetchAllData = async () => {
             setLoading(true);
             const urls = [
-                { url: 'http://localhost:8000/api/user', setter: setUserData, key: 'user', requiresAuth: true },
-                { url: 'http://localhost:8000/api/reviews', setter: setReviews, key: 'reviews', requiresAuth: false },
-                { url: 'http://localhost:8000/api/bookings', setter: setBookings, key: 'bookings', requiresAuth: true },
-                { url: 'http://localhost:8000/api/cruises', setter: setCruises, key: 'cruises', requiresAuth: false },
-                { url: 'http://localhost:8000/api/cruise_schedules', setter: setCruiseSchedules, key: 'cruise_schedules', requiresAuth: false },
-                { url: 'http://localhost:8000/api/photos', setter: setPhotos, key: 'photos', requiresAuth: false },
+                { url: `${API_BASE_URL}/api/user`, setter: setUserData, key: 'user', requiresAuth: true },
+                { url: `${API_BASE_URL}/api/reviews`, setter: setReviews, key: 'reviews', requiresAuth: false },
+                { url: `${API_BASE_URL}/api/bookings`, setter: setBookings, key: 'bookings', requiresAuth: true },
+                { url: `${API_BASE_URL}/api/cruises`, setter: setCruises, key: 'cruises', requiresAuth: false },
+                { url: `${API_BASE_URL}/api/cruise_schedules`, setter: setCruiseSchedules, key: 'cruise_schedules', requiresAuth: false },
+                { url: `${API_BASE_URL}/api/photos`, setter: setPhotos, key: 'photos', requiresAuth: false },
             ];
 
             const fetchPromises = urls.map(async ({ url, setter, key, requiresAuth }) => {
@@ -105,7 +106,7 @@ const Dashboard = () => {
     const handleDeletePhoto = async (photoId) => {
         if (!photoId) return alert('Ошибка: ID фотографии не указан');
         try {
-            const response = await fetch(`http://localhost:8000/api/photos/${photoId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/photos/${photoId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const Dashboard = () => {
 
     const handleCreateCruise = async (newCruise) => {
         try {
-            const response = await fetch('http://localhost:8000/api/cruises', {
+            const response = await fetch(`${API_BASE_URL}/api/cruises`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newCruise),
@@ -142,7 +143,7 @@ const Dashboard = () => {
 
     const handleCreateSchedule = async (newSchedule) => {
         try {
-            const response = await fetch('http://localhost:8000/api/cruise_schedules', {
+            const response = await fetch(`${API_BASE_URL}/api/cruise_schedules`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newSchedule),
@@ -164,7 +165,7 @@ const Dashboard = () => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8000/api/cruises/${cruiseId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/${cruiseId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -197,7 +198,7 @@ const Dashboard = () => {
                 total_places: totalPlaces,
                 available_places: totalPlaces,
             };
-            const response = await fetch(`http://localhost:8000/api/cruises/schedules/${updatedData.id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/schedules/${updatedData.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -219,7 +220,7 @@ const Dashboard = () => {
     const handleDeleteSchedule = async (scheduleId) => {
         if (!scheduleId) return alert('Ошибка: ID расписания не указан');
         try {
-            const response = await fetch(`http://localhost:8000/api/cruises/schedules/${scheduleId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/schedules/${scheduleId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -238,7 +239,7 @@ const Dashboard = () => {
     const handleCancelReview = async (reviewId) => {
         if (!reviewId) return alert('Ошибка: ID отзыва не указан');
         try {
-            const response = await fetch(`http://localhost:8000/api/reviews/${reviewId}/cancel`, {
+            const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -254,7 +255,7 @@ const Dashboard = () => {
     const handleDeleteReview = async (reviewId) => {
         if (!reviewId) return alert('Ошибка: ID отзыва не указан');
         try {
-            const response = await fetch(`http://localhost:8000/api/reviews/${reviewId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -274,7 +275,7 @@ const Dashboard = () => {
 
     const handleSaveCruise = async (updatedData) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/cruises/${updatedData.id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/cruises/${updatedData.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData),
@@ -338,7 +339,7 @@ const Dashboard = () => {
                         >
                             <UserInfo
                                 userData={userData}
-                                error={errors['http://localhost:8000/api/user']}
+                                error={errors[`${API_BASE_URL}/api/user`]}
                             />
                         </CollapsibleSection>
                     </Suspense>
@@ -360,7 +361,7 @@ const Dashboard = () => {
                             <CruisesList
                                 cruises={cruisesWithSchedules}
                                 cruiseSchedules={cruiseSchedules}
-                                error={errors['http://localhost:8000/api/cruises']}
+                                error={errors[`${API_BASE_URL}/api/cruises`]}
                                 formatDate={formatDate}
                                 onEdit={handleEditCruiseClick}
                                 onDelete={handleDeleteCruise}
@@ -398,7 +399,7 @@ const Dashboard = () => {
                         >
                             <ReviewsList
                                 reviews={reviewsWithDetails}
-                                error={errors['http://localhost:8000/api/reviews']}
+                                error={errors[`${API_BASE_URL}/api/reviews`]}
                                 formatDate={formatDate}
                                 onCancel={handleCancelReview}
                                 onDelete={handleDeleteReview}
@@ -414,7 +415,7 @@ const Dashboard = () => {
                         >
                             <BookingsList
                                 bookings={bookingsWithDetails}
-                                error={errors['http://localhost:8000/api/bookings']}
+                                error={errors[`${API_BASE_URL}/api/bookings`]}
                                 formatDate={formatDate}
                             />
                         </CollapsibleSection>
@@ -428,7 +429,7 @@ const Dashboard = () => {
                         >
                             <PhotosList
                                 photos={photosWithDetails}
-                                error={errors['http://localhost:8000/api/photos']}
+                                error={errors[`${API_BASE_URL}/api/photos`]}
                                 formatDate={formatDate}
                                 onDelete={handleDeletePhoto}
                             />

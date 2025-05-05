@@ -1,9 +1,10 @@
 'use client';
-
+import { API_BASE_URL } from '../../src/config';
 import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import styles from './CruiseRoutes.module.css';
+
 
 // Компонент для карты
 const CruiseRoutes = () => {
@@ -17,7 +18,7 @@ const CruiseRoutes = () => {
     // Функция для получения данных с бэкенда
     const fetchCruiseLocations = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/cruise-locations', {
+            const response = await fetch(`${API_BASE_URL}/api/cruise-locations`, {
                 headers: {
                     'Accept': 'application/json',
                 },
@@ -48,7 +49,7 @@ const CruiseRoutes = () => {
     // Функция для обновления координат через API
     const updateCruiseLocations = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/update-cruise-locations', {
+            const response = await fetch(`${API_BASE_URL}/api/update-cruise-locations`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

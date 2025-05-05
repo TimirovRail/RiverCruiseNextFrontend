@@ -4,6 +4,7 @@ import styles from './ServiceDetail.module.css';
 import Loading from "@/components/Loading/Loading";
 import Header from '@/components/Header/Header';
 import Link from 'next/link';
+import { API_BASE_URL } from '../../src/config';
 
 const ServiceDetail = () => {
     const router = useRouter();
@@ -15,7 +16,7 @@ const ServiceDetail = () => {
     useEffect(() => {
         if (id) {
             // Загрузка данных текущей услуги
-            fetch(`http://127.0.0.1:8000/api/services/${id}`)
+            fetch(`${API_BASE_URL}/api/services/${id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     setService(data);
@@ -27,7 +28,7 @@ const ServiceDetail = () => {
                 });
 
             // Загрузка похожих услуг
-            fetch('http://127.0.0.1:8000/api/services')
+            fetch(`${API_BASE_URL}/api/services`)
                 .then((response) => response.json())
                 .then((data) => {
                     const filteredServices = data

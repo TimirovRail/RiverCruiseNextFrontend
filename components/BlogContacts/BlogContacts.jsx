@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import styles from './BlogContacts.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 export default function BlogContacts() {
     const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export default function BlogContacts() {
 
     const fetchCruises = async (token) => {
         try {
-            const res = await fetch('http://localhost:8000/api/cruises', {
+            const res = await fetch(`${API_BASE_URL}/api/cruises`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Ошибка загрузки круизов');
@@ -72,7 +73,7 @@ export default function BlogContacts() {
 
     const fetchServices = async (token) => {
         try {
-            const res = await fetch('http://localhost:8000/api/services', {
+            const res = await fetch(`${API_BASE_URL}/api/services`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Ошибка загрузки услуг');
@@ -185,7 +186,7 @@ export default function BlogContacts() {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/api/auth/bookings', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/bookings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

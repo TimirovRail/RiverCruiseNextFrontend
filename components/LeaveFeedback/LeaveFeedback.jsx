@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './LeaveFeedback.module.css';
+import { API_BASE_URL } from '../../src/config';
 
 export default function LeaveFeedback() {
     const [comment, setComment] = useState('');
@@ -31,7 +32,7 @@ export default function LeaveFeedback() {
 
     const fetchAvailableCruises = async (token) => {
         try {
-            const res = await fetch('http://localhost:8000/api/auth/available-cruises', {
+            const res = await fetch(`${API_BASE_URL}/api/auth/available-cruises`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!res.ok) {
@@ -75,7 +76,7 @@ export default function LeaveFeedback() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/auth/reviews', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

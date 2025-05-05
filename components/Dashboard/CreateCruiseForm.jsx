@@ -116,7 +116,7 @@
 //                 console.log(`${key}: ${value}`);
 //             }
 
-//             const cruiseResponse = await fetch('http://localhost:8000/api/cruises', {
+//             const cruiseResponse = await fetch(`${API_BASE_URL}/api/cruises`, {
 //                 method: 'POST',
 //                 body: formData,
 //                 mode: 'no-cors',

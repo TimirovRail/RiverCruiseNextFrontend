@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './Header.module.css';
 import ProfilePopup from '../ProfilePopup/ProfilePopup';
+import { API_BASE_URL } from '../../src/config';
 
 const Header = () => {
     const [user, setUser] = useState(null);
@@ -48,7 +49,7 @@ const Header = () => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            fetch('http://localhost:8000/api/auth/me', {
+            fetch(`${API_BASE_URL}/api/auth/me`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,

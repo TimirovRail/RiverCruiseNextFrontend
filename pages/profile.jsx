@@ -8,6 +8,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import Loading from '../components/Loading/Loading';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
+import { API_BASE_URL } from '../src/config';
 
 const stripePromise = loadStripe('pk_test_51R7tDn07BVvEjWueRJTSYfrtHZ7UqTy3A8RQ3KUTtNVSnT9czvcX2GZCbaOOeHEMB2E3QWndHxLwhvX6FJopxB2G00s7rcz8mh');
 
@@ -27,7 +28,7 @@ const PaymentForm = ({ booking, onClose }) => {
 
             if (error) throw error;
 
-            await axios.post(`http://localhost:8000/api/bookings/${booking.id}/mark-as-paid`, {});
+            await axios.post(`${API_BASE_URL}/api/bookings/${booking.id}/mark-as-paid`, {});
             alert('Оплата успешно выполнена!');
             onClose();
         } catch (error) {
@@ -75,13 +76,13 @@ export default function Profile() {
 
         try {
             const [profileRes, dataRes, bookingsRes] = await Promise.all([
-                axios.get("http://localhost:8000/api/auth/profile", {
+                axios.get(`${API_BASE_URL}/api/auth/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
-                axios.get("http://localhost:8000/api/all-data", {
+                axios.get(`${API_BASE_URL}/api/all-data`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
-                axios.get("http://localhost:8000/api/bookings", {
+                axios.get(`${API_BASE_URL}/api/bookings`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             ]);
@@ -132,7 +133,7 @@ export default function Profile() {
     useEffect(() => {
         if (user) {
             const token = localStorage.getItem("token");
-            axios.get(`http://localhost:8000/api/user/photos/${user.id}`, {
+            axios.get(`${API_BASE_URL}/api/user/photos/${user.id}`, {
                 withCredentials: true,
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -148,7 +149,7 @@ export default function Profile() {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.get(
-                `http://localhost:8000/api/cruise-schedule/${booking.cruise_schedule_id}/seats`,
+                `${API_BASE_URL}/api/cruise-schedule/${booking.cruise_schedule_id}/seats`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -187,7 +188,7 @@ export default function Profile() {
             const token = localStorage.getItem("token");
 
             const { data } = await axios.post(
-                `http://localhost:8000/api/bookings/${selectedBooking.id}/reserve-seats`,
+                `${API_BASE_URL}/api/bookings/${selectedBooking.id}/reserve-seats`,
                 { seats: selectedSeats },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -211,7 +212,7 @@ export default function Profile() {
             });
 
             const { data: newBookings } = await axios.get(
-                "http://localhost:8000/api/bookings",
+                `${API_BASE_URL}/api/bookings`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setBookings(newBookings);
@@ -234,7 +235,7 @@ export default function Profile() {
         if (window.confirm("Вы точно хотите удалить этот отзыв?")) {
             const token = localStorage.getItem("token");
             try {
-                await axios.delete(`http://localhost:8000/api/reviews/${reviewId}`, {
+                await axios.delete(`${API_BASE_URL}/api/reviews/${reviewId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setData(prev => ({
@@ -264,7 +265,7 @@ export default function Profile() {
                     return;
                 }
 
-                await axios.delete(`http://localhost:8000/api/bookings/${bookingId}`, {
+                await axios.delete(`${API_BASE_URL}/api/bookings/${bookingId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -282,7 +283,7 @@ export default function Profile() {
         if (window.confirm("Вы точно хотите удалить эту фотографию?")) {
             const token = localStorage.getItem("token");
             try {
-                await axios.delete(`http://localhost:8000/api/photos/${photoId}`, {
+                await axios.delete(`${API_BASE_URL}/api/photos/${photoId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserPhotos(prev => prev.filter(p => p.id !== photoId));
@@ -463,7 +464,7 @@ export default function Profile() {
                             {userPhotos.map((photo) => (
                                 <div key={photo.id} className="photo-wrapper">
                                     <img
-                                        src={`http://localhost:8000${photo.url}`}
+                                        src={`${API_BASE_URL}${photo.url}`}
                                         alt={photo.name || `User photo ${photo.id}`}
                                         className="photo"
                                         onClick={() => handlePhotoClick(photo)}
@@ -547,7 +548,7 @@ export default function Profile() {
                                     setSelectedBooking(null);
                                     setShowPayment(false);
                                     const token = localStorage.getItem("token");
-                                    axios.get("http://localhost:8000/api/bookings", {
+                                    axios.get(`${API_BASE_URL}/api/bookings`, {
                                         headers: { Authorization: `Bearer ${token}` }
                                     }).then(response => setBookings(response.data));
                                 }} />
@@ -560,7 +561,7 @@ export default function Profile() {
                     <div className="modal">
                         <div className="modal-content photo-modal">
                             <img
-                                src={`http://localhost:8000${selectedPhoto.url}`}
+                                src={`${API_BASE_URL}${selectedPhoto.url}`}
                                 alt={selectedPhoto.name || `User photo ${selectedPhoto.id}`}
                                 className="enlarged-photo"
                             />

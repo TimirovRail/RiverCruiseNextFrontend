@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styles from './Checkout.module.css';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../src/config';
 
 const Checkout = () => {
     const [address, setAddress] = useState('');
@@ -24,7 +25,7 @@ const Checkout = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/orders', {
+            const response = await fetch(`${API_BASE_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

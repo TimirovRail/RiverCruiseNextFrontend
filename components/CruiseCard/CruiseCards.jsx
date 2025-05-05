@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './CruiseCards.module.css';
 import Loading from "@/components/Loading/Loading";
+import { API_BASE_URL } from '../../src/config';
 
 const CruiseCards = () => {
     const [cruises, setCruises] = useState([]);
@@ -14,7 +15,7 @@ const CruiseCards = () => {
     useEffect(() => {
         const fetchCruises = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/cruises');
+                const response = await fetch(`${API_BASE_URL}/api/cruises`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
