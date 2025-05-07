@@ -183,8 +183,8 @@
   height: 20px;
   accent-color: #2A376D;
   cursor: pointer;
-  margin: 0; 
-  vertical-align: middle; 
+  margin: 0;
+  vertical-align: middle;
   flex-shrink: 0;
 }
 
@@ -277,31 +277,60 @@
   font-weight: 600;
 }
 
-.authMessage {
+.errorMessage {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffe6e6;
+  color: #ff4d4d;
+  border: 1px solid #ff4d4d;
+  border-radius: 8px;
   text-align: center;
-  padding: 25px;
+  animation: slideIn 1s ease-in-out;
+}
+
+.noAuthMessage {
+  font-size: 18px;
+  color: #666;
+  text-align: center;
+  padding: 20px 40px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border: 2px solid #2A376D;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeInMessage 0.8s ease-in-out forwards;
 }
 
-.authMessage p {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-}
-
-.authMessage a {
+.noAuthMessage::before {
+  content: '🔒';
+  font-size: 24px;
   color: #2A376D;
-  font-weight: bold;
-  text-decoration: none;
-  transition: color 0.3s ease;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.authMessage a:hover {
-  color: #1a2550;
-  text-decoration: underline;
+.loginButton {
+  padding: 10px 20px;
+  background-color: #2A376D;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+.loginButton:hover {
+  background-color: #1a2550;
 }
 
 .cabinClassGroup {
@@ -338,9 +367,31 @@
   box-shadow: 0 0 6px rgba(26, 37, 80, 0.2);
 }
 
-/* Адаптивность */
+@keyframes slideIn {
+  from {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
 
-/* Для мониторов (1280px, 1600px, 1920px и выше) */
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInMessage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
 @media (min-width: 1280px) {
   .bookingForm {
     padding: 40px;
@@ -374,10 +425,6 @@
 
   .scheduleGrid {
     gap: 10px;
-  }
-
-  .scheduleCard {
-    padding: 10px;
   }
 
   .scheduleCard p {
@@ -452,12 +499,24 @@
     font-size: 20px;
   }
 
-  .authMessage {
-    padding: 25px;
+  .errorMessage {
+    padding: 10px;
+    font-size: 16px;
   }
 
-  .authMessage p {
+  .noAuthMessage {
     font-size: 18px;
+    padding: 20px 40px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 24px;
+    left: 15px;
+  }
+
+  .loginButton {
+    padding: 10px 20px;
+    font-size: 16px;
   }
 
   .cabinClassGroup {
@@ -480,7 +539,6 @@
   }
 }
 
-/* Для нетбуков (1024px и выше) */
 @media (max-width: 1279px) and (min-width: 1024px) {
   .bookingForm {
     padding: 30px;
@@ -592,12 +650,24 @@
     font-size: 18px;
   }
 
-  .authMessage {
-    padding: 20px;
+  .errorMessage {
+    padding: 8px;
+    font-size: 14px;
   }
 
-  .authMessage p {
+  .noAuthMessage {
     font-size: 16px;
+    padding: 15px 35px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 22px;
+    left: 12px;
+  }
+
+  .loginButton {
+    padding: 8px 18px;
+    font-size: 14px;
   }
 
   .cabinClassGroup {
@@ -620,7 +690,6 @@
   }
 }
 
-/* Для планшетов (768px и выше) */
 @media (max-width: 1023px) and (min-width: 768px) {
   .bookingForm {
     padding: 25px;
@@ -734,12 +803,24 @@
     font-size: 16px;
   }
 
-  .authMessage {
-    padding: 15px;
+  .errorMessage {
+    padding: 6px;
+    font-size: 13px;
   }
 
-  .authMessage p {
-    font-size: 15px;
+  .noAuthMessage {
+    font-size: 14px;
+    padding: 12px 30px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 20px;
+    left: 10px;
+  }
+
+  .loginButton {
+    padding: 6px 16px;
+    font-size: 13px;
   }
 
   .cabinClassGroup {
@@ -762,7 +843,6 @@
   }
 }
 
-/* Для смартфонов (480px и выше) */
 @media (max-width: 767px) and (min-width: 480px) {
   .bookingForm {
     padding: 20px;
@@ -876,12 +956,24 @@
     font-size: 15px;
   }
 
-  .authMessage {
-    padding: 12px;
+  .errorMessage {
+    padding: 5px;
+    font-size: 12px;
   }
 
-  .authMessage p {
-    font-size: 14px;
+  .noAuthMessage {
+    font-size: 13px;
+    padding: 10px 25px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 18px;
+    left: 8px;
+  }
+
+  .loginButton {
+    padding: 5px 14px;
+    font-size: 12px;
   }
 
   .cabinClassGroup {
@@ -904,7 +996,6 @@
   }
 }
 
-/* Для маленьких смартфонов (320px) */
 @media (max-width: 479px) {
   .bookingForm {
     padding: 15px;
@@ -1018,12 +1109,24 @@
     font-size: 14px;
   }
 
-  .authMessage {
-    padding: 10px;
+  .errorMessage {
+    padding: 4px;
+    font-size: 11px;
   }
 
-  .authMessage p {
-    font-size: 13px;
+  .noAuthMessage {
+    font-size: 12px;
+    padding: 8px 20px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 16px;
+    left: 6px;
+  }
+
+  .loginButton {
+    padding: 5px 12px;
+    font-size: 11px;
   }
 
   .cabinClassGroup {

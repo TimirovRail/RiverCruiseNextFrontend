@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./SliderReviewsClient.module.css";
 import { API_BASE_URL } from '../../src/config';
+import Loading from "@/components/Loading/Loading";
 
 export default function SliderReviewsClient() {
     const [reviews, setReviews] = useState([]);
@@ -61,7 +62,7 @@ export default function SliderReviewsClient() {
                 <h2 className="h1-title">ОТЗЫВЫ НАШИХ КЛИЕНТОВ</h2>
             </div>
             {reviews.length === 0 ? (
-                <p>Загрузка отзывов...</p>
+                <Loading />
             ) : (
                 <div className={styles.slider}>
                     <button

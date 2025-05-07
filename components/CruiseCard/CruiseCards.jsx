@@ -12,23 +12,35 @@ const CruiseCards = () => {
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('name-asc');
 
-    useEffect(() => {
-        const fetchCruises = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/cruises`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                setCruises(data);
-                setSortedCruises(data); // Изначально отображаем все круизы
-            } catch (error) {
-                console.error('Ошибка загрузки круизов:', error);
-                setError('Не удалось загрузить круизы. Попробуйте позже.');
-            } finally {
-                setLoading(false);
+    const fetchCruises = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/cruises`, {
+                headers: {
+                    'Accept': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
             }
-        };
+            const data = await response.json();
+            // Проверяем, что данные являются массивом
+            if (!Array.isArray(data)) {
+                throw new Error('Данные с сервера не являются массивом');
+            }
+            setCruises(data);
+            setSortedCruises(data); // Изначально отображаем все круизы
+            setError(null);
+        } catch (error) {
+            console.error('Ошибка загрузки круизов:', error);
+            setError(error.message || 'Не удалось загрузить круизы. Проверьте соединение и попробуйте снова.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchCruises();
     }, []);
 
@@ -61,13 +73,24 @@ const CruiseCards = () => {
     }, [sortOption, cruises]);
 
     if (loading) return <Loading />;
-    if (error) return <p className={styles.errorMessage}>{error}</p>;
-
+    
     return (
         <div className='layout'>
             <div className='title'>
                 <h2 className='h1-title'>ВСЕ КРУИЗЫ</h2>
             </div>
+
+            {error && (
+                <div className={styles.errorMessage}>
+                    <p>{error}</p>
+                    <button
+                        onClick={fetchCruises}
+                        className={styles.retryButton}
+                    >
+                        Попробовать снова
+                    </button>
+                </div>
+            )}
 
             {/* Панель сортировки */}
             <div className={styles.filterSortContainer}>
@@ -105,7 +128,7 @@ const CruiseCards = () => {
                         </div>
                     ))
                 ) : (
-                    <p>Круизы не найдены.</p>
+                    !error && <p>Круизы не найдены.</p>
                 )}
             </div>
         </div>

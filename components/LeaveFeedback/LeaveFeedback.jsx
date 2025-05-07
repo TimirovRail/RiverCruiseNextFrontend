@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './LeaveFeedback.module.css';
 import { API_BASE_URL } from '../../src/config';
+import Loading from "@/components/Loading/Loading";
 
 export default function LeaveFeedback() {
     const [comment, setComment] = useState('');
@@ -15,6 +16,7 @@ export default function LeaveFeedback() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -25,10 +27,10 @@ export default function LeaveFeedback() {
             setUser(JSON.parse(storedUser));
             fetchAvailableCruises(token);
         } else {
+            setIsAuthenticated(false);
             setIsLoading(false);
-            router.push('/login');
         }
-    }, [router]);
+    }, []);
 
     const fetchAvailableCruises = async (token) => {
         try {
@@ -37,14 +39,17 @@ export default function LeaveFeedback() {
             });
             if (!res.ok) {
                 const errorData = await res.json();
-                throw new Error(`Ошибка загрузки круизов: ${errorData.error || res.statusText}`);
+                throw new Error(errorData.error || `Ошибка сервера: ${res.status} ${res.statusText}`);
             }
             const data = await res.json();
-            console.log('Полученные круизы:', data);
-            setCruises(data); // Данные уже уникальны, так как фильтрация происходит на бэкенде
+            if (!Array.isArray(data)) {
+                throw new Error('Данные с сервера не являются массивом');
+            }
+            setCruises(data);
+            setError(null);
         } catch (error) {
-            console.error('Ошибка:', error);
-            alert(error.message);
+            console.error('Ошибка загрузки круизов:', error);
+            setError(error.message || 'Не удалось загрузить доступные круизы. Попробуйте позже.');
         } finally {
             setIsLoading(false);
         }
@@ -64,13 +69,12 @@ export default function LeaveFeedback() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!isAuthenticated) {
-            alert('Для отправки отзыва необходимо авторизоваться');
-            router.push('/login');
+            setError('Для отправки отзыва необходимо авторизоваться');
             return;
         }
 
         if (!comment || !cruiseId || !bookingId) {
-            alert('Пожалуйста, заполните все поля');
+            setError('Пожалуйста, заполните все поля');
             return;
         }
 
@@ -93,7 +97,7 @@ export default function LeaveFeedback() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Ошибка отправки отзыва');
+                throw new Error(errorData.error || `Ошибка сервера: ${response.status} ${response.statusText}`);
             }
 
             const newReview = await response.json();
@@ -102,12 +106,14 @@ export default function LeaveFeedback() {
             setCruiseId('');
             setBookingId('');
             setSubmitted(true);
+            setError(null);
             setTimeout(() => setSubmitted(false), 3000);
 
             // Обновляем список доступных круизов после отправки отзыва
             fetchAvailableCruises(token);
         } catch (error) {
-            alert(error.message);
+            console.error('Ошибка отправки отзыва:', error);
+            setError(error.message || 'Не удалось отправить отзыв. Попробуйте снова.');
         }
     };
 
@@ -119,12 +125,33 @@ export default function LeaveFeedback() {
             <div className={styles.feedbackContainer}>
                 <div className={styles.formWrapper}>
                     {isLoading ? (
-                        <p>Загрузка круизов...</p>
+                        <Loading />
                     ) : (
                         <>
                             {submitted && <div className={styles.successMessage}>Отзыв отправлен!</div>}
+                            {error && (
+                                <div className={styles.errorMessage}>
+                                    <p>{error}</p>
+                                    {error.includes('авторизоваться') && (
+                                        <button
+                                            onClick={() => router.push('/login')}
+                                            className={styles.loginButton}
+                                        >
+                                            Авторизоваться
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                             {!isAuthenticated ? (
-                                <p>Для отправки отзыва необходимо <a href="/login">авторизоваться</a>.</p>
+                                <div className={styles.noAuthMessage}>
+                                    <p>Чтобы оставить отзыв, пожалуйста, авторизуйтесь.</p>
+                                    <button
+                                        onClick={() => router.push('/login')}
+                                        className={styles.loginButton}
+                                    >
+                                        Войти
+                                    </button>
+                                </div>
                             ) : cruises.length === 0 ? (
                                 <p className={styles.noCruisesMessage}>
                                     У вас нет завершённых круизов, о которых можно оставить отзыв.
