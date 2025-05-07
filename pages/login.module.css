@@ -1,4 +1,3 @@
-/* Существующие стили остаются без изменений */
 .container {
     display: flex;
     flex-direction: column;
@@ -22,11 +21,13 @@
 
 .switch {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin-bottom: 2rem;
+    gap: 10px;
 }
 
 .switch button {
+    flex: 1;
     background-color: transparent;
     border: 2px solid #2A376D;
     font-size: 1.1rem;
@@ -35,6 +36,8 @@
     border-radius: 8px;
     transition: all 0.3s;
     color: #006C9E;
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .switch .active {
@@ -136,7 +139,6 @@
     }
 }
 
-/* Новые стили для двухфакторной аутентификации */
 .authContainer {
     background-color: #ffffff;
     padding: 2.5rem;
@@ -178,11 +180,13 @@
 }
 
 .codeInputWrapper {
+    display: flex;
+    gap: 10px;
     margin-bottom: 1.5rem;
 }
 
 .codeInputWrapper input {
-    width: 100%;
+    flex: 1;
     padding: 0.8rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -190,6 +194,8 @@
     background-color: #f9fafb;
     transition: border-color 0.3s;
     text-align: center;
+    height: 48px;
+    box-sizing: border-box;
 }
 
 .codeInputWrapper input:focus {
@@ -198,7 +204,7 @@
 }
 
 .verifyButton {
-    width: 100%;
+    flex: 1;
     padding: 0.8rem;
     background-color: #2A376D;
     color: white;
@@ -207,6 +213,8 @@
     font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    height: 48px;
+    box-sizing: border-box;
 }
 
 .verifyButton:hover {
@@ -221,7 +229,6 @@
     text-align: center;
 }
 
-/* Адаптивность для планшетов (768px и меньше) */
 @media (max-width: 768px) {
     .formContainer {
         padding: 2rem;
@@ -276,15 +283,16 @@
     .codeInputWrapper input {
         font-size: 0.9rem;
         padding: 0.7rem;
+        height: 44px;
     }
 
     .verifyButton {
         font-size: 1rem;
         padding: 0.7rem;
+        height: 44px;
     }
 }
 
-/* Адаптивность для маленьких экранов (480px и меньше) */
 @media (max-width: 480px) {
     .formContainer {
         padding: 1.5rem;
@@ -339,15 +347,16 @@
     .codeInputWrapper input {
         font-size: 0.85rem;
         padding: 0.6rem;
+        height: 40px;
     }
 
     .verifyButton {
         font-size: 0.9rem;
         padding: 0.6rem;
+        height: 40px;
     }
 }
 
-/* Адаптивность для очень маленьких экранов (320px и меньше) */
 @media (max-width: 320px) {
     .container {
         padding: 0.5rem;
@@ -426,18 +435,16 @@
         font-size: 0.8rem;
     }
 
-    .codeInputWrapper {
-        margin-bottom: 1rem;
-    }
-
     .codeInputWrapper input {
         font-size: 0.8rem;
         padding: 0.5rem;
+        height: 36px;
     }
 
     .verifyButton {
         font-size: 0.85rem;
         padding: 0.5rem;
+        height: 36px;
     }
 
     .successMessage {

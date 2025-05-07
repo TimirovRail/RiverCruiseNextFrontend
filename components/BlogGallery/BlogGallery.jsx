@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './BlogGallery.module.css';
 import { API_BASE_URL } from '../../src/config';
+import Loading from "@/components/Loading/Loading";
 
 export default function PhotoGallery() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -126,7 +127,7 @@ export default function PhotoGallery() {
                 <h2 className='h1-title'>ФОТОГАЛЕРЕЯ</h2>
             </div>
             {isLoading ? (
-                <p>Загрузка...</p>
+                <Loading />
             ) : (
                 <div className={styles.galleryContainer}>
                     <div className={styles.column}>

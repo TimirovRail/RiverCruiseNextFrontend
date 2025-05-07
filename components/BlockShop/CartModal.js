@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './CartModal.module.css';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '../../src/config';
+import Loading from "@/components/Loading/Loading";
 
 const CartModal = ({ isOpen, onClose }) => {
     const [cartItems, setCartItems] = useState([]);
@@ -110,7 +111,7 @@ const CartModal = ({ isOpen, onClose }) => {
                 <button className={styles.closeButton} onClick={onClose}>×</button>
                 <h2>Корзина</h2>
                 {loading ? (
-                    <p>Загрузка...</p>
+                    <Loading />
                 ) : error ? (
                     <p className={styles.errorMessage}>{error}</p>
                 ) : cartItems.length === 0 ? (

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import styles from './BlogContacts.module.css';
 import { API_BASE_URL } from '../../src/config';
+import Loading from "@/components/Loading/Loading";
 
 export default function BlogContacts() {
     const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export default function BlogContacts() {
     });
     const [cruises, setCruises] = useState([]);
     const [services, setServices] = useState([]);
+    const [bookings, setBookings] = useState([]); // Перемещаем сюда
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
@@ -46,42 +48,50 @@ export default function BlogContacts() {
         if (token && storedUser) {
             setIsAuthenticated(true);
             setUser(JSON.parse(storedUser));
-            fetchCruises(token);
-            fetchServices(token);
+            fetchInitialData(token);
         } else {
+            setIsAuthenticated(false);
             setIsLoading(false);
-            router.push('/login');
         }
-    }, [router]);
+    }, []);
 
-    const fetchCruises = async (token) => {
+    const fetchInitialData = async (token) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/cruises`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            if (!res.ok) throw new Error('Ошибка загрузки круизов');
-            const data = await res.json();
-            setCruises(data);
+            const [cruisesRes, bookingsRes, servicesRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/cruises`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                }),
+                fetch(`${API_BASE_URL}/api/bookings`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                }),
+                fetch(`${API_BASE_URL}/api/services`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                }),
+            ]);
+
+            if (!cruisesRes.ok) throw new Error(`Ошибка загрузки круизов: ${cruisesRes.status} ${cruisesRes.statusText}`);
+            if (!bookingsRes.ok) throw new Error(`Ошибка загрузки бронирований: ${bookingsRes.status} ${bookingsRes.statusText}`);
+            if (!servicesRes.ok) throw new Error(`Ошибка загрузки услуг: ${servicesRes.status} ${servicesRes.statusText}`);
+
+            const [cruisesData, bookingsData, servicesData] = await Promise.all([
+                cruisesRes.json(),
+                bookingsRes.json(),
+                servicesRes.json(),
+            ]);
+
+            if (!Array.isArray(cruisesData)) throw new Error('Данные о круизах не являются массивом');
+            if (!Array.isArray(bookingsData)) throw new Error('Данные о бронированиях не являются массивом');
+            if (!Array.isArray(servicesData)) throw new Error('Данные об услугах не являются массивом');
+
+            setCruises(cruisesData);
+            setBookings(bookingsData);
+            setServices(servicesData);
             setError(null);
         } catch (error) {
-            console.error('Ошибка:', error);
-            setError('Не удалось загрузить данные о круизах');
+            console.error('Ошибка загрузки данных:', error);
+            setError(error.message || 'Не удалось загрузить данные. Попробуйте позже.');
         } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const fetchServices = async (token) => {
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/services`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            if (!res.ok) throw new Error('Ошибка загрузки услуг');
-            const data = await res.json();
-            setServices(data);
-        } catch (error) {
-            console.error('Ошибка:', error);
-            setError('Не удалось загрузить данные об услугах');
+            setIsLoading(false); // Сбрасываем isLoading в любом случае
         }
     };
 
@@ -135,10 +145,14 @@ export default function BlogContacts() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!isAuthenticated) {
+            setError('Для бронирования билета необходимо авторизоваться');
+            return;
+        }
+
         const token = localStorage.getItem('token');
         if (!token || !user) {
-            alert('Токен или данные пользователя отсутствуют. Авторизуйтесь.');
-            router.push('/login');
+            setError('Токен или данные пользователя отсутствуют. Пожалуйста, авторизуйтесь.');
             return;
         }
 
@@ -147,7 +161,7 @@ export default function BlogContacts() {
             .find((s) => String(s.id) === String(formData.cruise_schedule_id));
 
         if (!schedule) {
-            alert('Выберите рейс');
+            setError('Выберите рейс');
             return;
         }
 
@@ -158,19 +172,37 @@ export default function BlogContacts() {
 
         const sumOfSeats = economySeats + standardSeats + luxurySeats;
         if (sumOfSeats !== totalSeats) {
-            alert(`Сумма мест по классам (${sumOfSeats}) должна совпадать с общим количеством мест (${totalSeats})`);
+            setError(`Сумма мест по классам (${sumOfSeats}) должна совпадать с общим количеством мест (${totalSeats})`);
             return;
         }
         if (economySeats > schedule.available_economy_places) {
-            alert(`Недостаточно мест для класса "Эконом". Доступно: ${schedule.available_economy_places}`);
+            setError(`Недостаточно мест для класса "Эконом". Доступно: ${schedule.available_economy_places}`);
             return;
         }
         if (standardSeats > schedule.available_standard_places) {
-            alert(`Недостаточно мест для класса "Стандарт". Доступно: ${schedule.available_standard_places}`);
+            setError(`Недостаточно мест для класса "Стандарт". Доступно: ${schedule.available_standard_places}`);
             return;
         }
         if (luxurySeats > schedule.available_luxury_places) {
-            alert(`Недостаточно мест для класса "Люкс". Доступно: ${schedule.available_luxury_places}`);
+            setError(`Недостаточно мест для класса "Люкс". Доступно: ${schedule.available_luxury_places}`);
+            return;
+        }
+
+        // Проверка общего количества забронированных мест
+        const userBookings = bookings.filter(b => b.user_id === user.id && b.is_paid) || [];
+        const totalBookedSeats = {
+            economy: userBookings.reduce((sum, b) => sum + (b.economy_seats || 0), 0),
+            standard: userBookings.reduce((sum, b) => sum + (b.standard_seats || 0), 0),
+            luxury: userBookings.reduce((sum, b) => sum + (b.luxury_seats || 0), 0),
+        };
+
+        const maxSeatsPerCategory = 5; // Лимит на категорию
+        if (
+            (totalBookedSeats.economy + economySeats > maxSeatsPerCategory) ||
+            (totalBookedSeats.standard + standardSeats > maxSeatsPerCategory) ||
+            (totalBookedSeats.luxury + luxurySeats > maxSeatsPerCategory)
+        ) {
+            setError('Вы превысили максимальное количество мест (5 мест на категорию).');
             return;
         }
 
@@ -197,7 +229,8 @@ export default function BlogContacts() {
 
             if (response.ok) {
                 const data = await response.json();
-                alert('Спасибо за бронирование!');
+                setError(null);
+                alert('Благодарим за бронирование! 🎉 Все ваши билеты ждут вас в личном профиле.');
                 setFormData({
                     cruise_schedule_id: '',
                     total_seats: '',
@@ -208,14 +241,14 @@ export default function BlogContacts() {
                     comment: '',
                 });
                 setTotalPrice(0);
-                fetchCruises(token);
+                fetchInitialData(token); // Обновляем все данные
             } else {
                 const errorData = await response.json();
-                alert(`Ошибка: ${errorData.error || errorData.message}`);
+                throw new Error(errorData.error || `Ошибка сервера: ${response.status} ${response.statusText}`);
             }
         } catch (error) {
-            console.error('Ошибка при отправке:', error);
-            alert('Произошла ошибка при бронировании');
+            console.error('Ошибка при бронировании:', error);
+            setError(error.message || 'Произошла ошибка при бронировании. Попробуйте снова.');
         }
     };
 
@@ -230,160 +263,166 @@ export default function BlogContacts() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
             >
-                {isAuthenticated ? (
-                    <div className={styles.formContainer}>
-                        {isLoading ? (
-                            <p>Загрузка рейсов...</p>
-                        ) : error ? (
-                            <p className={styles.error}>{error}</p>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                <div className={styles.cruiseGrid}>
-                                    <label>Выберите круиз и дату</label>
-                                    <div className={styles.cruiseGridInner}>
-                                        {cruises.map((cruise) => (
-                                            <div key={cruise.id} className={styles.cruiseCard}>
-                                                <h3>{cruise.name}</h3>
-                                                <img
-                                                    src={cruiseImages[cruise.name] || '/images/ticketback.jpg'}
-                                                    alt={cruise.name}
-                                                />
-                                                <div className={styles.scheduleGrid}>
-                                                    {(cruise.schedules || []).map((schedule) => (
-                                                        <div
-                                                            key={schedule.id}
-                                                            className={`${styles.scheduleCard} ${String(formData.cruise_schedule_id) === String(schedule.id)
-                                                                ? styles.selected
-                                                                : ''
-                                                                }`}
-                                                            onClick={() => handleScheduleSelect(schedule.id, cruise.name)}
-                                                        >
-                                                            <p>Дата: {new Date(schedule.departure_datetime).toLocaleDateString()}</p>
-                                                            <p>Время: {new Date(schedule.departure_datetime).toLocaleTimeString()}</p>
-                                                            <p>Всего мест: {schedule.available_places}</p>
-                                                            <p>Эконом: {schedule.available_economy_places}</p>
-                                                            <p>Стандарт: {schedule.available_standard_places}</p>
-                                                            <p>Люкс: {schedule.available_luxury_places}</p>
-                                                            <p>Цена: {cruise.price_per_person} руб./чел.</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="total_seats">Общее количество мест</label>
-                                    <input
-                                        type="number"
-                                        id="total_seats"
-                                        name="total_seats"
-                                        min="1"
-                                        value={formData.total_seats}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label>Классы кают</label>
-                                    <div className={styles.cabinClassGroup}>
-                                        <div className={styles.cabinClassInput}>
-                                            <label htmlFor="economy_seats">Эконом (x1)</label>
-                                            <input
-                                                type="number"
-                                                id="economy_seats"
-                                                name="economy_seats"
-                                                min="0"
-                                                value={formData.economy_seats}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                            />
-                                        </div>
-                                        <div className={styles.cabinClassInput}>
-                                            <label htmlFor="standard_seats">Стандарт (x1.5)</label>
-                                            <input
-                                                type="number"
-                                                id="standard_seats"
-                                                name="standard_seats"
-                                                min="0"
-                                                value={formData.standard_seats}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                            />
-                                        </div>
-                                        <div className={styles.cabinClassInput}>
-                                            <label htmlFor="luxury_seats">Люкс (x2)</label>
-                                            <input
-                                                type="number"
-                                                id="luxury_seats"
-                                                name="luxury_seats"
-                                                min="0"
-                                                value={formData.luxury_seats}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label>Дополнительные услуги</label>
-                                    <div className={styles.checkboxes}>
-                                        {services.map((service) => (
-                                            <div key={service.id} className={styles.serviceItem}>
-                                                <label className={styles.serviceLabel}>
-                                                    <input
-                                                        type="checkbox"
-                                                        value={service.title}
-                                                        onChange={handleExtrasChange}
-                                                        checked={formData.extras.includes(service.title)}
-                                                    />
-                                                    {service.title} ({service.price} руб.)
-                                                </label>
-                                                <div className={styles.serviceTooltip}>
-                                                    <img
-                                                        src={service.img || '/images/default-service.jpg'}
-                                                        alt={service.title}
-                                                        className={styles.tooltipImage}
-                                                    />
-                                                    <div className={styles.tooltipContent}>
-                                                        <h4>{service.title}</h4>
-                                                        <p>{service.description}</p>
-                                                        <p className={styles.tooltipPrice}>
-                                                            Цена: {service.price} руб.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="comment">Комментарий</label>
-                                    <textarea
-                                        id="comment"
-                                        name="comment"
-                                        rows="4"
-                                        value={formData.comment}
-                                        onChange={handleChange}
-                                        placeholder="Ваши пожелания"
-                                    />
-                                </div>
-
-                                <button type="submit" className={styles.submitButton}>Забронировать</button>
-
-                                <div className={styles.totalPrice}>
-                                    <h3>Итог: {totalPrice.toFixed(2)} руб.</h3>
-                                </div>
-                            </form>
-                        )}
+                {isLoading ? (
+                    <Loading />
+                ) : !isAuthenticated ? (
+                    <div className={styles.noAuthMessage}>
+                        <p>Чтобы забронировать билет, пожалуйста, авторизуйтесь.</p>
+                        <button
+                            onClick={() => router.push('/login')}
+                            className={styles.loginButton}
+                        >
+                            Войти
+                        </button>
+                    </div>
+                ) : error ? (
+                    <div className={styles.errorMessage}>
+                        <p>{error}</p>
                     </div>
                 ) : (
-                    <div className={styles.authMessage}>
-                        <p>Для бронирования билета необходимо <a href="/login">авторизоваться</a>.</p>
+                    <div className={styles.formContainer}>
+                        <form onSubmit={handleSubmit}>
+                            <div className={styles.cruiseGrid}>
+                                <label>Выберите круиз и дату</label>
+                                <div className={styles.cruiseGridInner}>
+                                    {cruises.map((cruise) => (
+                                        <div key={cruise.id} className={styles.cruiseCard}>
+                                            <h3>{cruise.name}</h3>
+                                            <img
+                                                src={cruiseImages[cruise.name] || '/images/ticketback.jpg'}
+                                                alt={cruise.name}
+                                            />
+                                            <div className={styles.scheduleGrid}>
+                                                {(cruise.schedules || []).map((schedule) => (
+                                                    <div
+                                                        key={schedule.id}
+                                                        className={`${styles.scheduleCard} ${String(formData.cruise_schedule_id) === String(schedule.id)
+                                                            ? styles.selected
+                                                            : ''
+                                                            }`}
+                                                        onClick={() => handleScheduleSelect(schedule.id, cruise.name)}
+                                                    >
+                                                        <p>Дата: {new Date(schedule.departure_datetime).toLocaleDateString()}</p>
+                                                        <p>Время: {new Date(schedule.departure_datetime).toLocaleTimeString()}</p>
+                                                        <p>Всего мест: {schedule.available_places}</p>
+                                                        <p>Эконом: {schedule.available_economy_places}</p>
+                                                        <p>Стандарт: {schedule.available_standard_places}</p>
+                                                        <p>Люкс: {schedule.available_luxury_places}</p>
+                                                        <p>Цена: {cruise.price_per_person} руб./чел.</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="total_seats">Общее количество мест</label>
+                                <input
+                                    type="number"
+                                    id="total_seats"
+                                    name="total_seats"
+                                    min="1"
+                                    value={formData.total_seats}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label>Классы кают</label>
+                                <div className={styles.cabinClassGroup}>
+                                    <div className={styles.cabinClassInput}>
+                                        <label htmlFor="economy_seats">Эконом (x1)</label>
+                                        <input
+                                            type="number"
+                                            id="economy_seats"
+                                            name="economy_seats"
+                                            min="0"
+                                            value={formData.economy_seats}
+                                            onChange={handleChange}
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                    <div className={styles.cabinClassInput}>
+                                        <label htmlFor="standard_seats">Стандарт (x1.5)</label>
+                                        <input
+                                            type="number"
+                                            id="standard_seats"
+                                            name="standard_seats"
+                                            min="0"
+                                            value={formData.standard_seats}
+                                            onChange={handleChange}
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                    <div className={styles.cabinClassInput}>
+                                        <label htmlFor="luxury_seats">Люкс (x2)</label>
+                                        <input
+                                            type="number"
+                                            id="luxury_seats"
+                                            name="luxury_seats"
+                                            min="0"
+                                            value={formData.luxury_seats}
+                                            onChange={handleChange}
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label>Дополнительные услуги</label>
+                                <div className={styles.checkboxes}>
+                                    {services.map((service) => (
+                                        <div key={service.id} className={styles.serviceItem}>
+                                            <label className={styles.serviceLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    value={service.title}
+                                                    onChange={handleExtrasChange}
+                                                    checked={formData.extras.includes(service.title)}
+                                                />
+                                                {service.title} ({service.price} руб.)
+                                            </label>
+                                            <div className={styles.serviceTooltip}>
+                                                <img
+                                                    src={service.img || '/images/default-service.jpg'}
+                                                    alt={service.title}
+                                                    className={styles.tooltipImage}
+                                                />
+                                                <div className={styles.tooltipContent}>
+                                                    <h4>{service.title}</h4>
+                                                    <p>{service.description}</p>
+                                                    <p className={styles.tooltipPrice}>
+                                                        Цена: {service.price} руб.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="comment">Комментарий</label>
+                                <textarea
+                                    id="comment"
+                                    name="comment"
+                                    rows="4"
+                                    value={formData.comment}
+                                    onChange={handleChange}
+                                    placeholder="Ваши пожелания"
+                                />
+                            </div>
+
+                            <button type="submit" className={styles.submitButton}>Забронировать</button>
+
+                            <div className={styles.totalPrice}>
+                                <h3>Итог: {totalPrice.toFixed(2)} руб.</h3>
+                            </div>
+                        </form>
                     </div>
                 )}
             </motion.div>

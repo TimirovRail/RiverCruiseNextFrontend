@@ -1,4 +1,3 @@
-/* Базовые стили */
 .feedbackContainer {
     display: flex;
     justify-content: space-between;
@@ -96,7 +95,91 @@
     border-radius: 5px;
 }
 
-/* Анимации */
+.errorMessage {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #ffe6e6;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    border-radius: 8px;
+    text-align: center;
+    animation: slideIn 1s ease-in-out;
+}
+
+.noAuthMessage {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #2A376D;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeInMessage 0.8s ease-in-out forwards;
+}
+
+.noAuthMessage::before {
+    content: '🔒';
+    font-size: 24px;
+    color: #2A376D;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.loginButton {
+    padding: 10px 20px;
+    background-color: #2A376D;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.loginButton:hover {
+    background-color: #29376D;
+}
+
+.noCruisesMessage {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #2A376D;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeInMessage 0.8s ease-in-out forwards;
+}
+
+.noCruisesMessage::before {
+    content: '⚠️';
+    font-size: 24px;
+    color: #2A376D;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -119,9 +202,19 @@
     }
 }
 
-/* Адаптивность */
+@keyframes fadeInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 
-/* Для мониторов (1280px, 1600px, 1920px и выше) */
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
 @media (min-width: 1280px) {
     .feedbackContainer {
         flex-direction: row;
@@ -147,18 +240,31 @@
         height: 150px;
     }
 
-    .submitButton {
+    .submitButton,
+    .loginButton {
         padding: 12px 20px;
         font-size: 16px;
     }
 
-    .successMessage {
+    .successMessage,
+    .errorMessage {
         padding: 10px;
         font-size: 16px;
     }
+
+    .noAuthMessage,
+    .noCruisesMessage {
+        font-size: 18px;
+        padding: 20px 40px;
+    }
+
+    .noAuthMessage::before,
+    .noCruisesMessage::before {
+        font-size: 24px;
+        left: 15px;
+    }
 }
 
-/* Для нетбуков (1024px и выше) */
 @media (max-width: 1279px) and (min-width: 1024px) {
     .feedbackContainer {
         flex-direction: row;
@@ -184,18 +290,31 @@
         height: 120px;
     }
 
-    .submitButton {
+    .submitButton,
+    .loginButton {
         padding: 10px 18px;
         font-size: 14px;
     }
 
-    .successMessage {
+    .successMessage,
+    .errorMessage {
         padding: 8px;
         font-size: 14px;
     }
+
+    .noAuthMessage,
+    .noCruisesMessage {
+        font-size: 16px;
+        padding: 15px 35px;
+    }
+
+    .noAuthMessage::before,
+    .noCruisesMessage::before {
+        font-size: 22px;
+        left: 12px;
+    }
 }
 
-/* Для планшетов (768px и выше) */
 @media (max-width: 1023px) and (min-width: 768px) {
     .feedbackContainer {
         flex-direction: column;
@@ -226,18 +345,31 @@
         height: 100px;
     }
 
-    .submitButton {
+    .submitButton,
+    .loginButton {
         padding: 8px 16px;
         font-size: 13px;
     }
 
-    .successMessage {
+    .successMessage,
+    .errorMessage {
         padding: 6px;
         font-size: 13px;
     }
+
+    .noAuthMessage,
+    .noCruisesMessage {
+        font-size: 14px;
+        padding: 12px 30px;
+    }
+
+    .noAuthMessage::before,
+    .noCruisesMessage::before {
+        font-size: 20px;
+        left: 10px;
+    }
 }
 
-/* Для смартфонов (480px и выше) */
 @media (max-width: 767px) and (min-width: 480px) {
     .feedbackContainer {
         flex-direction: column;
@@ -268,18 +400,31 @@
         height: 80px;
     }
 
-    .submitButton {
+    .submitButton,
+    .loginButton {
         padding: 6px 14px;
         font-size: 12px;
     }
 
-    .successMessage {
+    .successMessage,
+    .errorMessage {
         padding: 5px;
         font-size: 12px;
     }
+
+    .noAuthMessage,
+    .noCruisesMessage {
+        font-size: 13px;
+        padding: 10px 25px;
+    }
+
+    .noAuthMessage::before,
+    .noCruisesMessage::before {
+        font-size: 18px;
+        left: 8px;
+    }
 }
 
-/* Для маленьких смартфонов (320px) */
 @media (max-width: 479px) {
     .feedbackContainer {
         flex-direction: column;
@@ -310,120 +455,25 @@
         height: 60px;
     }
 
-    .submitButton {
+    .submitButton,
+    .loginButton {
         padding: 5px 12px;
         font-size: 11px;
     }
 
-    .successMessage {
+    .successMessage,
+    .errorMessage {
         padding: 4px;
         font-size: 11px;
     }
-}
-/* Стили для сообщения об отсутствии круизов */
-.noCruisesMessage {
-    font-size: 18px;
-    color: #666;
-    text-align: center;
-    padding: 20px 40px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); /* Легкий градиент для глубины */
-    border: 2px solid #2A376D; /* Темно-синяя рамка */
-    border-radius: 8px;
-    margin: 20px 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Более выразительная тень */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    opacity: 0;
-    animation: fadeInMessage 0.8s ease-in-out forwards; /* Анимация появления */
-}
 
-/* Псевдоэлемент для иконки */
-.noCruisesMessage::before {
-    content: '⚠️'; /* Иконка предупреждения (можно заменить на другую) */
-    font-size: 24px;
-    color: #2A376D;
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Анимация появления сообщения */
-@keyframes fadeInMessage {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Адаптивность для сообщения */
-
-/* Для мониторов (1280px, 1600px, 1920px и выше) */
-@media (min-width: 1280px) {
-    .noCruisesMessage {
-        font-size: 18px;
-        padding: 20px 40px;
-    }
-
-    .noCruisesMessage::before {
-        font-size: 24px;
-        left: 15px;
-    }
-}
-
-/* Для нетбуков (1024px и выше) */
-@media (max-width: 1279px) and (min-width: 1024px) {
-    .noCruisesMessage {
-        font-size: 16px;
-        padding: 15px 35px;
-    }
-
-    .noCruisesMessage::before {
-        font-size: 22px;
-        left: 12px;
-    }
-}
-
-/* Для планшетов (768px и выше) */
-@media (max-width: 1023px) and (min-width: 768px) {
-    .noCruisesMessage {
-        font-size: 14px;
-        padding: 12px 30px;
-    }
-
-    .noCruisesMessage::before {
-        font-size: 20px;
-        left: 10px;
-    }
-}
-
-/* Для смартфонов (480px и выше) */
-@media (max-width: 767px) and (min-width: 480px) {
-    .noCruisesMessage {
-        font-size: 13px;
-        padding: 10px 25px;
-    }
-
-    .noCruisesMessage::before {
-        font-size: 18px;
-        left: 8px;
-    }
-}
-
-/* Для маленьких смартфонов (320px) */
-@media (max-width: 479px) {
+    .noAuthMessage,
     .noCruisesMessage {
         font-size: 12px;
         padding: 8px 20px;
     }
 
+    .noAuthMessage::before,
     .noCruisesMessage::before {
         font-size: 16px;
         left: 6px;

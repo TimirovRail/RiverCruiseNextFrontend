@@ -338,3 +338,28 @@
         max-width: 300px;
     }
 }
+
+.errorMessage {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #ffe6e6;
+    border: 1px solid #ff4d4d;
+    border-radius: 4px;
+    text-align: center;
+    color: #ff4d4d;
+}
+
+.retryButton {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+    background-color: #e63939;
+}
