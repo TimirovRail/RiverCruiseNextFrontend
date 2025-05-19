@@ -16,6 +16,9 @@
     --foreground: #ededed;
   }
 }
+.leaflet-control-attribution{
+  display: none !important;
+}
 
 /* Базовые стили */
 .layout {

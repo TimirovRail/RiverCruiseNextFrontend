@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './CruiseSchedules.module.css'; // Создай CSS-модуль
-import { API_BASE_URL } from '../../src/config';
+import { API_BASE_URL } from './../src/config';
 
 export default function CruiseSchedules() {
     const [cruises, setCruises] = useState([]);
