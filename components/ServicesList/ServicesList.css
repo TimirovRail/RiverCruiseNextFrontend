@@ -46,19 +46,12 @@
     transition: color 0.3s ease;
 }
 
-.services-list>div:hover .services-text {
-    color: #FF8C00;
-}
 
 .services-description {
     font-size: 16px;
     color: #023047;
     text-align: center;
     transition: color 0.3s ease;
-}
-
-.services-list>div:hover .services-description {
-    color: #FF8C00;
 }
 
 /* Адаптивность */

@@ -19,7 +19,7 @@ export default function BlogContacts() {
     });
     const [cruises, setCruises] = useState([]);
     const [services, setServices] = useState([]);
-    const [bookings, setBookings] = useState([]); // Перемещаем сюда
+    const [bookings, setBookings] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
@@ -91,19 +91,21 @@ export default function BlogContacts() {
             console.error('Ошибка загрузки данных:', error);
             setError(error.message || 'Не удалось загрузить данные. Попробуйте позже.');
         } finally {
-            setIsLoading(false); // Сбрасываем isLoading в любом случае
+            setIsLoading(false);
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+        setError(null); // Clear error on input change
         calculateTotal({ ...formData, [name]: value });
     };
 
     const handleScheduleSelect = (scheduleId, cruiseName) => {
         const scheduleIdStr = String(scheduleId);
         setFormData((prev) => ({ ...prev, cruise_schedule_id: scheduleIdStr }));
+        setError(null); // Clear error on schedule select
         calculateTotal({ ...formData, cruise_schedule_id: scheduleIdStr });
     };
 
@@ -114,6 +116,7 @@ export default function BlogContacts() {
                 ? [...prevData.extras, value]
                 : prevData.extras.filter((extra) => extra !== value);
             const updatedData = { ...prevData, extras: newExtras };
+            setError(null); // Clear error on extras change
             calculateTotal(updatedData);
             return updatedData;
         });
@@ -188,7 +191,6 @@ export default function BlogContacts() {
             return;
         }
 
-        // Проверка общего количества забронированных мест
         const userBookings = bookings.filter(b => b.user_id === user.id && b.is_paid) || [];
         const totalBookedSeats = {
             economy: userBookings.reduce((sum, b) => sum + (b.economy_seats || 0), 0),
@@ -196,7 +198,7 @@ export default function BlogContacts() {
             luxury: userBookings.reduce((sum, b) => sum + (b.luxury_seats || 0), 0),
         };
 
-        const maxSeatsPerCategory = 5; // Лимит на категорию
+        const maxSeatsPerCategory = 5;
         if (
             (totalBookedSeats.economy + economySeats > maxSeatsPerCategory) ||
             (totalBookedSeats.standard + standardSeats > maxSeatsPerCategory) ||
@@ -241,10 +243,10 @@ export default function BlogContacts() {
                     comment: '',
                 });
                 setTotalPrice(0);
-                fetchInitialData(token); // Обновляем все данные
+                fetchInitialData(token);
             } else {
                 const errorData = await response.json();
-                throw new Error(errorData.error || `Ошибка сервера: ${response.status} ${response.statusText}`);
+                setError(errorData.error || `Ошибка сервера: ${response.status} ${response.statusText}`);
             }
         } catch (error) {
             console.error('Ошибка при бронировании:', error);
@@ -252,16 +254,43 @@ export default function BlogContacts() {
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.8, ease: 'easeOut' },
+        },
+    };
+
+    const formVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 },
+        },
+    };
+
+    const inputVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    };
+
+    const errorVariants = {
+        hidden: { opacity: 0, height: 0 },
+        visible: { opacity: 1, height: 'auto', transition: { duration: 0.3 } },
+    };
+
     return (
-        <div className='layout'>
-            <div className='title'>
-                <h2 className='h1-title'>БРОНИРОВАНИЕ БИЛЕТА</h2>
+        <div className="layout">
+            <div className="title">
+                <h2 className="h1-title">БРОНИРОВАНИЕ БИЛЕТА</h2>
             </div>
             <motion.div
                 className={styles.bookingForm}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
             >
                 {isLoading ? (
                     <Loading />
@@ -275,14 +304,25 @@ export default function BlogContacts() {
                             Войти
                         </button>
                     </div>
-                ) : error ? (
-                    <div className={styles.errorMessage}>
-                        <p>{error}</p>
-                    </div>
                 ) : (
-                    <div className={styles.formContainer}>
+                    <motion.div
+                        className={styles.formContainer}
+                        variants={formVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        {error && (
+                            <motion.div
+                                className={styles.errorMessage}
+                                variants={errorVariants}
+                                initial="hidden"
+                                animate="visible"
+                            >
+                                <p>{error}</p>
+                            </motion.div>
+                        )}
                         <form onSubmit={handleSubmit}>
-                            <div className={styles.cruiseGrid}>
+                            <motion.div className={styles.cruiseGrid} variants={inputVariants}>
                                 <label>Выберите круиз и дату</label>
                                 <div className={styles.cruiseGridInner}>
                                     {cruises.map((cruise) => (
@@ -315,9 +355,9 @@ export default function BlogContacts() {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className={styles.inputGroup}>
+                            <motion.div className={styles.inputGroup} variants={inputVariants}>
                                 <label htmlFor="total_seats">Общее количество мест</label>
                                 <input
                                     type="number"
@@ -328,9 +368,9 @@ export default function BlogContacts() {
                                     onChange={handleChange}
                                     required
                                 />
-                            </div>
+                            </motion.div>
 
-                            <div className={styles.inputGroup}>
+                            <motion.div className={styles.inputGroup} variants={inputVariants}>
                                 <label>Классы кают</label>
                                 <div className={styles.cabinClassGroup}>
                                     <div className={styles.cabinClassInput}>
@@ -370,9 +410,9 @@ export default function BlogContacts() {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className={styles.inputGroup}>
+                            <motion.div className={styles.inputGroup} variants={inputVariants}>
                                 <label>Дополнительные услуги</label>
                                 <div className={styles.checkboxes}>
                                     {services.map((service) => (
@@ -403,9 +443,9 @@ export default function BlogContacts() {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className={styles.inputGroup}>
+                            <motion.div className={styles.inputGroup} variants={inputVariants}>
                                 <label htmlFor="comment">Комментарий</label>
                                 <textarea
                                     id="comment"
@@ -415,15 +455,23 @@ export default function BlogContacts() {
                                     onChange={handleChange}
                                     placeholder="Ваши пожелания"
                                 />
-                            </div>
+                            </motion.div>
 
-                            <button type="submit" className={styles.submitButton}>Забронировать</button>
+                            <motion.button
+                                type="submit"
+                                className={styles.submitButton}
+                                variants={inputVariants}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Забронировать
+                            </motion.button>
 
-                            <div className={styles.totalPrice}>
+                            <motion.div className={styles.totalPrice} variants={inputVariants}>
                                 <h3>Итог: {totalPrice.toFixed(2)} руб.</h3>
-                            </div>
+                            </motion.div>
                         </form>
-                    </div>
+                    </motion.div>
                 )}
             </motion.div>
         </div>

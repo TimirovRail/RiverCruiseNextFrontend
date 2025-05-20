@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import styles from './FAQquestions.module.css';
 
 const FAQquestions = () => {
@@ -9,15 +10,15 @@ const FAQquestions = () => {
     const faqData = [
         {
             question: 'Какие реки России популярны для круизов?',
-            answer: 'Популярные реки для круизов в России включают Волгу, Дон, Неву, Лену, Енисей и Обь. Каждая из них предлагает уникальные пейзажи и культурные достопримечательности.',
+            answer: 'Популярные реки для круизов в России включают Волгу, Дон, Амуру, Лену, Енисей и Обь. Каждая из них предлагает уникальные пейзажи и культурные достопримечательности.',
         },
         {
             question: 'Как выбрать подходящий круиз?',
-            answer: 'Выбор круиза зависит от ваших предпочтений: продолжительность, маршрут, уровень комфорта и бюджет. Рекомендуем изучить отзывы и проконсультироваться с туроператором.',
+            answer: 'Выбор круиза зависит от ваших предпочтений: продолжительность, маршрут, уровень комфорта и бюджет. Рекомендуем изучить отзывы и проконсультироваться с туроператором по номеру +7 (937) 521-52-62',
         },
         {
             question: 'Что включено в стоимость круиза?',
-            answer: 'Обычно в стоимость круиза включены проживание, питание, экскурсии и развлекательная программа. Уточняйте детали у туроператора.',
+            answer: 'Обычно в стоимость круиза включены проживание, питание, экскурсии и развлекательная программа. Уточняйте детали у туроператора по номеру +7 (937) 521-52-62',
         },
         {
             question: 'Нужна ли виза для круиза по России?',
@@ -33,19 +34,19 @@ const FAQquestions = () => {
         },
         {
             question: 'Можно ли взять с собой животных?',
-            answer: 'Большинство круизных компаний не разрешают брать животных на борт. Уточните у туроператора.',
+            answer: 'Большинство круизных компаний не разрешают брать животных на борт. Уточните у туроператора по номеру +7 (937) 521-52-62',
         },
         {
             question: 'Какие развлечения доступны на борту?',
-            answer: 'На борту обычно есть рестораны, бары, кинотеатры, экскурсии и развлекательные программы.',
+            answer: 'На борту обычно есть рестораны, массаж, кинотеатры, экскурсии и развлекательные программы.',
         },
         {
             question: 'Как забронировать круиз?',
-            answer: 'Вы можете забронировать круиз через туроператора, на сайте круизной компании или в турагентстве.',
+            answer: 'Вы можете забронировать круиз у нас на сайте и оплатить билет у себя в профиле.',
         },
         {
             question: 'Можно ли отменить бронирование?',
-            answer: 'Условия отмены зависят от политики компании. Обычно можно отменить бронирование с возвратом части средств.',
+            answer: 'Отменить бронирование можно у себя в профиле.',
         },
     ];
 
@@ -57,16 +58,55 @@ const FAQquestions = () => {
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0, x: -50 },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.8, ease: 'easeOut' },
+        },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: (i) => ({
+            opacity: 1,
+            y: 0,
+            transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
+        }),
+    };
+
+    const answerVariants = {
+        hidden: { opacity: 0, height: 0 },
+        visible: {
+            opacity: 1,
+            height: 'auto',
+            transition: { duration: 0.3, ease: 'easeInOut' },
+        },
+    };
+
     return (
         <div className="layout">
             <div className="title">
                 <h2 className="h1-title">ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ</h2>
             </div>
-            <div className={styles.faqContainer}>
+            <motion.div
+                className={styles.faqContainer}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
                 {faqData.map((item, index) => (
-                    <div key={index} className={styles.faqItem}>
+                    <motion.div
+                        key={index}
+                        className={styles.faqItem}
+                        variants={itemVariants}
+                        initial="hidden"
+                        animate="visible"
+                        custom={index}
+                    >
                         <div
-                            className={styles.faqQuestion}
+                            className={`${styles.faqQuestion} ${openIndex === index ? styles.active : ''}`}
                             onClick={() => toggleAnswer(index)}
                         >
                             {item.question}
@@ -75,11 +115,18 @@ const FAQquestions = () => {
                             </span>
                         </div>
                         {openIndex === index && (
-                            <div className={styles.faqAnswer}>{item.answer}</div>
+                            <motion.div
+                                className={styles.faqAnswer}
+                                variants={answerVariants}
+                                initial="hidden"
+                                animate="visible"
+                            >
+                                {item.answer}
+                            </motion.div>
                         )}
-                    </div>
+                    </motion.div>
                 ))}
-            </div>
+            </motion.div>
         </div>
     );
 };
