@@ -42,6 +42,9 @@
   font-weight: bold;
 }
 
+.leaflet-attribution-flag{
+  display: none !important;
+}
 /* Адаптивность */
 
 /* Для мониторов (1280px, 1600px, 1920px и выше) */

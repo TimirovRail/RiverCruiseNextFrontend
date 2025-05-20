@@ -5,16 +5,34 @@ import { FaVk, FaTelegram, FaOdnoklassniki } from 'react-icons/fa';
 import styles from './ContactInfo.module.css';
 
 export default function ContactInfo() {
+    const containerVariants = {
+        hidden: { opacity: 0, x: -50 },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.8, ease: 'easeOut' },
+        },
+    };
+
+    const iconVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: (i) => ({
+            opacity: 1,
+            y: 0,
+            transition: { delay: i * 0.2, duration: 0.5, ease: 'easeOut' },
+        }),
+    };
+
     return (
-        <div className='layout'>
-            <div className='title'>
-                <h2 className='h1-title'>НАШИ КОНТАКТЫ</h2>
+        <div className="layout">
+            <div className="title">
+                <h2 className="h1-title">НАШИ КОНТАКТЫ</h2>
             </div>
             <motion.div
                 className={styles.contactInfo}
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
             >
                 <p>
                     <strong>Адрес:</strong> Москва, ул. Речная, 12. Наш офис находится в деловом центре на третьем этаже.
@@ -32,33 +50,26 @@ export default function ContactInfo() {
                     Мы более 10 лет организуем речные круизы, соединяя комфорт, безопасность и уникальные маршруты.
                 </p>
                 <div className={styles.socials}>
-                    <motion.a
-                        href="https://vk.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                        whileHover={{ scale: 1.2 }}
-                    >
-                        <FaVk size={40} />
-                    </motion.a>
-                    <motion.a
-                        href="https://telegram.org"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                        whileHover={{ scale: 1.2 }}
-                    >
-                        <FaTelegram size={40} />
-                    </motion.a>
-                    <motion.a
-                        href="https://ok.ru"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                        whileHover={{ scale: 1.2 }}
-                    >
-                        <FaOdnoklassniki size={40} />
-                    </motion.a>
+                    {[
+                        { href: 'https://vk.com/rail_tim22', Icon: FaVk },
+                        { href: 'https://telegram.org/rail_timiirov', Icon: FaTelegram },
+                        { href: 'https://ok.ru', Icon: FaOdnoklassniki },
+                    ].map((social, index) => (
+                        <motion.a
+                            key={index}
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.socialLink}
+                            variants={iconVariants}
+                            initial="hidden"
+                            animate="visible"
+                            custom={index}
+                            whileHover={{ scale: 1.2, rotate: 5 }}
+                        >
+                            <social.Icon size={40} />
+                        </motion.a>
+                    ))}
                 </div>
             </motion.div>
         </div>
