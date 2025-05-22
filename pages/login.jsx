@@ -20,11 +20,19 @@ const LoginPage = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [code, setCode] = useState('');
     const [isVerified, setIsVerified] = useState(false);
+    const [showTwoFactorInput, setShowTwoFactorInput] = useState(false);
     const router = useRouter();
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
         setError(null);
+        setFormData({ name: "", email: "", password: "", password_confirmation: "" });
+        setTwoFactorSecret('');
+        setQrCodeUrl('');
+        setCode('');
+        setIsAuthenticated(false);
+        setShowTwoFactorInput(false);
+        setIsVerified(false);
     };
 
     const handleChange = (e) => {
@@ -58,37 +66,34 @@ const LoginPage = () => {
                 body: body,
             });
 
+            // Проверяем, является ли ответ JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Сервер вернул некорректный ответ. Попробуйте позже.');
+            }
+
             const data = await res.json();
 
             if (res.ok) {
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('role', data.role);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                setIsAuthenticated(true);
+
                 if (isLogin) {
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('role', data.role);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-
-                    setIsAuthenticated(true);
-
+                    // При логине: показываем поле для 2FA, если оно включено
                     if (data.user.two_factor_secret) {
-                        setTwoFactorSecret(data.user.two_factor_secret);
-
-                        const otpauthUrl = `otpauth://totp/${encodeURIComponent(
-                            data.user.email
-                        )}?secret=${data.user.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
-
-                        QRCode.toDataURL(otpauthUrl, (err, url) => {
-                            if (err) {
-                                console.error('Ошибка генерации QR-кода:', err);
-                                setError('Не удалось сгенерировать QR-код. Попробуйте снова.');
-                                return;
-                            }
-                            setQrCodeUrl(url);
-                        });
+                        setShowTwoFactorInput(true);
+                    } else {
+                        // Если 2FA не включена, перенаправляем
+                        const role = (data.user?.role || data.role || '').trim().toLowerCase();
+                        redirectBasedOnRole(role);
                     }
                 } else {
-                    setIsLogin(true);
+                    // При регистрации: показываем QR-код и поле для 2FA
                     if (data.two_factor_secret) {
                         setTwoFactorSecret(data.two_factor_secret);
-
                         const otpauthUrl = `otpauth://totp/${encodeURIComponent(
                             data.user.email
                         )}?secret=${data.two_factor_secret}&issuer=${encodeURIComponent("YourAppName")}`;
@@ -101,14 +106,15 @@ const LoginPage = () => {
                             }
                             setQrCodeUrl(url);
                         });
+                        setShowTwoFactorInput(true);
+                    } else {
+                        setIsLogin(true); // Переключаем на форму логина после регистрации
                     }
                 }
             } else {
-                // Обрабатываем ошибки от сервера
                 if (data.message) {
                     setError(data.message);
                 } else if (data.errors) {
-                    // Если сервер вернул ошибки валидации
                     const errorMessages = Object.values(data.errors).flat().join(', ');
                     setError(errorMessages);
                 } else {
@@ -117,7 +123,7 @@ const LoginPage = () => {
             }
         } catch (err) {
             console.error('Ошибка запроса:', err);
-            setError('Не удалось подключиться к серверу. Проверьте ваше интернет-соединение и попробуйте снова.');
+            setError(err.message || 'Не удалось подключиться к серверу. Проверьте ваше интернет-соединение и попробуйте снова.');
         } finally {
             setLoading(false);
         }
@@ -132,14 +138,27 @@ const LoginPage = () => {
 
         setError(null);
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Токен отсутствует. Пожалуйста, войдите заново.');
+                setIsAuthenticated(false);
+                setShowTwoFactorInput(false);
+                return;
+            }
+
             const res = await fetch(`${API_BASE_URL}/api/auth/verify-two-factor`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ code: cleanedCode }),
             });
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Сервер вернул некорректный ответ. Попробуйте позже.');
+            }
 
             const data = await res.json();
 
@@ -150,27 +169,33 @@ const LoginPage = () => {
 
                 const user = JSON.parse(localStorage.getItem('user'));
                 const role = (user?.role || localStorage.getItem('role') || '').trim().toLowerCase();
-
-                if (role === 'admin') {
-                    router.push('/admin/dashboard');
-                } else if (role === 'manager') {
-                    router.push('/manager/profile');
-                } else {
-                    router.push('/');
-                }
+                redirectBasedOnRole(role);
             } else {
-                // Обрабатываем ошибки верификации
-                if (data.error === 'Invalid two-factor code') {
+                if (data.message === 'Unauthenticated.') {
+                    setError('Не удалось аутентифицировать запрос. Пожалуйста, войдите заново.');
+                    setIsAuthenticated(false);
+                    setShowTwoFactorInput(false);
+                } else if (data.error === 'Invalid two-factor code') {
                     setError('Неверный код двухфакторной аутентификации. Попробуйте снова.');
                 } else if (data.error === 'Two-factor authentication not enabled') {
                     setError('Двухфакторная аутентификация не включена для этого пользователя.');
                 } else {
-                    setError(data.error || 'Не удалось подтвердить код. Попробуйте снова.');
+                    setError(data.message || 'Не удалось подтвердить код. Попробуйте снова.');
                 }
             }
         } catch (error) {
             console.error('Ошибка при верификации кода:', error);
             setError('Не удалось подключиться к серверу для проверки кода. Проверьте интернет-соединение.');
+        }
+    };
+
+    const redirectBasedOnRole = (role) => {
+        if (role === 'admin') {
+            router.push('/admin/dashboard');
+        } else if (role === 'manager') {
+            router.push('/manager/profile');
+        } else {
+            router.push('/');
         }
     };
 
@@ -275,17 +300,18 @@ const LoginPage = () => {
                 )}
             </div>
 
-            {isAuthenticated && !isVerified && twoFactorSecret && (
+            {isAuthenticated && !isVerified && showTwoFactorInput && (
                 <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
                     {error && <div className={styles.error}>{error}</div>}
-                    <div className={styles.qrCodeWrapper}>
-                        <p>Сканируйте QR-код в приложении Google Authenticator или введите ключ вручную:</p>
-                        {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
-                        <p><strong>Секретный ключ:</strong> {twoFactorSecret}</p>
-                        <p>Сохраните этот ключ в надежном месте. Он потребуется для восстановления доступа.</p>
-                    </div>
-
+                    {!isLogin && twoFactorSecret && (
+                        <div className={styles.qrCodeWrapper}>
+                            <p>Сканируйте QR-код в приложении Google Authenticator или введите ключ вручную:</p>
+                            {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
+                            <p><strong>Секретный ключ:</strong> {twoFactorSecret}</p>
+                            <p>Сохраните этот ключ в надежном месте. Он потребуется для восстановления доступа.</p>
+                        </div>
+                    )}
                     <div className={styles.codeInputWrapper}>
                         <input
                             type="text"
@@ -297,7 +323,6 @@ const LoginPage = () => {
                             Подтвердить код
                         </button>
                     </div>
-
                     {isVerified && <p className={styles.successMessage}>Двухфакторная аутентификация пройдена!</p>}
                 </div>
             )}
