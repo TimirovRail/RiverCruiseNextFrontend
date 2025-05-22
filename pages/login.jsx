@@ -14,6 +14,7 @@ const LoginPage = () => {
         password_confirmation: "",
     });
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [twoFactorSecret, setTwoFactorSecret] = useState('');
@@ -26,6 +27,7 @@ const LoginPage = () => {
     const toggleForm = () => {
         setIsLogin(!isLogin);
         setError(null);
+        setSuccessMessage(null);
         setFormData({ name: "", email: "", password: "", password_confirmation: "" });
         setTwoFactorSecret('');
         setQrCodeUrl('');
@@ -46,6 +48,7 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccessMessage(null);
 
         const url = isLogin
             ? `${API_BASE_URL}/api/login`
@@ -66,32 +69,30 @@ const LoginPage = () => {
                 body: body,
             });
 
-            // Проверяем, является ли ответ JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new Error('Сервер вернул некорректный ответ. Попробуйте позже.');
             }
 
             const data = await res.json();
+            console.log(`Ответ ${isLogin ? '/api/login' : '/api/register'}:`, data);
 
             if (res.ok) {
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('role', data.role);
                 localStorage.setItem('user', JSON.stringify(data.user));
+                console.log('Сохранённый токен:', data.access_token);
 
                 setIsAuthenticated(true);
 
                 if (isLogin) {
-                    // При логине: показываем поле для 2FA, если оно включено
                     if (data.user.two_factor_secret) {
                         setShowTwoFactorInput(true);
                     } else {
-                        // Если 2FA не включена, перенаправляем
                         const role = (data.user?.role || data.role || '').trim().toLowerCase();
                         redirectBasedOnRole(role);
                     }
                 } else {
-                    // При регистрации: показываем QR-код и поле для 2FA
                     if (data.two_factor_secret) {
                         setTwoFactorSecret(data.two_factor_secret);
                         const otpauthUrl = `otpauth://totp/${encodeURIComponent(
@@ -106,9 +107,10 @@ const LoginPage = () => {
                             }
                             setQrCodeUrl(url);
                         });
-                        setShowTwoFactorInput(true);
+                        setSuccessMessage('Регистрация успешна! Сканируйте QR-код или сохраните секретный ключ в Google Authenticator, затем нажмите "Перейти к авторизации".');
                     } else {
-                        setIsLogin(true); // Переключаем на форму логина после регистрации
+                        setSuccessMessage('Регистрация успешна! Войдите, используя ваши данные.');
+                        setIsLogin(true);
                     }
                 }
             } else {
@@ -117,6 +119,8 @@ const LoginPage = () => {
                 } else if (data.errors) {
                     const errorMessages = Object.values(data.errors).flat().join(', ');
                     setError(errorMessages);
+                } else if (data.email) {
+                    setError(data.email.join(', '));
                 } else {
                     setError(isLogin ? 'Не удалось войти. Проверьте email и пароль.' : 'Не удалось зарегистрироваться. Проверьте введенные данные.');
                 }
@@ -139,6 +143,7 @@ const LoginPage = () => {
         setError(null);
         try {
             const token = localStorage.getItem('token');
+            console.log('Токен для 2FA:', token);
             if (!token) {
                 setError('Токен отсутствует. Пожалуйста, войдите заново.');
                 setIsAuthenticated(false);
@@ -161,6 +166,7 @@ const LoginPage = () => {
             }
 
             const data = await res.json();
+            console.log('Ответ /api/auth/verify-two-factor:', data);
 
             if (res.ok) {
                 setIsVerified(true);
@@ -187,6 +193,11 @@ const LoginPage = () => {
             console.error('Ошибка при верификации кода:', error);
             setError('Не удалось подключиться к серверу для проверки кода. Проверьте интернет-соединение.');
         }
+    };
+
+    const handleProceedToLogin = () => {
+        setIsLogin(true);
+        setSuccessMessage('Войдите, используя код из Google Authenticator.');
     };
 
     const redirectBasedOnRole = (role) => {
@@ -216,6 +227,7 @@ const LoginPage = () => {
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}
+                {successMessage && <div className={styles.success}>{successMessage}</div>}
 
                 {isLogin ? (
                     <form className={styles.form} onSubmit={handleSubmit}>
@@ -300,7 +312,7 @@ const LoginPage = () => {
                 )}
             </div>
 
-            {isAuthenticated && !isVerified && showTwoFactorInput && (
+            {isAuthenticated && !isVerified && (
                 <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
                     {error && <div className={styles.error}>{error}</div>}
@@ -310,19 +322,24 @@ const LoginPage = () => {
                             {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
                             <p><strong>Секретный ключ:</strong> {twoFactorSecret}</p>
                             <p>Сохраните этот ключ в надежном месте. Он потребуется для восстановления доступа.</p>
+                            <button onClick={handleProceedToLogin} className={styles.verifyButton}>
+                                Сохранил ключ, перейти к авторизации
+                            </button>
                         </div>
                     )}
-                    <div className={styles.codeInputWrapper}>
-                        <input
-                            type="text"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            placeholder="Введите код из Google Authenticator"
-                        />
-                        <button onClick={handleVerifyCode} className={styles.verifyButton}>
-                            Подтвердить код
-                        </button>
-                    </div>
+                    {isLogin && showTwoFactorInput && (
+                        <div className={styles.codeInputWrapper}>
+                            <input
+                                type="text"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                placeholder="Введите код из Google Authenticator"
+                            />
+                            <button onClick={handleVerifyCode} className={styles.verifyButton}>
+                                Подтвердить код
+                            </button>
+                        </div>
+                    )}
                     {isVerified && <p className={styles.successMessage}>Двухфакторная аутентификация пройдена!</p>}
                 </div>
             )}
