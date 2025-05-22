@@ -16,7 +16,9 @@
     --foreground: #ededed;
   }
 }
-
+.leaflet-control-attribution{
+  display: none !important;
+}
 /* Базовые стили */
 .layout {
   max-width: 1520px;
@@ -131,6 +133,3 @@
 
 
 
-.leaflet-attribution-flag{
-  display: none !important;
-}
