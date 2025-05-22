@@ -141,6 +141,66 @@
     font-size: 0.9rem;
 }
 
+/* Отзывы */
+.reviews {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reviews h3 {
+    font-size: 1.3rem;
+    color: #2a376d;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.reviews ul {
+    list-style: none;
+    padding: 0;
+}
+
+.reviews ul li {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.reviews ul li:last-child {
+    border-bottom: none;
+}
+
+.reviewComment {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.reviewComment strong {
+    color: #2a376d;
+}
+
+.reviewRating {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.reviewUser {
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+}
+
+.noReviews {
+    font-size: 1rem;
+    color: #888;
+    font-style: italic;
+}
+
 /* Расписание */
 .schedules {
     margin-top: 20px;
@@ -246,6 +306,7 @@
     background-color: #1e2a4b;
     transform: translateY(-2px);
 }
+
 /* Стили для обертки изображения каюты */
 .cabinImageWrapper {
     cursor: pointer;
@@ -281,6 +342,7 @@
     height: auto;
     border-radius: 8px;
 }
+
 /* Адаптивность */
 
 /* Для мониторов (1280px и выше) */
@@ -435,6 +497,7 @@
 
     .cabinClasses h3,
     .features h3,
+    .reviews h3,
     .schedules h3 {
         font-size: 1.2rem;
     }
@@ -460,6 +523,19 @@
     .backButton {
         padding: 10px 20px;
         font-size: 0.9rem;
+    }
+
+    .reviews ul li {
+        font-size: 0.95rem;
+    }
+
+    .reviewComment {
+        font-size: 0.95rem;
+    }
+
+    .reviewRating,
+    .reviewUser {
+        font-size: 0.85rem;
     }
 }
 
@@ -498,6 +574,7 @@
 
     .cabinClasses h3,
     .features h3,
+    .reviews h3,
     .schedules h3 {
         font-size: 1.1rem;
     }
@@ -537,5 +614,18 @@
     .backButton {
         padding: 8px 15px;
         font-size: 0.85rem;
+    }
+
+    .reviews ul li {
+        font-size: 0.9rem;
+    }
+
+    .reviewComment {
+        font-size: 0.9rem;
+    }
+
+    .reviewRating,
+    .reviewUser {
+        font-size: 0.8rem;
     }
 }

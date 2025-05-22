@@ -111,7 +111,7 @@ const FAQquestions = () => {
                         >
                             {item.question}
                             <span className={styles.arrow}>
-                                {openIndex === index ? '▲' : '▼'}
+                                {openIndex === index ? '' : ''}
                             </span>
                         </div>
                         {openIndex === index && (

@@ -1,4 +1,4 @@
-/* Базовые стили */
+/* Контейнер FAQ */
 .faqContainer {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -9,40 +9,79 @@
     padding: 0 20px;
 }
 
+/* Индивидуальный элемент FAQ */
 .faqItem {
-    border: 1px solid #ddd;
+    border: 1px solid #e0e0e0;
+    /* Лёгкая граница */
     overflow: hidden;
-    background-color: #f9f9f9;
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+    /* Мягкий градиент */
+    transition: box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
+    border-radius: 10px;
+    /* Скругление углов */
 }
 
+.faqItem:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Тень при наведении */
+}
+
+/* Вопрос */
 .faqQuestion {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background-color: #f9f9f9;
-    color: #333645;
+    background: transparent;
+    /* Прозрачный фон, чтобы виден был градиент .faqItem */
+    color: #2A376D;
+    /* Основной цвет проекта */
     cursor: pointer;
     font-size: 18px;
     font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .faqQuestion:hover {
-    background-color: #e9e9e9;
+    color: #1E2A4B;
+    /* Более тёмный оттенок при наведении */
 }
 
+/* Стрелка */
+.arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    /* Плавное вращение */
+}
+
+.faqQuestion.active .arrow {
+    transform: rotate(180deg);
+    /* Вращение стрелки при раскрытии */
+}
+
+/* SVG-стрелка */
+.arrow::before {
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232A376D' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+    display: inline-block;
+}
+
+/* Ответ */
 .faqAnswer {
     padding: 15px;
     background-color: #fff;
+    /* Белый фон для ответа */
     color: #333645;
     font-size: 16px;
     line-height: 1.5;
     flex-grow: 1;
+    border-top: 1px solid #e0e0e0;
+    /* Разделитель между вопросом и ответом */
 }
 
 /* Адаптивность */
@@ -65,6 +104,11 @@
         padding: 15px;
         font-size: 16px;
     }
+
+    .arrow {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 /* Для нетбуков (1024px и выше) */
@@ -84,6 +128,11 @@
     .faqAnswer {
         padding: 12px;
         font-size: 15px;
+    }
+
+    .arrow {
+        width: 18px;
+        height: 18px;
     }
 }
 
@@ -105,6 +154,11 @@
         padding: 10px;
         font-size: 14px;
     }
+
+    .arrow {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 /* Для смартфонов (480px и выше) */
@@ -125,6 +179,11 @@
         padding: 8px;
         font-size: 13px;
     }
+
+    .arrow {
+        width: 14px;
+        height: 14px;
+    }
 }
 
 /* Для маленьких смартфонов (320px) */
@@ -144,5 +203,10 @@
     .faqAnswer {
         padding: 6px;
         font-size: 12px;
+    }
+
+    .arrow {
+        width: 12px;
+        height: 12px;
     }
 }

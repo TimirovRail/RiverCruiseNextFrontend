@@ -9,8 +9,7 @@ import Loading from "@/components/Loading/Loading";
 
 export default function BlogContacts() {
     const [formData, setFormData] = useState({
-        cruise_schedule_id: '',
-        total_seats: '',
+        cruise_id: '', // Заменяем cruise_schedule_id на cruise_id для выбора круиза
         economy_seats: '',
         standard_seats: '',
         luxury_seats: '',
@@ -102,11 +101,16 @@ export default function BlogContacts() {
         calculateTotal({ ...formData, [name]: value });
     };
 
-    const handleScheduleSelect = (scheduleId, cruiseName) => {
-        const scheduleIdStr = String(scheduleId);
-        setFormData((prev) => ({ ...prev, cruise_schedule_id: scheduleIdStr }));
-        setError(null); // Clear error on schedule select
-        calculateTotal({ ...formData, cruise_schedule_id: scheduleIdStr });
+    const handleCruiseSelect = (cruiseId) => {
+        setFormData((prev) => ({ ...prev, cruise_id: cruiseId, cruise_schedule_id: '' })); // Сбрасываем schedule_id
+        setError(null);
+        calculateTotal({ ...formData, cruise_id: cruiseId });
+    };
+
+    const handleScheduleSelect = (scheduleId) => {
+        setFormData((prev) => ({ ...prev, cruise_schedule_id: String(scheduleId) }));
+        setError(null);
+        calculateTotal({ ...formData, cruise_schedule_id: String(scheduleId) });
     };
 
     const handleExtrasChange = (e) => {
@@ -171,13 +175,8 @@ export default function BlogContacts() {
         const economySeats = parseInt(formData.economy_seats) || 0;
         const standardSeats = parseInt(formData.standard_seats) || 0;
         const luxurySeats = parseInt(formData.luxury_seats) || 0;
-        const totalSeats = parseInt(formData.total_seats) || 0;
+        const totalSeats = economySeats + standardSeats + luxurySeats;
 
-        const sumOfSeats = economySeats + standardSeats + luxurySeats;
-        if (sumOfSeats !== totalSeats) {
-            setError(`Сумма мест по классам (${sumOfSeats}) должна совпадать с общим количеством мест (${totalSeats})`);
-            return;
-        }
         if (economySeats > schedule.available_economy_places) {
             setError(`Недостаточно мест для класса "Эконом". Доступно: ${schedule.available_economy_places}`);
             return;
@@ -234,8 +233,7 @@ export default function BlogContacts() {
                 setError(null);
                 alert('Благодарим за бронирование! 🎉 Все ваши билеты ждут вас в личном профиле.');
                 setFormData({
-                    cruise_schedule_id: '',
-                    total_seats: '',
+                    cruise_id: '',
                     economy_seats: '',
                     standard_seats: '',
                     luxury_seats: '',
@@ -281,6 +279,11 @@ export default function BlogContacts() {
         visible: { opacity: 1, height: 'auto', transition: { duration: 0.3 } },
     };
 
+    const selectedCruise = cruises.find((c) => String(c.id) === String(formData.cruise_id));
+    const selectedSchedule = selectedCruise
+        ? selectedCruise.schedules.find((s) => String(s.id) === String(formData.cruise_schedule_id))
+        : null;
+
     return (
         <div className="layout">
             <div className="title">
@@ -323,52 +326,101 @@ export default function BlogContacts() {
                         )}
                         <form onSubmit={handleSubmit}>
                             <motion.div className={styles.cruiseGrid} variants={inputVariants}>
-                                <label>Выберите круиз и дату</label>
+                                <label>Выберите круиз</label>
                                 <div className={styles.cruiseGridInner}>
                                     {cruises.map((cruise) => (
-                                        <div key={cruise.id} className={styles.cruiseCard}>
+                                        <div
+                                            key={cruise.id}
+                                            className={`${styles.cruiseCard} ${String(formData.cruise_id) === String(cruise.id) ? styles.selectedCruise : ''}`}
+                                            onClick={() => handleCruiseSelect(cruise.id)}
+                                        >
                                             <h3>{cruise.name}</h3>
                                             <img
                                                 src={cruiseImages[cruise.name] || '/images/ticketback.jpg'}
                                                 alt={cruise.name}
                                             />
-                                            <div className={styles.scheduleGrid}>
-                                                {(cruise.schedules || []).map((schedule) => (
-                                                    <div
-                                                        key={schedule.id}
-                                                        className={`${styles.scheduleCard} ${String(formData.cruise_schedule_id) === String(schedule.id)
-                                                            ? styles.selected
-                                                            : ''
-                                                            }`}
-                                                        onClick={() => handleScheduleSelect(schedule.id, cruise.name)}
-                                                    >
-                                                        <p>Дата: {new Date(schedule.departure_datetime).toLocaleDateString()}</p>
-                                                        <p>Время: {new Date(schedule.departure_datetime).toLocaleTimeString()}</p>
-                                                        <p>Всего мест: {schedule.available_places}</p>
-                                                        <p>Эконом: {schedule.available_economy_places}</p>
-                                                        <p>Стандарт: {schedule.available_standard_places}</p>
-                                                        <p>Люкс: {schedule.available_luxury_places}</p>
-                                                        <p>Цена: {cruise.price_per_person} руб./чел.</p>
-                                                    </div>
-                                                ))}
-                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </motion.div>
 
-                            <motion.div className={styles.inputGroup} variants={inputVariants}>
-                                <label htmlFor="total_seats">Общее количество мест</label>
-                                <input
-                                    type="number"
-                                    id="total_seats"
-                                    name="total_seats"
-                                    min="1"
-                                    value={formData.total_seats}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </motion.div>
+                            {formData.cruise_id && selectedCruise && (
+                                <motion.div className={styles.scheduleGrid} variants={inputVariants}>
+                                    <label>Выберите дату рейса</label>
+                                    <div className={styles.scheduleGridInner}>
+                                        {(selectedCruise.schedules || []).map((schedule) => (
+                                            <div
+                                                key={schedule.id}
+                                                className={`${styles.scheduleCard} ${String(formData.cruise_schedule_id) === String(schedule.id) ? styles.selected : ''}`}
+                                                onClick={() => handleScheduleSelect(schedule.id)}
+                                            >
+                                                <p>Дата: {new Date(schedule.departure_datetime).toLocaleDateString()}</p>
+                                                <p>Время: {new Date(schedule.departure_datetime).toLocaleTimeString()}</p>
+                                                <p>Цена: {selectedCruise.price_per_person} руб./чел.</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {formData.cruise_schedule_id && selectedSchedule && (
+                                <motion.div className={styles.scheduleSection} variants={inputVariants}>
+                                    <h3>Расписание выбранного круиза</h3>
+                                    <div className={styles.scheduleDetails}>
+                                        <div className={styles.scheduleItem}>
+                                            <p><strong>Дата отправления:</strong> {new Date(selectedSchedule.departure_datetime).toLocaleDateString()}</p>
+                                            <p><strong>Время отправления:</strong> {new Date(selectedSchedule.departure_datetime).toLocaleTimeString()}</p>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <p><strong>Дата прибытия:</strong> {new Date(selectedSchedule.arrival_datetime).toLocaleDateString()}</p>
+                                            <p><strong>Время прибытия:</strong> {new Date(selectedSchedule.arrival_datetime).toLocaleTimeString()}</p>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <p><strong>Доступные места:</strong></p>
+                                            <ul>
+                                                <li>Эконом: {selectedSchedule.available_economy_places}</li>
+                                                <li>Стандарт: {selectedSchedule.available_standard_places}</li>
+                                                <li>Люкс: {selectedSchedule.available_luxury_places}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className={styles.cabinGallery}>
+                                        <h3>Фотографии кают</h3>
+                                        <div className={styles.cabinImages}>
+                                            {selectedCruise?.cabins_by_class?.economy?.image_path && (
+                                                <div className={styles.cabinImageWrapper}>
+                                                    <img
+                                                        src={selectedCruise.cabins_by_class.economy.image_path}
+                                                        alt="Эконом каюта"
+                                                        onClick={() => openImage(selectedCruise.cabins_by_class.economy.image_path)}
+                                                    />
+                                                    <p>Эконом каюта</p>
+                                                </div>
+                                            )}
+                                            {selectedCruise?.cabins_by_class?.standard?.image_path && (
+                                                <div className={styles.cabinImageWrapper}>
+                                                    <img
+                                                        src={selectedCruise.cabins_by_class.standard.image_path}
+                                                        alt="Стандарт каюта"
+                                                        onClick={() => openImage(selectedCruise.cabins_by_class.standard.image_path)}
+                                                    />
+                                                    <p>Стандарт каюта</p>
+                                                </div>
+                                            )}
+                                            {selectedCruise?.cabins_by_class?.luxury?.image_path && (
+                                                <div className={styles.cabinImageWrapper}>
+                                                    <img
+                                                        src={selectedCruise.cabins_by_class.luxury.image_path}
+                                                        alt="Люкс каюта"
+                                                        onClick={() => openImage(selectedCruise.cabins_by_class.luxury.image_path)}
+                                                    />
+                                                    <p>Люкс каюта</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
 
                             <motion.div className={styles.inputGroup} variants={inputVariants}>
                                 <label>Классы кают</label>
@@ -410,6 +462,23 @@ export default function BlogContacts() {
                                         />
                                     </div>
                                 </div>
+                                {/* Перемещаем подсчёт мест сюда */}
+                                {(() => {
+                                    const economySeats = parseInt(formData.economy_seats) || 0;
+                                    const standardSeats = parseInt(formData.standard_seats) || 0;
+                                    const luxurySeats = parseInt(formData.luxury_seats) || 0;
+                                    const totalSeats = economySeats + standardSeats + luxurySeats;
+                                    return (
+                                        <p className={styles.totalSeats}>
+                                            {economySeats > 0 && `${economySeats} Эконом`}
+                                            {economySeats > 0 && (standardSeats > 0 || luxurySeats > 0) && ", "}
+                                            {standardSeats > 0 && `${standardSeats} Стандарт`}
+                                            {standardSeats > 0 && luxurySeats > 0 && ", "}
+                                            {luxurySeats > 0 && `${luxurySeats} Люкс`}
+                                            {(economySeats > 0 || standardSeats > 0 || luxurySeats > 0) && ", "}Всего мест: {totalSeats}
+                                        </p>
+                                    );
+                                })()}
                             </motion.div>
 
                             <motion.div className={styles.inputGroup} variants={inputVariants}>
@@ -476,4 +545,19 @@ export default function BlogContacts() {
             </motion.div>
         </div>
     );
+
+    function openImage(src) {
+        const modal = document.createElement('div');
+        modal.className = styles.modal;
+        modal.innerHTML = `
+            <div class="${styles.modalContent}">
+                <img src="${src}" alt="Увеличенное изображение" class="${styles.modalImage}" />
+                <button class="${styles.closeButton}" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
 }

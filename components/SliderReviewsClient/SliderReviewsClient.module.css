@@ -1,14 +1,15 @@
-/* Базовые стили */
+/* Контейнер слайдера */
 .slider {
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     max-width: 1500px;
     margin: 0 auto;
     padding: 0 20px;
     position: relative;
 }
 
+/* Обёртка отзывов */
 .testimonialWrapper {
     display: flex;
     gap: 30px;
@@ -19,41 +20,53 @@
     justify-content: center;
 }
 
+/* Индивидуальный отзыв */
 .testimonial {
-    min-width: 300px;
     background: #ffffff;
     padding: 20px;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
     margin: 20px 0;
     height: auto;
     border-radius: 8px;
+    border: 1px solid #e0e0e0;
     flex: 1;
+    /* Адаптивная ширина */
+    max-width: 400px;
+    /* Ограничение максимальной ширины для десктопов */
 }
 
-.testimonial:hover {
-    transform: scale(1.05);
-}
-
+/* Цитата отзыва */
 .quote {
     font-size: 16px;
     font-style: italic;
-    color: #000000;
+    color: #333333;
     margin: 10px 0;
     line-height: 1.5;
 }
 
+/* Автор отзыва */
 .author {
     font-size: 14px;
     font-weight: bold;
     color: #333;
+    margin-top: 10px;
 }
 
+/* Название круиза */
 .cruise {
     font-size: 12px;
     color: #666;
+    margin-top: 5px;
 }
 
+/* Оценка */
+.rating {
+    font-size: 14px;
+    color: #333;
+    margin-top: 5px;
+}
+
+/* Кнопки навигации */
 .prev,
 .next {
     background-color: #2A376D;
@@ -82,7 +95,7 @@
 /* Для мониторов (1280px, 1600px, 1920px и выше) */
 @media (min-width: 1280px) {
     .slider {
-        gap: 30px;
+        gap: 20px;
         max-width: 1500px;
         padding: 0 20px;
     }
@@ -92,7 +105,6 @@
     }
 
     .testimonial {
-        min-width: 300px;
         padding: 20px;
         margin: 20px 0;
     }
@@ -107,6 +119,10 @@
 
     .cruise {
         font-size: 12px;
+    }
+
+    .rating {
+        font-size: 14px;
     }
 
     .prev,
@@ -129,7 +145,6 @@
     }
 
     .testimonial {
-        min-width: 280px;
         padding: 15px;
         margin: 15px 0;
     }
@@ -144,6 +159,10 @@
 
     .cruise {
         font-size: 11px;
+    }
+
+    .rating {
+        font-size: 13px;
     }
 
     .prev,
@@ -166,7 +185,6 @@
     }
 
     .testimonial {
-        min-width: 300px;
         padding: 12px;
         margin: 10px 0;
     }
@@ -181,6 +199,10 @@
 
     .cruise {
         font-size: 10px;
+    }
+
+    .rating {
+        font-size: 12px;
     }
 
     .prev,
@@ -203,7 +225,8 @@
     }
 
     .testimonial {
-        min-width: 350px;
+        width: 100%;
+        /* Адаптивная ширина */
         padding: 10px;
         margin: 8px 0;
     }
@@ -218,6 +241,10 @@
 
     .cruise {
         font-size: 9px;
+    }
+
+    .rating {
+        font-size: 11px;
     }
 
     .prev,
@@ -240,7 +267,8 @@
     }
 
     .testimonial {
-        min-width: 260px;
+        width: 100%;
+        /* Адаптивная ширина */
         padding: 8px;
         margin: 5px 0;
     }
@@ -255,6 +283,10 @@
 
     .cruise {
         font-size: 8px;
+    }
+
+    .rating {
+        font-size: 10px;
     }
 
     .prev,

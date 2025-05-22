@@ -290,47 +290,94 @@
         padding: 4px 10px;
         font-size: 10px;
     }
+
+    .filterGroup label {
+        font-size: 0.9rem;
+    }
+
+    .filterGroup select {
+        padding: 8px 28px 8px 10px;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .titleContainer {
+        padding: 10px;
+    }
 }
 
-/* Стили для панели сортировки */
+.titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1375px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 .filterSortContainer {
     display: flex;
-    justify-content: center;
-    margin: 10px 0px;
+    align-items: center;
 }
 
 .filterGroup {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
 }
 
 .filterGroup label {
     font-size: 1rem;
     color: #2A376D;
-    font-weight: bold;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .filterGroup select {
-    padding: 8px;
+    appearance: none;
+    padding: 10px 30px 10px 12px;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 200px;
-    transition: border-color 0.3s ease;
+    color: #2A376D;
+    background-color: #fff;
+    border: 2px solid #2A376D;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 220px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232A376D' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.filterGroup select:hover {
+    border-color: #1E2A4B;
+    background-color: #f8f9fa;
 }
 
 .filterGroup select:focus {
-    border-color: #2A376D;
+    border-color: #1E2A4B;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(42, 55, 109, 0.2);
+}
+
+.filterGroup select option {
+    background-color: #fff;
+    color: #2A376D;
+    font-size: 1rem;
 }
 
 /* Адаптивность для панели сортировки */
 @media (max-width: 767px) {
-    .filterSortContainer {
+    .titleContainer {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         gap: 1rem;
+        padding: 15px;
+    }
+
+    .filterSortContainer {
+        width: 100%;
+        justify-content: center;
     }
 
     .filterGroup select {

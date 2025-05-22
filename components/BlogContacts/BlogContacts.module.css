@@ -1,3 +1,191 @@
+.scheduleGrid {
+  margin-bottom: 25px;
+}
+
+.scheduleGrid label {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2A376D;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.scheduleGridInner {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.scheduleSection {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e9ecef 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #2A376D;
+  position: relative;
+  /* Для правильного наложения текста */
+}
+
+.scheduleSection h3 {
+  font-size: 20px;
+  color: #2A376D;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.scheduleDetails {
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.scheduleItem {
+  margin-bottom: 15px;
+}
+
+.scheduleItem p,
+.scheduleItem ul {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.scheduleItem ul {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.scheduleItem ul li {
+  position: relative;
+  padding-left: 15px;
+}
+
+.scheduleItem ul li:before {
+  content: '✓';
+  color: #2A376D;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.cabinGallery {
+  padding: 15px;
+  background: linear-gradient(135deg, #f9f9f9 0%, #e9ecef 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cabinGallery h3 {
+  font-size: 20px;
+  color: #2A376D;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.cabinImages {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cabinImageWrapper {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.cabinImageWrapper img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 3px solid #2A376D;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cabinImageWrapper:hover img {
+  transform: scale(1.1);
+}
+
+.cabinImageWrapper p {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.totalSeats {
+  font-size: 18px;
+  color: #2A376D;
+  font-weight: 600;
+  margin-top: 15px;
+  background: #e6f0fa;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Модальное окно для изображений */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+}
+
+.modalImage {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.closeButton:hover {
+  background: #cc0000;
+}
+
 .bookingForm {
   padding: 40px;
   background: linear-gradient(135deg, #f9f9f9 0%, #e9ecef 100%);
@@ -75,11 +263,12 @@
 
 .scheduleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 10px;
 }
 
 .scheduleCard {
+  flex: 0 0 auto;
+  width: 140px;
   background-color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -89,6 +278,7 @@
   transition: all 0.3s ease;
   position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  scroll-snap-align: start;
 }
 
 .scheduleCard:hover {
@@ -391,151 +581,318 @@
   }
 }
 
-/* Адаптивность */
-@media (min-width: 1280px) {
+/* Расширенная адаптивность */
+@media (min-width: 1920px) {
   .bookingForm {
-    padding: 40px;
-    max-width: 1400px;
+    padding: 50px;
+    max-width: 1600px;
   }
 
   .formContainer {
-    max-width: 1200px;
+    max-width: 1400px;
   }
 
   .cruiseGrid label {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .cruiseGridInner {
-    gap: 20px;
-  }
-
-  .cruiseCard {
-    padding: 15px;
-  }
-
-  .cruiseCard h3 {
-    font-size: 18px;
-  }
-
-  .cruiseCard img {
-    height: 120px;
-  }
-
-  .scheduleGrid {
-    gap: 10px;
-  }
-
-  .scheduleCard p {
-    font-size: 13px;
-  }
-
-  .inputGroup {
+    font-size: 24px;
     margin-bottom: 25px;
   }
 
+  .cruiseGridInner {
+    gap: 25px;
+  }
+
+  .cruiseCard {
+    padding: 20px;
+  }
+
+  .cruiseCard h3 {
+    font-size: 22px;
+  }
+
+  .cruiseCard img {
+    height: 150px;
+  }
+
+  .scheduleGrid {
+    gap: 15px;
+  }
+
+  .scheduleCard {
+    width: 160px;
+    padding: 12px;
+  }
+
+  .scheduleCard p {
+    font-size: 15px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 26px;
+    padding: 0 15px;
+  }
+
+  .inputGroup {
+    margin-bottom: 30px;
+  }
+
   .inputGroup label {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .inputGroup input,
   .inputGroup select,
   .inputGroup textarea {
-    padding: 12px;
-    font-size: 16px;
+    padding: 15px;
+    font-size: 18px;
   }
 
   .inputGroup textarea {
-    height: 100px;
-  }
-
-  .checkboxes {
-    gap: 12px;
-    padding: 15px;
-  }
-
-  .serviceLabel {
-    font-size: 16px;
-    gap: 12px;
-  }
-
-  .serviceItem input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-  }
-
-  .serviceTooltip {
-    width: 300px;
-  }
-
-  .tooltipImage {
     height: 120px;
   }
 
+  .checkboxes {
+    gap: 15px;
+    padding: 18px;
+  }
+
+  .serviceLabel {
+    font-size: 18px;
+    gap: 15px;
+  }
+
+  .serviceItem input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .serviceTooltip {
+    width: 320px;
+  }
+
+  .tooltipImage {
+    height: 140px;
+  }
+
   .tooltipContent h4 {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .tooltipContent p {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .tooltipPrice {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .submitButton {
-    padding: 15px;
-    font-size: 18px;
-  }
-
-  .totalPrice {
-    margin-top: 25px;
-    padding: 15px;
-  }
-
-  .totalPrice h3 {
+    padding: 18px;
     font-size: 20px;
   }
 
+  .totalPrice {
+    margin-top: 30px;
+    padding: 18px;
+  }
+
+  .totalPrice h3 {
+    font-size: 22px;
+  }
+
   .errorMessage {
-    padding: 10px;
-    font-size: 16px;
+    padding: 12px;
+    font-size: 18px;
   }
 
   .noAuthMessage {
-    font-size: 18px;
-    padding: 20px 40px;
+    font-size: 20px;
+    padding: 25px 50px;
   }
 
   .noAuthMessage::before {
-    font-size: 24px;
-    left: 15px;
+    font-size: 28px;
+    left: 18px;
   }
 
   .loginButton {
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 12px 25px;
+    font-size: 18px;
   }
 
   .cabinClassGroup {
-    gap: 25px;
-    margin-top: 15px;
+    gap: 30px;
+    margin-top: 18px;
   }
 
   .cabinClassInput {
-    gap: 8px;
-    min-width: 120px;
+    gap: 10px;
+    min-width: 140px;
   }
 
   .cabinClassInput label {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .cabinClassInput input {
-    padding: 10px;
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .bookingForm {
+    padding: 45px;
+    max-width: 1500px;
+  }
+
+  .formContainer {
+    max-width: 1300px;
+  }
+
+  .cruiseGrid label {
+    font-size: 22px;
+    margin-bottom: 22px;
+  }
+
+  .cruiseGridInner {
+    gap: 22px;
+  }
+
+  .cruiseCard {
+    padding: 18px;
+  }
+
+  .cruiseCard h3 {
+    font-size: 20px;
+  }
+
+  .cruiseCard img {
+    height: 140px;
+  }
+
+  .scheduleGrid {
+    gap: 12px;
+  }
+
+  .scheduleCard {
+    width: 150px;
+    padding: 11px;
+  }
+
+  .scheduleCard p {
     font-size: 14px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 24px;
+    padding: 0 12px;
+  }
+
+  .inputGroup {
+    margin-bottom: 28px;
+  }
+
+  .inputGroup label {
+    font-size: 17px;
+  }
+
+  .inputGroup input,
+  .inputGroup select,
+  .inputGroup textarea {
+    padding: 14px;
+    font-size: 17px;
+  }
+
+  .inputGroup textarea {
+    height: 110px;
+  }
+
+  .checkboxes {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .serviceLabel {
+    font-size: 17px;
+    gap: 14px;
+  }
+
+  .serviceItem input[type="checkbox"] {
+    width: 21px;
+    height: 21px;
+  }
+
+  .serviceTooltip {
+    width: 310px;
+  }
+
+  .tooltipImage {
+    height: 130px;
+  }
+
+  .tooltipContent h4 {
+    font-size: 17px;
+  }
+
+  .tooltipContent p {
+    font-size: 15px;
+  }
+
+  .tooltipPrice {
+    font-size: 15px;
+  }
+
+  .submitButton {
+    padding: 16px;
+    font-size: 19px;
+  }
+
+  .totalPrice {
+    margin-top: 28px;
+    padding: 16px;
+  }
+
+  .totalPrice h3 {
+    font-size: 21px;
+  }
+
+  .errorMessage {
+    padding: 11px;
+    font-size: 17px;
+  }
+
+  .noAuthMessage {
+    font-size: 19px;
+    padding: 22px 45px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 26px;
+    left: 16px;
+  }
+
+  .loginButton {
+    padding: 11px 22px;
+    font-size: 17px;
+  }
+
+  .cabinClassGroup {
+    gap: 28px;
+    margin-top: 16px;
+  }
+
+  .cabinClassInput {
+    gap: 9px;
+    min-width: 130px;
+  }
+
+  .cabinClassInput label {
+    font-size: 15px;
+  }
+
+  .cabinClassInput input {
+    padding: 11px;
+    font-size: 15px;
   }
 }
 
@@ -575,11 +932,17 @@
   }
 
   .scheduleCard {
+    width: 130px;
     padding: 8px;
   }
 
   .scheduleCard p {
     font-size: 12px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 20px;
+    padding: 0 10px;
   }
 
   .inputGroup {
@@ -727,11 +1090,17 @@
   }
 
   .scheduleCard {
+    width: 120px;
     padding: 6px;
   }
 
   .scheduleCard p {
     font-size: 11px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 18px;
+    padding: 0 8px;
   }
 
   .inputGroup {
@@ -880,11 +1249,17 @@
   }
 
   .scheduleCard {
+    width: 110px;
     padding: 5px;
   }
 
   .scheduleCard p {
     font-size: 10px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 16px;
+    padding: 0 6px;
   }
 
   .inputGroup {
@@ -996,7 +1371,7 @@
   }
 }
 
-@media (max-width: 479px) {
+@media (max-width: 479px) and (min-width: 320px) {
   .bookingForm {
     padding: 15px;
     max-width: 300px;
@@ -1033,11 +1408,17 @@
   }
 
   .scheduleCard {
+    width: 100px;
     padding: 4px;
   }
 
   .scheduleCard p {
     font-size: 9px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 14px;
+    padding: 0 4px;
   }
 
   .inputGroup {
@@ -1146,5 +1527,164 @@
   .cabinClassInput input {
     padding: 4px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 319px) {
+  .bookingForm {
+    padding: 10px;
+    max-width: 250px;
+  }
+
+  .formContainer {
+    max-width: 230px;
+  }
+
+  .cruiseGrid label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .cruiseGridInner {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .cruiseCard {
+    padding: 4px;
+  }
+
+  .cruiseCard h3 {
+    font-size: 11px;
+  }
+
+  .cruiseCard img {
+    height: 60px;
+  }
+
+  .scheduleGrid {
+    gap: 3px;
+  }
+
+  .scheduleCard {
+    width: 90px;
+    padding: 3px;
+  }
+
+  .scheduleCard p {
+    font-size: 8px;
+  }
+
+  .scheduleSection h3 {
+    font-size: 12px;
+    padding: 0 3px;
+  }
+
+  .inputGroup {
+    margin-bottom: 8px;
+  }
+
+  .inputGroup label {
+    font-size: 10px;
+  }
+
+  .inputGroup input,
+  .inputGroup select,
+  .inputGroup textarea {
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  .inputGroup textarea {
+    height: 50px;
+  }
+
+  .checkboxes {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .serviceLabel {
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .serviceItem input[type="checkbox"] {
+    width: 10px;
+    height: 10px;
+  }
+
+  .serviceTooltip {
+    width: 200px;
+    top: -150%;
+  }
+
+  .tooltipImage {
+    height: 60px;
+  }
+
+  .tooltipContent h4 {
+    font-size: 10px;
+  }
+
+  .tooltipContent p {
+    font-size: 9px;
+  }
+
+  .tooltipPrice {
+    font-size: 9px;
+  }
+
+  .submitButton {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .totalPrice {
+    margin-top: 8px;
+    padding: 5px;
+  }
+
+  .totalPrice h3 {
+    font-size: 12px;
+  }
+
+  .errorMessage {
+    padding: 3px;
+    font-size: 10px;
+  }
+
+  .noAuthMessage {
+    font-size: 10px;
+    padding: 6px 15px;
+  }
+
+  .noAuthMessage::before {
+    font-size: 14px;
+    left: 5px;
+  }
+
+  .loginButton {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .cabinClassGroup {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .cabinClassInput {
+    gap: 2px;
+    min-width: 60px;
+  }
+
+  .cabinClassInput label {
+    font-size: 9px;
+  }
+
+  .cabinClassInput input {
+    padding: 3px;
+    font-size: 9px;
   }
 }
