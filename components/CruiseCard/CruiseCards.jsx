@@ -25,12 +25,11 @@ const CruiseCards = () => {
                 throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            // Проверяем, что данные являются массивом
             if (!Array.isArray(data)) {
                 throw new Error('Данные с сервера не являются массивом');
             }
             setCruises(data);
-            setSortedCruises(data); // Изначально отображаем все круизы
+            setSortedCruises(data);
             setError(null);
         } catch (error) {
             console.error('Ошибка загрузки круизов:', error);
@@ -44,7 +43,6 @@ const CruiseCards = () => {
         fetchCruises();
     }, []);
 
-    // Логика сортировки
     useEffect(() => {
         let updatedCruises = [...cruises];
 
@@ -73,11 +71,28 @@ const CruiseCards = () => {
     }, [sortOption, cruises]);
 
     if (loading) return <Loading />;
-    
+
     return (
         <div className='layout'>
-            <div className='title'>
-                <h2 className='h1-title'>ВСЕ КРУИЗЫ</h2>
+            <div className={styles.titleContainer}>
+                <div className={styles.titleWrapper}>
+                    <h2 className='h1-title'>ВСЕ КРУИЗЫ</h2>
+                </div>
+                <div className={styles.filterSortContainer}>
+                    <div className={styles.filterGroup}>
+                        <label>Сортировать по:</label>
+                        <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                            <option value="name-asc">Название (А-Я)</option>
+                            <option value="name-desc">Название (Я-А)</option>
+                            <option value="description-asc">Описание (А-Я)</option>
+                            <option value="description-desc">Описание (Я-А)</option>
+                            <option value="river-asc">Место круиза (А-Я)</option>
+                            <option value="river-desc">Место круиза (Я-А)</option>
+                            <option value="price-asc">Цена (по возрастанию)</option>
+                            <option value="price-desc">Цена (по убыванию)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             {error && (
@@ -91,23 +106,6 @@ const CruiseCards = () => {
                     </button>
                 </div>
             )}
-
-            {/* Панель сортировки */}
-            <div className={styles.filterSortContainer}>
-                <div className={styles.filterGroup}>
-                    <label>Сортировать по:</label>
-                    <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
-                        <option value="name-asc">Название (А-Я)</option>
-                        <option value="name-desc">Название (Я-А)</option>
-                        <option value="description-asc">Описание (А-Я)</option>
-                        <option value="description-desc">Описание (Я-А)</option>
-                        <option value="river-asc">Место круиза (А-Я)</option>
-                        <option value="river-desc">Место круиза (Я-А)</option>
-                        <option value="price-asc">Цена (по возрастанию)</option>
-                        <option value="price-desc">Цена (по убыванию)</option>
-                    </select>
-                </div>
-            </div>
 
             <div className={styles.card_container}>
                 {sortedCruises.length > 0 ? (

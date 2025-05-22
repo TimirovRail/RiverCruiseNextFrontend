@@ -13,25 +13,58 @@ const CruiseDetail = () => {
     const { query } = useRouter();
     const { id } = query;
     const [cruise, setCruise] = useState(null);
+    const [reviews, setReviews] = useState([]); // Состояние для отзывов
     const [loading, setLoading] = useState(true);
-    const [selectedImage, setSelectedImage] = useState(null); 
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const fetchUserName = async (userId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/profile?user_id=${userId}`);
+            const data = await response.json();
+            console.log('User data:', data); // Для отладки
+            return data.user?.name || 'Аноним';
+        } catch (error) {
+            console.error('Ошибка загрузки имени пользователя:', error);
+            return 'Аноним';
+        }
+    };
 
     useEffect(() => {
         if (!id) return;
 
-        const fetchCruise = async () => {
+        const fetchCruiseData = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/cruise/${id}`);
-                const data = await response.json();
-                setCruise(data);
+                // Загружаем данные круиза
+                const cruiseResponse = await fetch(`${API_BASE_URL}/api/cruise/${id}`);
+                const cruiseData = await cruiseResponse.json();
+                setCruise(cruiseData);
+
+                // Загружаем все отзывы и фильтруем на клиенте
+                const reviewsResponse = await fetch(`${API_BASE_URL}/api/reviews`);
+                const reviewsData = await reviewsResponse.json();
+                console.log('All reviews data:', reviewsData); // Для отладки
+
+                // Фильтруем отзывы по cruise_id и is_active
+                const filteredReviews = reviewsData.filter(
+                    (review) => review.cruise_id === parseInt(id) && review.is_active
+                );
+                console.log('Filtered reviews:', filteredReviews); // Для отладки
+
+                // Получаем имена пользователей для отзывов
+                const userNames = await Promise.all(filteredReviews.map(review => fetchUserName(review.user_id)));
+                const reviewsWithNames = filteredReviews.map((review, index) => ({
+                    ...review,
+                    user_name: userNames[index]
+                }));
+                setReviews(reviewsWithNames);
             } catch (error) {
-                console.error('Ошибка загрузки круиза:', error);
+                console.error('Ошибка загрузки данных:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchCruise();
+        fetchCruiseData();
     }, [id]);
 
     const openImage = (src) => {
@@ -125,6 +158,22 @@ const CruiseDetail = () => {
                                 </ul>
                             </div>
                         )}
+                        {/* Новый блок для отзывов */}
+                        <div className={styles.reviews}>
+                            <h3>Отзывы о круизе</h3>
+                            {reviews.length > 0 ? (
+                                <ul>
+                                    {reviews.map((review, index) => (
+                                        <li key={index}>
+                                            <p className={styles.reviewComment}><strong>{review.comment}</strong></p>
+                                            <p className={styles.reviewRating}>Оценка: {review.rating}/5</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className={styles.noReviews}>Отзывов пока нет.</p>
+                            )}
+                        </div>
                     </div>
                     <div className={styles.info}>
                         <h1>{cruise.name}</h1>

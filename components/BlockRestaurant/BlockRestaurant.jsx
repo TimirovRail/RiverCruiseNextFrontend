@@ -26,12 +26,11 @@ const BlockRestaurant = () => {
                 throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            // Проверяем, что данные являются массивом
             if (!Array.isArray(data)) {
                 throw new Error('Данные с сервера не являются массивом');
             }
             setServices(data);
-            setSortedServices(data); // Изначально отображаем все услуги
+            setSortedServices(data);
             setError(null);
         } catch (err) {
             console.error('Ошибка загрузки услуг:', err);
@@ -45,7 +44,6 @@ const BlockRestaurant = () => {
         fetchServices();
     }, []);
 
-    // Логика сортировки
     useEffect(() => {
         let updatedServices = [...services];
 
@@ -73,8 +71,21 @@ const BlockRestaurant = () => {
 
     return (
         <div className='layout'>
-            <div className='title'>
+            <div className={styles.titleContainer}>
                 <h2 className='h1-title'>УСЛУГИ</h2>
+                <div className={styles.filterSortContainer}>
+                    <div className={styles.filterGroup}>
+                        <label>Сортировать по:</label>
+                        <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                            <option value="title-asc">Название (А-Я)</option>
+                            <option value="title-desc">Название (Я-А)</option>
+                            <option value="description-asc">Описание (А-Я)</option>
+                            <option value="description-desc">Описание (Я-А)</option>
+                            <option value="price-asc">Цена (по возрастанию)</option>
+                            <option value="price-desc">Цена (по убыванию)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             {error && (
@@ -88,21 +99,6 @@ const BlockRestaurant = () => {
                     </button>
                 </div>
             )}
-
-            {/* Панель сортировки */}
-            <div className={styles.filterSortContainer}>
-                <div className={styles.filterGroup}>
-                    <label>Сортировать по:</label>
-                    <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
-                        <option value="title-asc">Название (А-Я)</option>
-                        <option value="title-desc">Название (Я-А)</option>
-                        <option value="description-asc">Описание (А-Я)</option>
-                        <option value="description-desc">Описание (Я-А)</option>
-                        <option value="price-asc">Цена (по возрастанию)</option>
-                        <option value="price-desc">Цена (по убыванию)</option>
-                    </select>
-                </div>
-            </div>
 
             <div className={styles.wrapper}>
                 {sortedServices.length > 0 ? (
