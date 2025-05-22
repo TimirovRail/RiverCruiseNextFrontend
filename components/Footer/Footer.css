@@ -2,7 +2,7 @@
 .footer-block {
     position: relative;
     background-color: #2A376D;
-    padding: 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,7 +38,7 @@
 }
 
 .footer-logo {
-    width: 130px;
+    width: 100px;
     margin-bottom: 15px;
     position: relative;
     z-index: 1;
@@ -46,9 +46,9 @@
 
 .footer-text {
     width: 100%;
-    font-size: 32px;
+    font-size: 26px;
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-family: "Montserrat", sans-serif;
     position: relative;
     z-index: 1;
@@ -59,63 +59,12 @@
 /* Для мониторов (1280px, 1600px, 1920px и выше) */
 @media (min-width: 1280px) {
     .footer-block {
-        padding: 20px;
-    }
-
-    .footer-logo {
-        width: 130px;
-        margin-bottom: 15px;
-    }
-
-    .footer-text {
-        font-size: 32px;
-        margin-bottom: 20px;
-    }
-}
-
-/* Для нетбуков (1024px и выше) */
-@media (max-width: 1279px) and (min-width: 1024px) {
-    .footer-block {
-        padding: 15px;
-    }
-
-    .footer-logo {
-        width: 110px;
-        margin-bottom: 12px;
-    }
-
-    .footer-text {
-        font-size: 28px;
-        margin-bottom: 15px;
-    }
-}
-
-/* Для планшетов (768px и выше) */
-@media (max-width: 1023px) and (min-width: 768px) {
-    .footer-block {
         padding: 10px;
     }
 
     .footer-logo {
         width: 90px;
-        margin-bottom: 10px;
-    }
-
-    .footer-text {
-        font-size: 24px;
-        margin-bottom: 12px;
-    }
-}
-
-/* Для смартфонов (480px и выше) */
-@media (max-width: 767px) and (min-width: 480px) {
-    .footer-block {
-        padding: 8px;
-    }
-
-    .footer-logo {
-        width: 80px;
-        margin-bottom: 8px;
+        margin-bottom: 15px;
     }
 
     .footer-text {
@@ -124,19 +73,70 @@
     }
 }
 
-/* Для маленьких смартфонов (320px) */
-@media (max-width: 479px) {
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
     .footer-block {
-        padding: 5px;
+        padding: 8px;
+    }
+
+    .footer-logo {
+        width: 80px;
+        margin-bottom: 12px;
+    }
+
+    .footer-text {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .footer-block {
+        padding: 8px;
     }
 
     .footer-logo {
         width: 70px;
-        margin-bottom: 6px;
+        margin-bottom: 10px;
     }
 
     .footer-text {
         font-size: 16px;
+        margin-bottom: 6px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .footer-block {
+        padding: 6px;
+    }
+
+    .footer-logo {
+        width: 60px;
         margin-bottom: 8px;
+    }
+
+    .footer-text {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .footer-block {
+        padding: 6px;
+    }
+
+    .footer-logo {
+        width: 60px;
+        margin-bottom: 6px;
+    }
+
+    .footer-text {
+        font-size: 12px;
+        margin-bottom: 6px;
     }
 }

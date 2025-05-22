@@ -7,6 +7,7 @@ const Footer = () => {
             <div className='footer-block'>
                 <img className='footer-logo' src="/images/whole_logo.png" alt="" />
                 <p className='footer-text'>КРУИЗ ПО РЕКАМ РОССИИ, 2025 ® </p>
+                <p className='footer-text'>Все права защищены ©</p>
             </div>
         </div>
     );
