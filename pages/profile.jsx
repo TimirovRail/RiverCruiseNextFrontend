@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import QRCode from "qrcode";
@@ -16,7 +16,7 @@ const PaymentForm = ({ booking, onClose }) => {
     const stripe = useStripe();
     const elements = useElements();
 
-    const handleSubmit = async (e) => {
+    const handlePaymentSubmit = async (e) => {
         e.preventDefault();
         if (!stripe || !elements) return;
 
@@ -28,7 +28,9 @@ const PaymentForm = ({ booking, onClose }) => {
 
             if (error) throw error;
 
-            await axios.post(`${API_BASE_URL}/api/bookings/${booking.id}/mark-as-paid`, {});
+            await axios.post(`${API_BASE_URL}/api/bookings/${booking.id}/mark-as-paid`, {}, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
             alert('Оплата успешно выполнена!');
             onClose();
         } catch (error) {
@@ -38,15 +40,35 @@ const PaymentForm = ({ booking, onClose }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="payment-form">
-            <CardElement options={{ style: { base: { fontSize: '16px' } } }} />
-            <button type="submit" className="action-button pay-now-button" disabled={!stripe}>
-                Оплатить {booking.total_price || 0} руб.
-            </button>
-            <button type="button" onClick={onClose} className="action-button close-button">
-                Закрыть
-            </button>
-        </form>
+        <div className="payment-form">
+            <form onSubmit={handlePaymentSubmit}>
+                <CardElement options={{
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#333',
+                            '::placeholder': { color: '#777' }
+                        }
+                    }
+                }} />
+                <div className="button-group">
+                    <button
+                        type="submit"
+                        className="action-button pay-now-button"
+                        disabled={!stripe}
+                    >
+                        Оплатить {booking.total_price || 0} руб.
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="action-button close-button"
+                    >
+                        Закрыть
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 };
 
@@ -64,8 +86,37 @@ export default function Profile() {
     const [qrCodes, setQrCodes] = useState({});
     const [showQrCode, setShowQrCode] = useState({});
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [openSection, setOpenSection] = useState(null);
+
+    // Refs для измерения высоты секций
+    const sectionRefs = {
+        user: useRef(null),
+        reviews: useRef(null),
+        bookings: useRef(null),
+        tickets: useRef(null),
+        photos: useRef(null),
+    };
 
     const router = useRouter();
+
+    const toggleSection = (section) => {
+        const newSection = openSection === section ? null : section;
+        setOpenSection(newSection);
+
+        // Динамически устанавливаем max-height для открытой секции
+        Object.keys(sectionRefs).forEach((key) => {
+            const ref = sectionRefs[key].current;
+            if (ref) {
+                if (key === newSection) {
+                    // Устанавливаем max-height равным scrollHeight для открытой секции
+                    ref.style.maxHeight = `${ref.scrollHeight}px`;
+                } else {
+                    // Сбрасываем max-height для закрытых секций
+                    ref.style.maxHeight = '0';
+                }
+            }
+        });
+    };
 
     const fetchData = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -253,7 +304,6 @@ export default function Profile() {
     const handleCancelBooking = async (bookingId) => {
         if (window.confirm("Вы точно хотите отменить эту бронь?")) {
             const token = localStorage.getItem("token");
-            console.log("Attempting to cancel booking with ID:", bookingId);
             try {
                 const booking = bookings.find(b => b.id === bookingId);
                 if (!booking) {
@@ -270,7 +320,7 @@ export default function Profile() {
                 });
 
                 setBookings(prev => prev.filter(b => b.id !== bookingId));
-                await fetchData(); // Обновляем данные
+                await fetchData();
                 alert('Бронь успешно отменена!');
             } catch (error) {
                 console.error("Ошибка отмены брони:", error.response?.data || error.message);
@@ -317,11 +367,17 @@ export default function Profile() {
     return (
         <>
             <Header user={user} onBack={() => router.push("/")} />
+
             <div className="container">
-                <div className="section-content">
-                    <h3 className="section-title">Информация о пользователе</h3>
+                <div className="title">
+                    <h2 className="h1-title">ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ</h2>
+                </div>
+                <div className={`section-title ${openSection === 'user' ? 'open' : ''}`} onClick={() => toggleSection('user')}>
+                    Информация о пользователе
+                </div>
+                <div className={`section-content ${openSection === 'user' ? 'open' : ''}`} ref={sectionRefs.user}>
                     {user ? (
-                        <div className="user-info">
+                        <div className="user-info fade-in">
                             <p><strong>Имя:</strong> {user.name || "Не указано"}</p>
                             <p><strong>Email:</strong> {user.email || "Не указано"}</p>
                             <button onClick={handleLogout} className="action-button logout-button">
@@ -329,14 +385,16 @@ export default function Profile() {
                             </button>
                         </div>
                     ) : (
-                        <p className="error-message">Информация о пользователе недоступна</p>
+                        <p className="error-message fade-in">Информация о пользователе недоступна</p>
                     )}
                 </div>
 
-                <div className="section-content">
-                    <h3 className="section-title">Мои отзывы</h3>
+                <div className={`section-title ${openSection === 'reviews' ? 'open' : ''}`} onClick={() => toggleSection('reviews')}>
+                    Мои отзывы
+                </div>
+                <div className={`section-content ${openSection === 'reviews' ? 'open' : ''}`} ref={sectionRefs.reviews}>
                     {userReviews.length > 0 ? (
-                        <ul>
+                        <ul className="fade-in">
                             {userReviews.map((fb) => (
                                 <li key={fb.id}>
                                     <p><strong>{fb.comment}</strong></p>
@@ -352,14 +410,16 @@ export default function Profile() {
                             ))}
                         </ul>
                     ) : (
-                        <p className="error-message">У вас пока нет отзывов</p>
+                        <p className="error-message fade-in">У вас пока нет отзывов</p>
                     )}
                 </div>
 
-                <div className="section-content">
-                    <h3 className="section-title">Мои бронирования</h3>
+                <div className={`section-title ${openSection === 'bookings' ? 'open' : ''}`} onClick={() => toggleSection('bookings')}>
+                    Мои бронирования
+                </div>
+                <div className={`section-content ${openSection === 'bookings' ? 'open' : ''}`} ref={sectionRefs.bookings}>
                     {userBookings.length > 0 ? (
-                        <ul>
+                        <ul className="fade-in">
                             {userBookings.map((b) => (
                                 <li key={b.id}>
                                     <p>
@@ -402,14 +462,16 @@ export default function Profile() {
                             ))}
                         </ul>
                     ) : (
-                        <p className="error-message">У вас пока нет бронирований</p>
+                        <p className="error-message fade-in">У вас пока нет бронирований</p>
                     )}
                 </div>
 
-                <div className="section-content">
-                    <h3 className="section-title">Купленные билеты</h3>
+                <div className={`section-title ${openSection === 'tickets' ? 'open' : ''}`} onClick={() => toggleSection('tickets')}>
+                    Купленные билеты
+                </div>
+                <div className={`section-content ${openSection === 'tickets' ? 'open' : ''}`} ref={sectionRefs.tickets}>
                     {purchasedTickets.length > 0 ? (
-                        <ul>
+                        <ul className="fade-in">
                             {purchasedTickets.map((b) => (
                                 <li key={b.id}>
                                     <p>
@@ -453,14 +515,16 @@ export default function Profile() {
                             ))}
                         </ul>
                     ) : (
-                        <p className="error-message">У вас пока нет купленных билетов</p>
+                        <p className="error-message fade-in">У вас пока нет купленных билетов</p>
                     )}
                 </div>
 
-                <div className="section-content">
-                    <h3 className="section-title">Мои фотографии</h3>
+                <div className={`section-title ${openSection === 'photos' ? 'open' : ''}`} onClick={() => toggleSection('photos')}>
+                    Мои фотографии
+                </div>
+                <div className={`section-content ${openSection === 'photos' ? 'open' : ''}`} ref={sectionRefs.photos}>
                     {userPhotos.length > 0 ? (
-                        <div className="user-photos">
+                        <div className="user-photos fade-in">
                             {userPhotos.map((photo) => (
                                 <div key={photo.id} className="photo-wrapper">
                                     <img
@@ -479,7 +543,7 @@ export default function Profile() {
                             ))}
                         </div>
                     ) : (
-                        <p className="error-message">У вас пока нет фотографий</p>
+                        <p className="error-message fade-in">У вас пока нет фотографий</p>
                     )}
                 </div>
 
@@ -515,20 +579,22 @@ export default function Profile() {
                                         </div>
                                     ))}
                                     {seatError && <p className="error-message">{seatError}</p>}
-                                    <button
-                                        onClick={confirmSeats}
-                                        className="action-button confirm-button"
-                                        disabled={!Object.values(selectedSeats).some(seats => seats.length > 0) || loading}
-                                    >
-                                        {loading ? 'Загрузка...' : 'Подтвердить выбор'}
-                                    </button>
-                                    <button
-                                        onClick={() => setSelectedBooking(null)}
-                                        className="action-button close-button"
-                                        disabled={loading}
-                                    >
-                                        Закрыть
-                                    </button>
+                                    <div className="button-group">
+                                        <button
+                                            onClick={confirmSeats}
+                                            className="action-button confirm-button"
+                                            disabled={!Object.values(selectedSeats).some(seats => seats.length > 0) || loading}
+                                        >
+                                            {loading ? 'Загрузка...' : 'Подтвердить выбор'}
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedBooking(null)}
+                                            className="action-button close-button"
+                                            disabled={loading}
+                                        >
+                                            Закрыть
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <p>Загрузка мест...</p>
@@ -544,14 +610,14 @@ export default function Profile() {
                                 Оплата для {selectedBooking.cruise_name || "Неизвестный круиз"}
                             </h3>
                             <Elements stripe={stripePromise}>
-                                <PaymentForm booking={selectedBooking} onClose={() => {
-                                    setSelectedBooking(null);
-                                    setShowPayment(false);
-                                    const token = localStorage.getItem("token");
-                                    axios.get(`${API_BASE_URL}/api/bookings`, {
-                                        headers: { Authorization: `Bearer ${token}` }
-                                    }).then(response => setBookings(response.data));
-                                }} />
+                                <PaymentForm
+                                    booking={selectedBooking}
+                                    onClose={() => {
+                                        setSelectedBooking(null);
+                                        setShowPayment(false);
+                                        fetchData();
+                                    }}
+                                />
                             </Elements>
                         </div>
                     </div>

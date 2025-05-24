@@ -1,4 +1,82 @@
-/* Общие стили для профиля */
+.title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+}
+
+.h1-title {
+    font-size: 48px;
+    color: #3B4055;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+
+    .title {
+        padding: 15px;
+    }
+
+    .h1-title {
+        font-size: 48px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+
+    .title {
+        padding: 20px;
+    }
+
+    .h1-title {
+        font-size: 40px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+
+    .title {
+        padding: 15px;
+    }
+
+    .h1-title {
+        font-size: 36px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+
+    .title {
+        padding: 10px;
+    }
+
+    .h1-title {
+        font-size: 30px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+
+    .title {
+        padding: 8px;
+    }
+
+    .h1-title {
+        font-size: 24px;
+    }
+}
+
+/* Общие стили */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f4f5f7;
@@ -9,27 +87,85 @@ body {
 
 /* Контейнер профиля */
 .container {
-    width: 80%;
-    max-width: 1100px;
-    margin: 50px auto;
+    width: 100%;
+    max-width: 1300px;
+    margin: 10px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Секции */
-.section-content {
-    margin-top: 30px;
-}
-
+/* Заголовки секций */
 .section-title {
     font-size: 24px;
     font-weight: 600;
     color: #29376D;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #29376D;
-    padding-bottom: 5px;
+    padding: 15px 20px;
+    margin: 10px 0 0 0;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title:hover {
+    background-color: #29376D;
+    color: #fff;
+}
+
+.section-title::after {
+    content: '▼';
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.section-title.open::after {
+    transform: rotate(180deg);
+}
+
+/* Содержимое секций */
+.section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    padding: 0 20px;
+    background-color: #fff;
+    border-radius: 0 0 5px 5px;
+}
+
+.section-content.open {
+    padding: 20px;
+    overflow-y: auto;
+    /* Включаем вертикальный скролл при необходимости */
+    max-height: 10000px;
+    /* Fallback для non-JS сценариев */
+}
+
+/* Ограничение высоты секции до 80vh для скролла */
+.section-content.open {
+    max-height: 80vh;
+    /* Ограничиваем высоту до 80% высоты вьюпорта */
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
 }
 
 /* Стили для списков */
@@ -68,6 +204,7 @@ ul li p small {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    justify-content: flex-start;
 }
 
 /* Информация о пользователе */
@@ -104,7 +241,7 @@ ul li p small {
 
 /* Кнопки */
 .action-button {
-    padding: 8px 15px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -121,6 +258,7 @@ ul li p small {
 
 .logout-button:hover {
     background-color: #660000;
+    transform: translateY(-2px);
 }
 
 .pay-button {
@@ -130,6 +268,7 @@ ul li p small {
 
 .pay-button:hover {
     background-color: #1e2a4b;
+    transform: translateY(-2px);
 }
 
 .cancel-button {
@@ -139,6 +278,7 @@ ul li p small {
 
 .cancel-button:hover {
     background-color: #660000;
+    transform: translateY(-2px);
 }
 
 .qr-button {
@@ -148,15 +288,19 @@ ul li p small {
 
 .qr-button:hover {
     background-color: #1e2a4b;
+    transform: translateY(-2px);
 }
 
 .confirm-button {
     background-color: #29376D;
     color: #fff;
+    padding: 12px 24px;
+    font-size: 16px;
 }
 
 .confirm-button:hover {
     background-color: #1e2a4b;
+    transform: translateY(-2px);
 }
 
 .confirm-button:disabled {
@@ -167,24 +311,35 @@ ul li p small {
 .close-button {
     background-color: #800000;
     color: #fff;
+    padding: 12px 24px;
+    font-size: 16px;
 }
 
 .close-button:hover {
     background-color: #660000;
+    transform: translateY(-2px);
 }
 
 .pay-now-button {
     background-color: #29376D;
     color: #fff;
+    padding: 12px 24px;
+    font-size: 16px;
 }
 
 .pay-now-button:hover {
     background-color: #1e2a4b;
+    transform: translateY(-2px);
+}
+
+.pay-now-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 /* QR-код */
 .qr-code {
-    margin-top: 10px;
+    margin-top: 15px;
     text-align: center;
 }
 
@@ -192,6 +347,7 @@ ul li p small {
     width: 128px;
     height: 128px;
     border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Фотографии */
@@ -264,8 +420,13 @@ ul li p small {
     border-radius: 10px;
 }
 
+/* Выбор мест */
 .seats-container {
-    margin-top: 15px;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .seat-category {
@@ -273,43 +434,92 @@ ul li p small {
 }
 
 .seat-category h4 {
-    font-size: 1.2rem;
+    font-size: 18px;
+    font-weight: 600;
     color: #29376D;
     margin-bottom: 10px;
     text-transform: capitalize;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.seat-category p {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
 }
 
 .seats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    gap: 10px;
 }
 
 .seat {
-    width: 40px;
-    height: 40px;
-    background: #ddd;
+    width: 45px;
+    height: 45px;
+    background: #e0e0e0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    border: 2px solid #ccc;
+    transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .seat:hover:not(.taken) {
+    background-color: #c0c8ff;
+    border-color: #29376D;
     transform: scale(1.1);
 }
 
 .seat.selected {
     background: #29376D;
     color: #fff;
+    border-color: #1e2a4b;
 }
 
 .seat.taken {
     background: #888;
+    color: #fff;
+    border-color: #666;
     cursor: not-allowed;
+}
+
+/* Форма оплаты */
+.payment-form {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.payment-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-form .StripeElement {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-form .StripeElement--focus {
+    border-color: #29376D;
+    box-shadow: 0 0 5px rgba(41, 55, 109, 0.3);
+}
+
+.payment-form .button-group {
+    justify-content: flex-end;
 }
 
 /* Адаптивность */
@@ -322,11 +532,70 @@ ul li p small {
 
     .section-title {
         font-size: 20px;
+        padding: 12px 15px;
+    }
+
+    .section-content.open {
+        padding: 15px;
     }
 
     .modal-content {
         width: 95%;
         padding: 15px;
+    }
+
+    .seats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        font-size: 13px;
+    }
+
+    .action-button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .confirm-button,
+    .close-button,
+    .pay-now-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .user-photos {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+    .photo {
+        height: 130px;
+    }
+
+    .payment-form .StripeElement {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 479px) {
+    .section-title {
+        font-size: 18px;
+        padding: 10px 12px;
+    }
+
+    .section-content.open {
+        padding: 12px;
+    }
+
+    .modal-content {
+        padding: 10px;
     }
 
     .seats-grid {
@@ -336,37 +605,27 @@ ul li p small {
     .seat {
         width: 35px;
         height: 35px;
-        font-size: 0.8rem;
+        font-size: 12px;
+    }
+
+    .seat-category h4 {
+        font-size: 16px;
+    }
+
+    .seat-category p {
+        font-size: 13px;
     }
 
     .action-button {
         padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .confirm-button,
+    .close-button,
+    .pay-now-button {
+        padding: 8px 16px;
         font-size: 13px;
-    }
-
-    .button-group {
-        flex-direction: column;
-        gap: 5px;
-    }
-}
-
-@media (max-width: 479px) {
-    .modal-content {
-        padding: 10px;
-    }
-
-    .seats-grid {
-        grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
-    }
-
-    .seat {
-        width: 30px;
-        height: 30px;
-        font-size: 0.7rem;
-    }
-
-    .seat-category h4 {
-        font-size: 1rem;
     }
 
     .user-photos {
@@ -375,5 +634,9 @@ ul li p small {
 
     .photo {
         height: 120px;
+    }
+
+    .payment-form .StripeElement {
+        padding: 8px;
     }
 }
