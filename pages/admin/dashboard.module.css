@@ -22,15 +22,14 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-bottom: clamp(15px, 2vw, 20px);
+    padding: 25px;
 }
 
 .h1Title {
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: 48px;
     color: #3B4055;
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
-    margin-top: 50px;
 }
 
 /* Группа кнопок */
@@ -98,5 +97,62 @@
 @media (max-width: 480px) {
     .layout {
         padding: clamp(8px, 1.5vw, 10px);
+    }
+}
+
+/* Адаптивность */
+
+/* Для мониторов (1280px, 1600px, 1920px и выше) */
+@media (min-width: 1280px) {
+    .title {
+        padding: 25px;
+    }
+
+    .h1Title {
+        font-size: 48px;
+    }
+}
+
+/* Для нетбуков (1024px и выше) */
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .title {
+        padding: 20px;
+    }
+
+    .h1Title {
+        font-size: 40px;
+    }
+}
+
+/* Для планшетов (768px и выше) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .title {
+        padding: 15px;
+    }
+
+    .h1Title {
+        font-size: 36px;
+    }
+}
+
+/* Для смартфонов (480px и выше) */
+@media (max-width: 767px) and (min-width: 480px) {
+    .title {
+        padding: 10px;
+    }
+
+    .h1Title {
+        font-size: 30px;
+    }
+}
+
+/* Для маленьких смартфонов (320px) */
+@media (max-width: 479px) {
+    .title {
+        padding: 8px;
+    }
+
+    .h1Title {
+        font-size: 24px;
     }
 }

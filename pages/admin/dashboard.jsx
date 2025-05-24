@@ -327,8 +327,8 @@ const Dashboard = () => {
                 </Suspense>
 
                 <div className={styles.dashboardContainer}>
-                    <div className="title">
-                        <h2 className="h1-title">ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
+                    <div className={styles.title}>
+                        <h2 className={styles.h1Title}>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
                     </div>
 
                     <Suspense fallback={<Loading />}>

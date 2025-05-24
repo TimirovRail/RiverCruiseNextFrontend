@@ -16,11 +16,11 @@ const CreateCruiseScheduleForm = ({ onSubmit }) => {
     // Статичный список круизов (6 круизов)
     const cruises = [
         { id: 1, name: 'Круиз по Волге' },
-        { id: 2, name: 'Круиз по Дону' },
-        { id: 3, name: 'Круиз по Оке' },
-        { id: 4, name: 'Круиз по Каме' },
-        { id: 5, name: 'Круиз по Енисею' },
-        { id: 6, name: 'Круиз по Лене' },
+        { id: 2, name: 'Круиз по Лене' },
+        { id: 3, name: 'Круиз по Енисею' },
+        { id: 4, name: 'Круиз по Амуру' },
+        { id: 5, name: 'Круиз по Дону' },
+        { id: 6, name: 'Круиз по Оби' },
     ];
 
     const handleChange = (e) => {
