@@ -63,7 +63,7 @@ const CruisesList = () => {
     };
 
     return (
-        <div className="layout">
+        <div id="cruises-list" className="layout">
             <div className="title">
                 <h2 className="h1-title">ПОПУЛЯРНЫЕ МАРШРУТЫ</h2>
             </div>
