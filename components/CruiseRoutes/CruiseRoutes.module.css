@@ -1,17 +1,19 @@
-/* Селектор круизов */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 .cruiseSelector {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
     margin: 0 auto 25px auto;
-    max-width: 800px;
+    max-width: 900px;
     padding: 15px 25px;
     background: linear-gradient(145deg, #ffffff, #f0f4ff);
     border: 1px solid #e0e7ff;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
 }
 
 .cruiseSelector:hover {
@@ -30,7 +32,7 @@
 }
 
 .selectorLabel:hover {
-    color: #1a2a5d;
+    color: #1a254d;
 }
 
 .cruiseSelect {
@@ -63,24 +65,103 @@
     box-shadow: 0 0 8px rgba(42, 55, 109, 0.3);
 }
 
-/* Анимация для селектора */
+.userRouteInput {
+    padding-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px auto 50px auto;
+    max-width: 900px;
+    padding: 25px 15px;
+    background: linear-gradient(145deg, #ffffff, #f0f4ff);
+    border: 1px solid #e0e7ff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.userRouteInput:hover {
+    background: linear-gradient(145deg, #f0f4ff, #e6f0ff);
+    border-color: #b3c5ff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.userCityInput {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border: 1px solid #e0e7ff;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #2a376d;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    flex-grow: 1;
+}
+
+.userCityInput:hover {
+    background-color: #f8faff;
+    border-color: #b3c5ff;
+}
+
+.userCityInput:focus {
+    outline: none;
+    border-color: #2a376d;
+    box-shadow: 0 0 8px rgba(42, 55, 109, 0.3);
+}
+
+.userRouteInfo {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', sans-serif;
+}
+
+.userRouteInfo h4 {
+    margin: 0 0 12px;
+    color: #2a376d;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.userRouteInfo div {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e7ff;
+}
+
+.userRouteInfo div:last-child {
+    border-bottom: none;
+}
+
+.userRouteInfo p {
+    margin: 4px 0;
+    font-size: 1rem;
+    color: #4b5563;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.cruiseSelector {
+.cruiseSelector,
+.userRouteInput {
     animation: fadeIn 0.5s ease forwards;
 }
 
-/* Стили для попапа */
 .cruisePopupOverlay {
     position: fixed;
     top: 0;
@@ -96,48 +177,83 @@
 }
 
 .cruisePopup {
-    background-color: white;
-    padding: 30px;
+    background-color: #ffffff;
+    padding: 25px;
     border-radius: 12px;
-    max-width: 600px;
+    max-width: 550px;
     width: 90%;
     position: relative;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    max-height: 80vh;
+    max-height: 75vh;
     overflow-y: auto;
+    font-family: 'Inter', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #b3c5ff #f0f4ff;
+}
+
+.cruisePopup::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cruisePopup::-webkit-scrollbar-track {
+    background: #f0f4ff;
+    border-radius: 4px;
+}
+
+.cruisePopup::-webkit-scrollbar-thumb {
+    background: #b3c5ff;
+    border-radius: 4px;
 }
 
 .closeButton {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #666;
+    color: #6b7280;
     transition: color 0.3s;
 }
 
 .closeButton:hover {
-    color: #333;
+    color: #2a376d;
 }
 
 .routePoints {
-    margin-top: 20px;
-    max-height: 300px;
+    margin-top: 15px;
+    max-height: 250px;
     overflow-y: auto;
-    padding-right: 10px;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #b3c5ff #f0f4ff;
+}
+
+.routePoints::-webkit-scrollbar {
+    width: 6px;
+}
+
+.routePoints::-webkit-scrollbar-track {
+    background: #f0f4ff;
+    border-radius: 3px;
+}
+
+.routePoints::-webkit-scrollbar-thumb {
+    background: #b3c5ff;
+    border-radius: 3px;
 }
 
 .routePoints ul {
-    padding-left: 20px;
+    padding-left: 15px;
     list-style-type: none;
 }
 
 .routePoints li {
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e0e7ff;
+    font-size: 0.95rem;
+    color: #4b5563;
 }
 
 .routePoints li:last-child {
@@ -145,17 +261,35 @@
 }
 
 .showRouteButton {
-    margin-top: 20px;
     padding: 12px 24px;
-    background-color: #2A376D;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s;
     width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.showRouteButton::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.showRouteButton:hover::after {
+    width: 300%;
+    height: 300%;
 }
 
 .showRouteButton:hover {
@@ -163,55 +297,15 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Стили для маркеров точек маршрута */
-.route-point-marker {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 12px;
-    color: white;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Легенда карты */
-.info {
-    padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background: white;
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-
-.info h4 {
-    margin: 0 0 5px;
-    color: #777;
-}
-
-.legend {
-    line-height: 18px;
-    color: #555;
-}
-
-.legend i {
-    width: 18px;
-    height: 18px;
-    float: left;
-    margin-right: 8px;
-    opacity: 0.7;
-}
-
-/* Тёмная тема */
 @media (prefers-color-scheme: dark) {
-    .cruiseSelector {
+    .cruiseSelector,
+    .userRouteInput {
         background: linear-gradient(145deg, #2a376d, #1e2a44);
         border-color: #3a4a7d;
     }
 
-    .cruiseSelector:hover {
+    .cruiseSelector:hover,
+    .userRouteInput:hover {
         background: linear-gradient(145deg, #3a4a7d, #2a376d);
         border-color: #5a6aa9;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -225,26 +319,45 @@
         color: #c9d8ff;
     }
 
-    .cruiseSelect {
+    .cruiseSelect,
+    .userCityInput {
         background-color: #2a376d;
         color: #e6f0ff;
         border-color: #3a4a7d;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .cruiseSelect {
         background-image: url('data:image/svg+xml;utf8,<svg fill="%23e6f0ff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
     }
 
-    .cruiseSelect:hover {
+    .cruiseSelect:hover,
+    .userCityInput:hover {
         background-color: #3a4a7d;
         border-color: #5a6aa9;
     }
 
-    .cruiseSelect:focus {
+    .cruiseSelect:focus,
+    .userCityInput:focus {
         border-color: #e6f0ff;
         box-shadow: 0 0 8px rgba(230, 240, 255, 0.3);
     }
 
-    .cruisePopup {
+    .cruisePopup,
+    .userRouteInfo {
         background-color: #2a376d;
         color: #e6f0ff;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .cruisePopup::-webkit-scrollbar-track,
+    .routePoints::-webkit-scrollbar-track {
+        background: #1e2a44;
+    }
+
+    .cruisePopup::-webkit-scrollbar-thumb,
+    .routePoints::-webkit-scrollbar-thumb {
+        background: #5a6aa9;
     }
 
     .closeButton {
@@ -255,8 +368,14 @@
         color: #ffffff;
     }
 
-    .routePoints li {
+    .routePoints li,
+    .userRouteInfo div {
         border-bottom: 1px solid #3a4a7d;
+    }
+
+    .routePoints li,
+    .userRouteInfo p {
+        color: #c9d8ff;
     }
 
     .showRouteButton {
@@ -264,12 +383,24 @@
     }
 }
 
-/* Адаптивность */
+@media (max-width: 1024px) {
+    .cruiseSelector,
+    .userRouteInput {
+        max-width: 700px;
+        padding: 12px 20px;
+    }
+
+    .cruiseSelect {
+        min-width: 300px;
+    }
+}
+
 @media (max-width: 768px) {
-    .cruiseSelector {
+    .cruiseSelector,
+    .userRouteInput {
         flex-direction: column;
         gap: 12px;
-        padding: 12px;
+        padding: 12px 15px;
         max-width: 100%;
     }
 
@@ -279,7 +410,8 @@
         text-align: center;
     }
 
-    .cruiseSelect {
+    .cruiseSelect,
+    .userCityInput {
         width: 100%;
         min-width: auto;
         padding: 10px 35px 10px 15px;
@@ -288,20 +420,53 @@
 
     .cruisePopup {
         padding: 20px;
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 600px) {
+    .cruiseSelector,
+    .userRouteInput {
+        padding: 10px 12px;
+    }
+
+    .selectorLabel {
+        font-size: 1rem;
+    }
+
+    .cruiseSelect,
+    .userCityInput {
+        padding: 8px 30px 8px 12px;
+        font-size: 0.95rem;
+    }
+
+    .showRouteButton {
+        padding: 10px 20px;
+        font-size: 0.95rem;
     }
 }
 
 @media (max-width: 480px) {
     .selectorLabel {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
-    .cruiseSelect {
-        font-size: 0.95rem;
-        padding: 8px 30px 8px 12px;
+    .cruiseSelect,
+    .userCityInput {
+        font-size: 0.9rem;
+        padding: 8px 25px 8px 10px;
     }
 
     .cruisePopup {
         padding: 15px;
+        max-width: 95%;
+    }
+
+    .userRouteInfo h4 {
+        font-size: 1.2rem;
+    }
+
+    .userRouteInfo p {
+        font-size: 0.9rem;
     }
 }

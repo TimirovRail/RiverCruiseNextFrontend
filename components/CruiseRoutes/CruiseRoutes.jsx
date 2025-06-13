@@ -1,429 +1,513 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import 'leaflet/dist/leaflet.css';
+import Script from 'next/script';
 import styles from './CruiseRoutes.module.css';
 
-// Моковые данные для круизов
+// Моковые данные с 9–10 точками для каждого круиза
 const MOCK_CRUISE_DATA = [
-    {
-        id: 1,
-        name: "Волга Премиум",
-        river: "Волга",
-        latitude: 56.3287,
-        longitude: 44.002,
-        route: [
-            [56.3287, 44.002], // Нижний Новгород
-            [56.7339, 37.5874], // Дубна
-            [57.6299, 39.8737], // Ярославль
-            [58.5215, 31.2755], // Великий Новгород
-            [57.7678, 40.9269], // Кострома
-            [57.1522, 65.5272], // Тюмень
-            [55.7963, 49.1088], // Казань
-            [53.1959, 50.1002], // Самара
-            [48.7194, 44.5018], // Волгоград
-            [47.2313, 39.7233], // Ростов-на-Дону
-        ],
-        description: "Эксклюзивный круиз по всей длине Волги - от истока до устья. Посещение 10 исторических городов России с богатым культурным наследием."
-    },
-    {
-        id: 2,
-        name: "Лена Экспедишн",
-        river: "Лена",
-        latitude: 62.0283,
-        longitude: 129.7325,
-        route: [
-            [62.0283, 129.7325], // Якутск
-            [60.7253, 129.8830], // Покровск
-            [60.7416, 135.3166], // Хандыга
-            [61.6763, 135.3342], // Джебарики-Хая
-            [63.0496, 129.4405], // Сангар
-            [64.5635, 129.8034], // Жиганск
-            [66.7697, 123.3710], // Джарджан
-            [68.7506, 123.3710], // Кюсюр
-            [70.6869, 127.3969], // Тит-Ары
-            [72.3696, 126.5928], // Быков Мыс
-        ],
-        description: "Экспедиционный круиз по реке Лена с посещением самых отдаленных уголков Якутии. Уникальная возможность увидеть природу Сибири и традиции местных народов."
-    },
-    {
-        id: 3,
-        name: "Дон Классик",
-        river: "Дон",
-        latitude: 47.2313,
-        longitude: 39.7233,
-        route: [
-            [47.2313, 39.7233], // Ростов-на-Дону
-            [47.5163, 40.2163], // Новочеркасск
-            [48.7194, 44.5018], // Волгоград
-            [49.7937, 43.6565], // Серафимович
-            [50.0961, 40.7863], // Павловск
-            [51.0966, 39.0356], // Воронеж
-            [52.4252, 37.6063], // Елец
-            [53.9486, 37.5269], // Тула
-            [54.1930, 37.6177], // Ясная Поляна
-            [55.5306, 37.5184], // Москва (канал им. Москвы)
-        ],
-        description: "Классический круиз по Дону с посещением казачьих станиц и исторических мест. Включает экскурсии по местам, связанным с историей донского казачества."
-    },
-    {
-        id: 4,
-        name: "Енисей Голд",
-        river: "Енисей",
-        latitude: 56.0184,
-        longitude: 92.8672,
-        route: [
-            [56.0184, 92.8672], // Красноярск
-            [58.4431, 92.1514], // Енисейск
-            [60.3726, 93.2638], // Лесосибирск
-            [61.5992, 90.1236], // Туруханск
-            [63.1934, 87.9617], // Игарка
-            [66.5295, 86.5733], // Дудинка
-            [67.6478, 86.1566], // Норильск
-            [69.3333, 88.2167], // Диксон
-            [71.9806, 102.4711], // Хатанга
-            [72.3696, 126.5928], // Усть-Оленёк
-        ],
-        description: "Премиальный круиз по Енисею с заходом в арктические порты. В программе: наблюдение за северным сиянием, посещение плато Путорана и знакомство с культурой северных народов."
-    },
-    {
-        id: 5,
-        name: "Амур Мистери",
-        river: "Амур",
-        latitude: 48.4802,
-        longitude: 135.0719,
-        route: [
-            [48.4802, 135.0719], // Хабаровск
-            [49.0670, 135.0523], // Комсомольск-на-Амуре
-            [50.2639, 136.8787], // Николаевск-на-Амуре
-            [52.0333, 141.5167], // Де-Кастри
-            [52.9389, 140.2903], // Советская Гавань
-            [53.1403, 140.7222], // Ванино
-            [54.7293, 142.0544], // Александровск-Сахалинский
-            [55.1667, 142.0167], // Оха
-            [56.9167, 142.0667], // Ноглики
-            [59.5500, 150.8000], // Магадан
-        ],
-        description: "Загадочное путешествие по Амуру с выходом в Охотское море. Уникальная возможность увидеть дикую природу Дальнего Востока и познакомиться с культурой коренных народов."
-    },
-    {
-        id: 6,
-        name: "Обь Эксплорер",
-        river: "Обь",
-        latitude: 55.0111,
-        longitude: 82.9346,
-        route: [
-            [55.0111, 82.9346], // Новосибирск
-            [56.1124, 82.9346], // Колпашево
-            [57.1522, 65.5272], // Тюмень
-            [58.0105, 65.5272], // Ханты-Мансийск
-            [60.9500, 76.5667], // Нижневартовск
-            [61.2500, 73.4167], // Сургут
-            [63.7167, 72.4333], // Салехард
-            [66.5295, 66.5295], // Лабытнанги
-            [67.4667, 86.5667], // Игарка
-            [69.3333, 88.2167], // Дудинка
-        ],
-        description: "Исследовательский круиз по Оби с посещением нефтяных месторождений Западной Сибири. В программе: экскурсии на месторождения, знакомство с культурой хантов и манси, рыбалка на сибирскую рыбу."
-    }
+  {
+    id: 1,
+    name: "Волга Премиум",
+    river: "Волга",
+    latitude: 56.3287,
+    longitude: 44.002,
+    routeCities: [
+      { name: "Нижний Новгород", sights: "Кремль, Чкаловская лестница", lat: 56.3287, lng: 44.002 },
+      { name: "", lat: 56.2500, lng: 45.0000 }, // Промежуточная точка
+      { name: "Чебоксары", sights: "Залив, Введенский собор", lat: 56.1467, lng: 47.2511 },
+      { name: "", lat: 56.1000, lng: 47.8000 }, // Промежуточная точка
+      { name: "Казань", sights: "Кремль, мечеть Кул-Шариф", lat: 55.7950, lng: 49.1063 },
+      { name: "", lat: 55.6000, lng: 50.0000 }, // Промежуточная точка
+      { name: "Самара", sights: "Набережная, Жигулёвское пиво", lat: 53.1959, lng: 50.1018 },
+      { name: "", lat: 52.8000, lng: 49.4000 }, // Промежуточная точка
+      { name: "Волгоград", sights: "Мамаев курган, Родина-мать", lat: 48.7071, lng: 44.5170 },
+      { name: "", lat: 49.1000, lng: 44.7000 } // Промежуточная точка
+    ],
+    description: "Эксклюзивный круиз по Волге."
+  },
+  {
+    id: 2,
+    name: "Лена Экспедишн",
+    river: "Лена",
+    latitude: 62.0283,
+    longitude: 129.7325,
+    routeCities: [
+      { name: "Якутск", sights: "Музей мамонта, Ленские столбы", lat: 62.0283, lng: 129.7325 },
+      { name: "", lat: 61.9000, lng: 129.6000 }, // Промежуточная точка
+      { name: "Покровск", sights: "Храм Покрова, местный музей", lat: 61.4844, lng: 129.1486 },
+      { name: "", lat: 61.3000, lng: 129.0000 }, // Промежуточная точка
+      { name: "Олёкминск", sights: "Исторический центр", lat: 60.3742, lng: 120.4262 },
+      { name: "", lat: 60.5000, lng: 122.0000 }, // Промежуточная точка
+      { name: "Сангар", sights: "Речные виды, местная культура", lat: 63.9241, lng: 127.4736 },
+      { name: "", lat: 63.5000, lng: 128.0000 }, // Промежуточная точка
+      { name: "", lat: 64.0000, lng: 127.5000 } // Промежуточная точка
+    ],
+    description: "Экспедиционный круиз по Лене."
+  },
+  {
+    id: 3,
+    name: "Дон Классик",
+    river: "Дон",
+    latitude: 47.2313,
+    longitude: 39.7233,
+    routeCities: [
+      { name: "Ростов-на-Дону", sights: "Набережная, Ростовский собор", lat: 47.2313, lng: 39.7233 },
+      { name: "", lat: 47.5000, lng: 40.0000 }, // Промежуточная точка
+      { name: "Азов", sights: "Крепость, музей", lat: 47.1078, lng: 39.4163 },
+      { name: "", lat: 47.8000, lng: 41.0000 }, // Промежуточная точка
+      { name: "Волгоград", sights: "Мамаев курган, Родина-мать", lat: 48.7071, lng: 44.5170 },
+      { name: "", lat: 49.0000, lng: 44.2000 }, // Промежуточная точка
+      { name: "Воронеж", sights: "Благовещенский собор, набережная", lat: 51.6608, lng: 39.2003 },
+      { name: "", lat: 51.4000, lng: 39.5000 }, // Промежуточная точка
+      { name: "", lat: 50.8000, lng: 40.0000 } // Промежуточная точка
+    ],
+    description: "Классический круиз по Дону."
+  },
+  {
+    id: 4,
+    name: "Енисей Голд",
+    river: "Енисей",
+    latitude: 56.0184,
+    longitude: 92.8672,
+    routeCities: [
+      { name: "Красноярск", sights: "Столбы, часовня Параскевы", lat: 56.0184, lng: 92.8672 },
+      { name: "", lat: 56.5000, lng: 92.6000 }, // Промежуточная точка
+      { name: "Енисейск", sights: "Спасо-Преображенский монастырь", lat: 58.4497, lng: 92.1797 },
+      { name: "", lat: 59.0000, lng: 92.0000 }, // Промежуточная точка
+      { name: "Игарка", sights: "Музей вечной мерзлоты", lat: 67.4658, lng: 86.5618 },
+      { name: "", lat: 66.8000, lng: 86.8000 }, // Промежуточная точка
+      { name: "Дудинка", sights: "Таймырский музей", lat: 69.4058, lng: 86.1777 },
+      { name: "", lat: 68.5000, lng: 86.3000 }, // Промежуточная точка
+      { name: "", lat: 67.0000, lng: 86.5000 }, // Промежуточная точка
+      { name: "", lat: 65.5000, lng: 87.0000 } // Промежуточная точка
+    ],
+    description: "Премиальный круиз по Енисею."
+  },
+  {
+    id: 5,
+    name: "Амур Мистери",
+    river: "Амур",
+    latitude: 48.4802,
+    longitude: 135.0719,
+    routeCities: [
+      { name: "Хабаровск", sights: "Набережная, Спасо-Преображенский собор", lat: 48.4802, lng: 135.0719 },
+      { name: "", lat: 48.6000, lng: 135.5000 }, // Промежуточная точка
+      { name: "Комсомольск-на-Амуре", sights: "Мемориал Победы", lat: 50.5503, lng: 137.0099 },
+      { name: "", lat: 50.8000, lng: 136.8000 }, // Промежуточная точка
+      { name: "Амурск", sights: "Набережная Амура", lat: 50.2261, lng: 136.8994 },
+      { name: "", lat: 51.0000, lng: 137.2000 }, // Промежуточная точка
+      { name: "Николаевск-на-Амуре", sights: "Речной порт", lat: 53.1462, lng: 140.7119 },
+      { name: "", lat: 52.8000, lng: 140.5000 }, // Промежуточная точка
+      { name: "", lat: 52.3000, lng: 140.0000 } // Промежуточная точка
+    ],
+    description: "Загадочное путешествие по Амуру."
+  },
+  {
+    id: 6,
+    name: "Обь Эксплорер",
+    river: "Обь",
+    latitude: 55.0111,
+    longitude: 82.9346,
+    routeCities: [
+      { name: "Новосибирск", sights: "Оперный театр, зоопарк", lat: 55.0111, lng: 82.9346 },
+      { name: "", lat: 55.5000, lng: 82.5000 }, // Промежуточная точка
+      { name: "Томск", sights: "Деревянная архитектура", lat: 56.4886, lng: 84.9523 },
+      { name: "", lat: 57.0000, lng: 83.0000 }, // Промежуточная точка
+      { name: "Сургут", sights: "Исторический музей", lat: 61.2540, lng: 73.3962 },
+      { name: "", lat: 61.8000, lng: 73.0000 }, // Промежуточная точка
+      { name: "Салехард", sights: "Обдорский острог", lat: 66.5300, lng: 66.6019 },
+      { name: "", lat: 66.0000, lng: 67.0000 }, // Промежуточная точка
+      { name: "", lat: 65.5000, lng: 67.5000 }, // Промежуточная точка
+      { name: "", lat: 64.8000, lng: 68.0000 } // Промежуточная точка
+    ],
+    description: "Исследовательский круиз по Оби."
+  }
 ];
 
 const CruiseRoutes = () => {
-    const mapRef = useRef(null);
-    const mapInstance = useRef(null);
-    const markersRef = useRef({});
-    const polylinesRef = useRef({});
-    const routeMarkersRef = useRef({});
-    const [cruiseData, setCruiseData] = useState(MOCK_CRUISE_DATA);
-    const [selectedCruiseId, setSelectedCruiseId] = useState(null);
-    const [activeCruise, setActiveCruise] = useState(null);
-    const [showPopup, setShowPopup] = useState(false);
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const shipMarkerRef = useRef(null);
+  const userRouteRef = useRef(null);
+  const animationRef = useRef(null);
+  const [cruiseData, setCruiseData] = useState(MOCK_CRUISE_DATA);
+  const [selectedCruiseId, setSelectedCruiseId] = useState(null);
+  const [activeCruise, setActiveCruise] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
+  const [userCity, setUserCity] = useState('');
+  const [userRouteInfo, setUserRouteInfo] = useState(null);
 
-    // Функция для фокусировки на выбранном круизе
-    const focusOnCruise = (cruiseId) => {
-        setSelectedCruiseId(cruiseId);
-        const cruise = cruiseData.find(c => c.id === cruiseId);
-        if (cruise && cruise.latitude && cruise.longitude && mapInstance.current) {
-            mapInstance.current.flyTo([cruise.latitude, cruise.longitude], 6, {
-                duration: 1,
-            });
-            drawCruiseRoute(cruise);
-        } else if (!cruiseId && mapInstance.current) {
-            // Сброс при выборе "Все круизы"
-            mapInstance.current.flyTo([61.52401, 105.318756], 4, { duration: 1 });
-            clearAllRoutes();
-        }
+  const getRiverColor = (river) => {
+    const colors = {
+      'Волга': '#2A376D',
+      'Лена': '#3A6EA5',
+      'Дон': '#4B8F8C',
+      'Енисей': '#C45B7A',
+      'Амур': '#E67E22',
+      'Обь': '#16A085'
+    };
+    return colors[river] || '#2A376D';
+  };
+
+  useEffect(() => {
+    if (!isMapReady || !mapRef.current || mapInstanceRef.current) return;
+
+    const initMap = () => {
+      mapInstanceRef.current = new window.ymaps.Map(mapRef.current, {
+        center: [61.52401, 105.318756],
+        zoom: 4,
+        controls: ['zoomControl', 'fullscreenControl']
+      });
+
+      const legend = new window.ymaps.control.ListBox({
+        data: { title: 'Реки' },
+        items: [
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #2A376D;">Волга</span>` } }),
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #3A6EA5;">Лена</span>` } }),
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #4B8F8C;">Дон</span>` } }),
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #C45B7A;">Енисей</span>` } }),
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #E67E22;">Амур</span>` } }),
+          new window.ymaps.control.ListBoxItem({ data: { content: `<span style="color: #16A085;">Обь</span>` } })
+        ]
+      });
+      mapInstanceRef.current.controls.add(legend, { position: { bottom: 20, right: 20 } });
+
+      initializeMarkers();
     };
 
-    // Функция для отрисовки маршрута круиза
-    const drawCruiseRoute = (cruise) => {
-        if (!mapInstance.current || !cruise.route) return;
+    if (window.ymaps) {
+      window.ymaps.ready(initMap);
+    }
 
-        const L = window.L;
-        
-        // Удаляем предыдущий маршрут, если есть
-        if (polylinesRef.current[cruise.id]) {
-            mapInstance.current.removeLayer(polylinesRef.current[cruise.id]);
-        }
-
-        // Удаляем маркеры точек маршрута для этого круиза
-        if (routeMarkersRef.current[cruise.id]) {
-            routeMarkersRef.current[cruise.id].forEach(marker => {
-                mapInstance.current.removeLayer(marker);
-            });
-            routeMarkersRef.current[cruise.id] = [];
-        }
-
-        // Создаем новую линию маршрута
-        polylinesRef.current[cruise.id] = L.polyline(cruise.route, {
-            color: getRiverColor(cruise.river),
-            weight: 4,
-            opacity: 0.9,
-            dashArray: '5, 5'
-        }).addTo(mapInstance.current);
-
-        // Добавляем маркеры для точек маршрута
-        routeMarkersRef.current[cruise.id] = [];
-        cruise.route.forEach((point, index) => {
-            const marker = L.marker(point, {
-                icon: L.divIcon({
-                    className: 'route-point-marker',
-                    html: `<div style="background-color: ${getRiverColor(cruise.river)}">${index + 1}</div>`,
-                    iconSize: [24, 24]
-                })
-            }).addTo(mapInstance.current);
-            
-            marker.bindPopup(`
-                <strong>${cruise.name}</strong><br>
-                Точка маршрута ${index + 1}<br>
-                Широта: ${point[0].toFixed(4)}<br>
-                Долгота: ${point[1].toFixed(4)}<br>
-                <small>${getLocationName(cruise.id, index)}</small>
-            `);
-            
-            routeMarkersRef.current[cruise.id].push(marker);
-        });
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+        mapInstanceRef.current = null;
+      }
     };
+  }, [isMapReady]);
 
-    // Функция для получения цвета в зависимости от реки
-    const getRiverColor = (river) => {
-        const colors = {
-            'Волга': '#2A376D',
-            'Лена': '#3A6EA5',
-            'Дон': '#4B8F8C',
-            'Енисей': '#C45BAA',
-            'Амур': '#E67E22',
-            'Обь': '#16A085'
-        };
-        return colors[river] || '#2A376D';
-    };
+  const initializeMarkers = () => {
+    if (!mapInstanceRef.current) return;
 
-    // Функция для получения названия локации
-    const getLocationName = (cruiseId, pointIndex) => {
-        const cruise = cruiseData.find(c => c.id === cruiseId);
-        if (!cruise) return '';
-        
-        const defaultNames = {
-            1: ['Нижний Новгород', 'Дубна', 'Ярославль', 'Великий Новгород', 'Кострома', 'Тюмень', 'Казань', 'Самара', 'Волгоград', 'Ростов-на-Дону'],
-            2: ['Якутск', 'Покровск', 'Хандыга', 'Джебарики-Хая', 'Сангар', 'Жиганск', 'Джарджан', 'Кюсюр', 'Тит-Ары', 'Быков Мыс'],
-            3: ['Ростов-на-Дону', 'Новочеркасск', 'Волгоград', 'Серафимович', 'Павловск', 'Воронеж', 'Елец', 'Тула', 'Ясная Поляна', 'Москва'],
-            4: ['Красноярск', 'Енисейск', 'Лесосибирск', 'Туруханск', 'Игарка', 'Дудинка', 'Норильск', 'Диксон', 'Хатанга', 'Усть-Оленёк'],
-            5: ['Хабаровск', 'Комсомольск-на-Амуре', 'Николаевск-на-Амуре', 'Де-Кастри', 'Советская Гавань', 'Ванино', 'Александровск-Сахалинский', 'Оха', 'Ноглики', 'Магадан'],
-            6: ['Новосибирск', 'Колпашево', 'Тюмень', 'Ханты-Мансийск', 'Нижневартовск', 'Сургут', 'Салехард', 'Лабытнанги', 'Игарка', 'Дудинка']
-        };
-        
-        return defaultNames[cruiseId]?.[pointIndex] || `Точка ${pointIndex + 1}`;
-    };
+    cruiseData.forEach((cruise) => {
+      if (!cruise.latitude || !cruise.longitude) return;
 
-    // Функция для очистки всех маршрутов
-    const clearAllRoutes = () => {
-        Object.values(polylinesRef.current).forEach(polyline => {
-            if (mapInstance.current && polyline) {
-                mapInstance.current.removeLayer(polyline);
-            }
-        });
-        polylinesRef.current = {};
-        
-        Object.values(routeMarkersRef.current).forEach(markers => {
-            markers.forEach(marker => {
-                if (mapInstance.current && marker) {
-                    mapInstance.current.removeLayer(marker);
-                }
-            });
-        });
-        routeMarkersRef.current = {};
-    };
+      const marker = new window.ymaps.Placemark([cruise.latitude, cruise.longitude], {
+        hintContent: cruise.name,
+        balloonContent: `
+          <strong>${cruise.name}</strong><br>
+          Река: ${cruise.river}<br>
+          Описание: ${cruise.description}<br>
+          Достопримечательности: ${cruise.routeCities.filter(city => city.name).map(city => city.sights).join(', ')}<br>
+          <button style="
+            margin-top:8px;
+            padding:4px 8px;
+            background-color:${getRiverColor(cruise.river)};
+            color:white;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+          " onclick="document.getElementById('cruise-select').value='${cruise.id}'; 
+            document.getElementById('cruise-select').dispatchEvent(new Event('change'));">
+            Показать маршрут
+          </button>
+        `
+      }, {
+        iconLayout: 'default#image',
+        iconImageHref: '/images/ship-icon.png',
+        iconImageSize: [32, 32],
+        iconImageOffset: [-16, -16]
+      });
 
-    // Функция для показа попапа с информацией
-    const showCruiseInfo = (cruise) => {
+      marker.events.add('click', () => {
+        focusOnCruise(cruise.id);
         setActiveCruise(cruise);
         setShowPopup(true);
+      });
+
+      mapInstanceRef.current.geoObjects.add(marker);
+    });
+  };
+
+  const focusOnCruise = (cruiseId) => {
+    setSelectedCruiseId(cruiseId);
+    const cruise = cruiseData.find(c => c.id === parseInt(cruiseId));
+    if (cruise && mapInstanceRef.current) {
+      mapInstanceRef.current.setCenter([cruise.latitude, cruise.longitude], 6, {
+        duration: 1000
+      });
+      drawRoute(cruise);
+    } else if (!cruiseId && mapInstanceRef.current) {
+      mapInstanceRef.current.setCenter([61.52401, 105.318756], 4, { duration: 1000 });
+      clearMap();
+    }
+  };
+
+  const drawRoute = (cruise) => {
+    if (!mapInstanceRef.current || !cruise.routeCities) return;
+
+    clearMap();
+
+    const points = cruise.routeCities.map(city => [city.lat, city.lng]).filter(point => point[0] && point[1]);
+
+    if (points.length < 1) {
+      console.warn('Недостаточно координат для построения маршрута');
+      return;
+    }
+
+    const routeLine = new window.ymaps.Polyline(points, {
+      balloonContent: cruise.name
+    }, {
+      strokeColor: getRiverColor(cruise.river),
+      strokeWidth: 4,
+      strokeOpacity: 0.9
+    });
+    mapInstanceRef.current.geoObjects.add(routeLine);
+
+    cruise.routeCities.forEach((city, index) => {
+      if (!city.name) return; // Пропускаем промежуточные точки
+      const point = [city.lat, city.lng];
+      const marker = new window.ymaps.Placemark(point, {
+        hintContent: city.name,
+        balloonContent: `
+          <strong>${cruise.name}</strong><br>
+          Город: ${city.name}<br>
+          Достопримечательности: ${city.sights}<br>
+          Широта: ${point[0].toFixed(4)}<br>
+          Долгота: ${point[1].toFixed(4)}
+        `
+      }, {
+        iconLayout: 'default#imageWithContent',
+        iconImageHref: '/images/marker.png',
+        iconImageSize: [24, 24],
+        iconImageOffset: [-12, -12],
+        iconContentLayout: window.ymaps.templateLayoutFactory.createClass(
+          `<div style="background-color: ${getRiverColor(cruise.river)}; color: white; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px;">${index + 1}</div>`
+        )
+      });
+      mapInstanceRef.current.geoObjects.add(marker);
+    });
+
+    animateShip(points, getRiverColor(cruise.river));
+  };
+
+  const animateShip = (route, color) => {
+    if (shipMarkerRef.current) {
+      mapInstanceRef.current.geoObjects.remove(shipMarkerRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    shipMarkerRef.current = new window.ymaps.Placemark(route[0], {}, {
+      iconLayout: 'default#image',
+      iconImageHref: '/images/ship-icon.png',
+      iconImageSize: [32, 32],
+      iconImageOffset: [-16, -16]
+    });
+    mapInstanceRef.current.geoObjects.add(shipMarkerRef.current);
+
+    let index = 0;
+    const step = () => {
+      if (index >= route.length - 1) {
+        index = 0;
+        shipMarkerRef.current.geometry.setCoordinates(route[0]);
+      }
+
+      const start = route[index];
+      const end = route[index + 1] || route[0];
+      const steps = 300;
+      let stepCount = 0;
+
+      const animate = () => {
+        if (stepCount >= steps) {
+          index++;
+          step();
+          return;
+        }
+
+        const lat = start[0] + (end[0] - start[0]) * (stepCount / steps);
+        const lng = start[1] + (end[1] - start[1]) * (stepCount / steps);
+        shipMarkerRef.current.geometry.setCoordinates([lat, lng]);
+        stepCount++;
+        animationRef.current = requestAnimationFrame(animate);
+      };
+
+      animate();
     };
 
-    useEffect(() => {
-        const initializeMap = async () => {
-            const L = await import('leaflet');
-            
-            if (mapRef.current && !mapInstance.current) {
-                mapInstance.current = L.map(mapRef.current, {
-                    center: [61.52401, 105.318756],
-                    zoom: 4,
-                    maxBounds: [[40, 60], [80, 180]], // Ограничения для России
-                    maxBoundsViscosity: 1.0
-                });
+    step();
+  };
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                }).addTo(mapInstance.current);
+  const clearMap = () => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.geoObjects.removeAll();
+      initializeMarkers();
+    }
+    if (shipMarkerRef.current) {
+      mapInstanceRef.current.geoObjects.remove(shipMarkerRef.current);
+      shipMarkerRef.current = null;
+    }
+    if (userRouteRef.current) {
+      mapInstanceRef.current.geoObjects.remove(userRouteRef.current);
+      userRouteRef.current = null;
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+  };
 
-                // Добавляем легенду
-                const legend = L.control({ position: 'bottomright' });
-                legend.onAdd = function(map) {
-                    const div = L.DomUtil.create('div', 'info legend');
-                    div.style.backgroundColor = 'white';
-                    div.style.padding = '10px';
-                    div.style.borderRadius = '5px';
-                    div.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-                    
-                    const rivers = ['Волга', 'Лена', 'Дон', 'Енисей', 'Амур', 'Обь'];
-                    let html = '<h4 style="margin:0 0 10px 0; text-align:center;">Реки</h4>';
-                    
-                    rivers.forEach(river => {
-                        html += `
-                            <div style="display:flex; align-items:center; margin-bottom:5px;">
-                                <div style="width:20px; height:20px; background-color:${getRiverColor(river)}; margin-right:8px;"></div>
-                                <span>${river}</span>
-                            </div>
-                        `;
-                    });
-                    
-                    div.innerHTML = html;
-                    return div;
-                };
-                legend.addTo(mapInstance.current);
+  const buildUserRoute = async () => {
+    if (!userCity || !selectedCruiseId || !mapInstanceRef.current) return;
 
-                // Инициализация маркеров
-                initializeMarkers();
-            }
-        };
+    const cruise = cruiseData.find(c => c.id === parseInt(selectedCruiseId));
+    if (!cruise) return;
 
-        const initializeMarkers = () => {
-            const L = window.L;
-            if (!L || !mapInstance.current) return;
+    try {
+      if (userRouteRef.current) {
+        mapInstanceRef.current.geoObjects.remove(userRouteRef.current);
+      }
 
-            // Создаем маркеры для каждого круиза
-            cruiseData.forEach((cruise) => {
-                if (!cruise.latitude || !cruise.longitude) return;
+      const multiRoute = new window.ymaps.multiRouter.MultiRoute({
+        referencePoints: [userCity, cruise.routeCities[0].name],
+        params: { routingMode: 'auto', results: 1 }
+      }, {
+        wayPointStartIconLayout: 'default#image',
+        wayPointStartIconImageHref: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000000"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>',
+        wayPointStartIconImageSize: [32, 32],
+        wayPointStartIconImageOffset: [-16, -16],
+        wayPointFinishIconLayout: 'default#image',
+        wayPointFinishIconImageHref: '/images/ship-icon.png',
+        wayPointFinishIconImageSize: [32, 32],
+        wayPointFinishIconImageOffset: [-16, -16],
+        routeActiveStrokeWidth: 4,
+        routeActiveStrokeColor: '#DC2626'
+      });
 
-                const coords = [cruise.latitude, cruise.longitude];
-                const cruiseIcon = L.icon({
-                    iconUrl: '/images/ship-icon.png',
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 32],
-                    popupAnchor: [0, -32],
-                });
-                
-                markersRef.current[cruise.id] = L.marker(coords, { 
-                    icon: cruiseIcon,
-                    riseOnHover: true
-                })
-                    .addTo(mapInstance.current)
-                    .on('click', () => {
-                        focusOnCruise(cruise.id);
-                        showCruiseInfo(cruise);
-                    })
-                    .bindPopup(`
-                        <strong>${cruise.name}</strong><br>
-                        Река: ${cruise.river}<br>
-                        <button style="
-                            margin-top:8px;
-                            padding:4px 8px;
-                            background-color:${getRiverColor(cruise.river)};
-                            color:white;
-                            border:none;
-                            border-radius:4px;
-                            cursor:pointer;
-                        " onclick="event.stopPropagation(); 
-                            document.getElementById('cruise-select').value='${cruise.id}'; 
-                            document.getElementById('cruise-select').dispatchEvent(new Event('change'));
-                        ">
-                            Показать маршрут
-                        </button>
-                    `);
-            });
-        };
+      multiRoute.model.events.add('requestsuccess', () => {
+        const activeRoute = multiRoute.getActiveRoute();
+        if (activeRoute) {
+          const duration = activeRoute.properties.get('duration').value;
+          const hours = Math.floor(duration / 3600);
+          const minutes = Math.floor((duration % 3600) / 60);
+          setUserRouteInfo({
+            duration: `${hours} ч ${minutes} мин`
+          });
+          mapInstanceRef.current.geoObjects.add(multiRoute);
+          userRouteRef.current = multiRoute;
+        } else {
+          console.warn('Маршрут не построен');
+        }
+      });
 
-        initializeMap();
+      multiRoute.model.events.add('requestfail', (error) => {
+        console.error('Ошибка построения маршрута:', error);
+      });
+    } catch (error) {
+      console.error('Общая ошибка построения маршрута:', error);
+    }
+  };
 
-        return () => {
-            if (mapInstance.current) {
-                mapInstance.current.remove();
-                mapInstance.current = null;
-            }
-        };
-    }, [cruiseData]);
-
-    return (
-        <div>
-            <div className="title">
-                <h2 className="h1-title">КАРТА МАРШРУТОВ</h2>
-            </div>
-            <div className={styles.cruiseSelector}>
-                <label htmlFor="cruise-select" className={styles.selectorLabel}>
-                    Выберите круиз для отслеживания:
-                </label>
-                <select
-                    id="cruise-select"
-                    value={selectedCruiseId || ''}
-                    onChange={(e) => focusOnCruise(e.target.value ? parseInt(e.target.value) : null)}
-                    className={styles.cruiseSelect}
-                >
-                    <option value="">Все круизы</option>
-                    {cruiseData.map(cruise => (
-                        <option key={cruise.id} value={cruise.id}>
-                            {cruise.name} ({cruise.river})
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="layout">
-                <div style={{ height: '600px', width: '100%', borderRadius: '15px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }} ref={mapRef}></div>
-            </div>
-
-            {/* Попап с информацией о круизе */}
-            {showPopup && activeCruise && (
-                <div className={styles.cruisePopupOverlay} onClick={() => setShowPopup(false)}>
-                    <div className={styles.cruisePopup} onClick={(e) => e.stopPropagation()}>
-                        <button className={styles.closeButton} onClick={() => setShowPopup(false)}>×</button>
-                        <h3 style={{ color: getRiverColor(activeCruise.river), marginBottom: '15px' }}>{activeCruise.name}</h3>
-                        <p><strong>Река:</strong> {activeCruise.river}</p>
-                        <p><strong>Описание:</strong> {activeCruise.description}</p>
-                        <div className={styles.routePoints}>
-                            <h4>Точки маршрута:</h4>
-                            <ul>
-                                {activeCruise.route?.map((point, index) => (
-                                    <li key={index}>
-                                        <strong>Точка {index + 1}:</strong> {getLocationName(activeCruise.id, index)}<br />
-                                        Координаты: {point[0].toFixed(4)}, {point[1].toFixed(4)}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <button 
-                            className={styles.showRouteButton}
-                            style={{ backgroundColor: getRiverColor(activeCruise.river) }}
-                            onClick={() => {
-                                focusOnCruise(activeCruise.id);
-                                setShowPopup(false);
-                            }}
-                        >
-                            Показать на карте
-                        </button>
-                    </div>
-                </div>
-            )}
+  return (
+    <>
+      <Script
+        src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=12c4ddc3-85ba-4f58-8508-3bc9bca108f1"
+        strategy="afterInteractive"
+        onLoad={() => setIsMapReady(true)}
+      />
+      <div>
+        <div className="title">
+          <h2 className="h1-title">КАРТА МАРШРУТОВ</h2>
         </div>
-    );
+        <div className={styles.cruiseSelector}>
+          <label htmlFor="cruise-select" className={styles.selectorLabel}>
+            Выберите круиз:
+          </label>
+          <select
+            id="cruise-select"
+            value={selectedCruiseId || ''}
+            onChange={(e) => focusOnCruise(e.target.value ? parseInt(e.target.value) : null)}
+            className={styles.cruiseSelect}
+          >
+            <option value="">Все круизы</option>
+            {cruiseData.map(cruise => (
+              <option key={cruise.id} value={cruise.id}>
+                {cruise.name} ({cruise.river})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="layout">
+          <div style={{ height: '600px', width: '100%', borderRadius: '15px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }} ref={mapRef}></div>
+        </div>
+        {selectedCruiseId && (
+          <div className={styles.userRouteInput}>
+            <label htmlFor="user-city" className={styles.selectorLabel}>
+              Ваш город отправления:
+            </label>
+            <input
+              id="user-city"
+              type="text"
+              value={userCity}
+              onChange={(e) => setUserCity(e.target.value)}
+              placeholder="Введите город"
+              className={styles.userCityInput}
+            />
+            <button
+              onClick={buildUserRoute}
+              className={styles.showRouteButton}
+              style={{ backgroundColor: getRiverColor(cruiseData.find(c => c.id === parseInt(selectedCruiseId))?.river) }}
+            >
+              Построить маршрут
+            </button>
+          </div>
+        )}
+        {userRouteInfo && (
+          <div className={styles.userRouteInfo}>
+            <h4>Маршрут до круиза</h4>
+            <div>
+              <p><strong>Транспорт:</strong> Машина</p>
+              <p><strong>Время в пути:</strong> {userRouteInfo.duration}</p>
+            </div>
+          </div>
+        )}
+        {showPopup && activeCruise && (
+          <div className={styles.cruisePopupOverlay} onClick={() => setShowPopup(false)}>
+            <div className={styles.cruisePopup} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.closeButton} onClick={() => setShowPopup(false)}>×</button>
+              <h3 style={{ color: getRiverColor(activeCruise.river), marginBottom: '15px' }}>{activeCruise.name}</h3>
+              <p><strong>Река:</strong> {activeCruise.river}</p>
+              <p><strong>Описание:</strong> {activeCruise.description}</p>
+              <div className={styles.routePoints}>
+                <h4>Точки маршрута и достопримечательности:</h4>
+                <ul>
+                  {activeCruise.routeCities?.filter(city => city.name).map((city, index) => (
+                    <li key={index}>
+                      <strong>Точка {index + 1}:</strong> {city.name}<br />
+                      Достопримечательности: {city.sights}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button
+                className={styles.showRouteButton}
+                style={{ backgroundColor: getRiverColor(activeCruise.river) }}
+                onClick={() => {
+                  focusOnCruise(activeCruise.id);
+                  setShowPopup(false);
+                }}
+              >
+                Показать на карте
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default dynamic(() => Promise.resolve(CruiseRoutes), { ssr: false });
