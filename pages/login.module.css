@@ -66,7 +66,7 @@
 }
 
 .inputGroup input {
-    width: 100%;
+    width: 94%;
     padding: 0.8rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -109,15 +109,40 @@
     font-size: 0.95rem;
 }
 
-.toggleText button {
+.toggleText .toggleButton {
     color: #2A376D;
     font-weight: 500;
     text-decoration: underline;
     cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
-.toggleText button:hover {
+.toggleText .toggleButton:hover {
     color: #005D85;
+}
+
+.backButton {
+    display: block;
+    width: 94%;
+    padding: 0.8rem;
+    background-color: #2A376D;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.backButton:hover {
+    background-color: #005D85;
+    transform: scale(1.05);
 }
 
 .error {
@@ -132,7 +157,6 @@
         opacity: 0;
         transform: translateY(30px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -262,6 +286,11 @@
         font-size: 0.9rem;
     }
 
+    .backButton {
+        font-size: 1rem;
+        padding: 0.7rem;
+    }
+
     .authContainer {
         padding: 2rem;
         max-width: 350px;
@@ -324,6 +353,11 @@
 
     .toggleText {
         font-size: 0.85rem;
+    }
+
+    .backButton {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
 
     .authContainer {
@@ -405,6 +439,11 @@
     .toggleText {
         font-size: 0.8rem;
         margin-top: 1rem;
+    }
+
+    .backButton {
+        font-size: 0.85rem;
+        padding: 0.5rem;
     }
 
     .error {

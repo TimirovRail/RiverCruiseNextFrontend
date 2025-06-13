@@ -256,8 +256,11 @@ const LoginPage = () => {
                             {loading ? 'Загружается...' : 'Войти'}
                         </button>
                         <p className={styles.toggleText}>
-                            Нет аккаунта? <button type="button" className={styles.button_login} onClick={toggleForm}>Зарегистрироваться</button>
+                            Нет аккаунта? <button type="button" className={styles.toggleButton} onClick={toggleForm}>Зарегистрироваться</button>
                         </p>
+                        <Link href="/" className={styles.backButton}>
+                            Назад
+                        </Link>
                     </form>
                 ) : (
                     <form className={styles.form} onSubmit={handleSubmit}>
@@ -306,8 +309,11 @@ const LoginPage = () => {
                             {loading ? 'Загружается...' : 'Зарегистрироваться'}
                         </button>
                         <p className={styles.toggleText}>
-                            Уже есть аккаунт? <button type="button" className={styles.button_register} onClick={toggleForm}>Войти</button>
+                            Уже есть аккаунт? <button type="button" className={styles.toggleButton} onClick={toggleForm}>Войти</button>
                         </p>
+                        <Link href="/" className={styles.backButton}>
+                            Назад
+                        </Link>
                     </form>
                 )}
             </div>
