@@ -131,7 +131,7 @@ export default function PhotoGallery() {
             ) : (
                 <div className={styles.galleryContainer}>
                     <div className={styles.column}>
-                        <h3>Фотки из сервиса</h3>
+                        <h3>Фотографии из сервиса</h3>
                         <div className={styles.images}>
                             {serviceImages.map((image, index) => (
                                 <div
@@ -146,7 +146,7 @@ export default function PhotoGallery() {
                     </div>
 
                     <div className={styles.column}>
-                        <h3>Фотки пользователей</h3>
+                        <h3>Фотографии пользователей</h3>
                         <div className={styles.images}>
                             {allPhotos.map((photo, index) => (
                                 <div
