@@ -83,7 +83,6 @@ const BookingsList = ({ bookings, error, formatDate }) => {
                                 <th>Пользователь</th>
                                 <th>Email</th>
                                 <th>Круиз</th>
-                                <th>Места</th>
                                 <th>Комментарий</th>
                                 <th>Статус</th>
                                 <th>Создан</th>
@@ -98,7 +97,6 @@ const BookingsList = ({ bookings, error, formatDate }) => {
                                         <td>{booking.user_name || '—'}</td>
                                         <td>{booking.user_email || '—'}</td>
                                         <td>{booking.cruise_name || '—'}</td>
-                                        <td>{booking.seats || 0}</td>
                                         <td title={booking.comment || ''}>{truncateComment(booking.comment)}</td>
                                         <td><span className={getStatusClass(booking.status)}>{booking.status || '—'}</span></td>
                                         <td>{safeFormatDate(booking.created_at)}</td>
