@@ -5,7 +5,6 @@
     width: 100%;
     z-index: 1000;
     background-color: #3B4055;
-    opacity: 0.9;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,7 +36,7 @@
 }
 
 .nav a:hover {
-    color: rgb(0, 0, 0);
+    color: #cecece;
 }
 
 .profile {
