@@ -13,7 +13,12 @@ const LoginPage = () => {
         password: "",
         password_confirmation: "",
     });
-    const [error, setError] = useState(null);
+    const [errors, setErrors] = useState({
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+    });
     const [successMessage, setSuccessMessage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,11 +27,56 @@ const LoginPage = () => {
     const [code, setCode] = useState('');
     const [isVerified, setIsVerified] = useState(false);
     const [showTwoFactorInput, setShowTwoFactorInput] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
     const router = useRouter();
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.(?:[a-zA-Z]{2,})$/;
+        return emailRegex.test(email);
+    };
+
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = { name: "", email: "", password: "", password_confirmation: "" };
+
+        if (!formData.email) {
+            newErrors.email = "Электронная почта обязательна";
+            isValid = false;
+        } else if (!validateEmail(formData.email)) {
+            newErrors.email = "Введите корректный email адрес (например, user@domain.com)";
+            isValid = false;
+        }
+
+        if (!formData.password) {
+            newErrors.password = "Пароль обязателен";
+            isValid = false;
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Пароль должен содержать минимум 8 символов";
+            isValid = false;
+        }
+
+        if (!isLogin) {
+            if (!formData.name) {
+                newErrors.name = "Имя обязательно";
+                isValid = false;
+            }
+            if (!formData.password_confirmation) {
+                newErrors.password_confirmation = "Подтверждение пароля обязательно";
+                isValid = false;
+            } else if (formData.password !== formData.password_confirmation) {
+                newErrors.password_confirmation = "Пароли не совпадают";
+                isValid = false;
+            }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
-        setError(null);
+        setErrors({ name: "", email: "", password: "", password_confirmation: "" });
         setSuccessMessage(null);
         setFormData({ name: "", email: "", password: "", password_confirmation: "" });
         setTwoFactorSecret('');
@@ -35,19 +85,30 @@ const LoginPage = () => {
         setIsAuthenticated(false);
         setShowTwoFactorInput(false);
         setIsVerified(false);
+        setShowPassword(false);
+        setShowPasswordConfirmation(false);
     };
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
+        });
+        // Clear error for the field being edited
+        setErrors({
+            ...errors,
+            [name]: "",
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
         setLoading(true);
-        setError(null);
+        setErrors({ name: "", email: "", password: "", password_confirmation: "" });
         setSuccessMessage(null);
 
         const url = isLogin
@@ -102,7 +163,7 @@ const LoginPage = () => {
                         QRCode.toDataURL(otpauthUrl, (err, url) => {
                             if (err) {
                                 console.error('Ошибка генерации QR-кода:', err);
-                                setError('Не удалось сгенерировать QR-код. Попробуйте снова.');
+                                setErrors({ ...errors, general: 'Не удалось сгенерировать QR-код. Попробуйте снова.' });
                                 return;
                             }
                             setQrCodeUrl(url);
@@ -115,19 +176,19 @@ const LoginPage = () => {
                 }
             } else {
                 if (data.message) {
-                    setError(data.message);
+                    setErrors({ ...errors, general: data.message });
                 } else if (data.errors) {
                     const errorMessages = Object.values(data.errors).flat().join(', ');
-                    setError(errorMessages);
+                    setErrors({ ...errors, general: errorMessages });
                 } else if (data.email) {
-                    setError(data.email.join(', '));
+                    setErrors({ ...errors, email: data.email.join(', ') });
                 } else {
-                    setError(isLogin ? 'Не удалось войти. Проверьте email и пароль.' : 'Не удалось зарегистрироваться. Проверьте введенные данные.');
+                    setErrors({ ...errors, general: isLogin ? 'Не удалось войти. Проверьте email и пароль.' : 'Не удалось зарегистрироваться. Проверьте введенные данные.' });
                 }
             }
         } catch (err) {
             console.error('Ошибка запроса:', err);
-            setError(err.message || 'Не удалось подключиться к серверу. Проверьте ваше интернет-соединение и попробуйте снова.');
+            setErrors({ ...errors, general: err.message || 'Не удалось подключиться к серверу. Проверьте ваше интернет-соединение и попробуйте снова.' });
         } finally {
             setLoading(false);
         }
@@ -136,16 +197,16 @@ const LoginPage = () => {
     const handleVerifyCode = async () => {
         const cleanedCode = code.replace(/\s/g, '');
         if (!cleanedCode) {
-            setError('Пожалуйста, введите код из Google Authenticator.');
+            setErrors({ ...errors, code: 'Пожалуйста, введите код из Google Authenticator.' });
             return;
         }
 
-        setError(null);
+        setErrors({ ...errors, code: "" });
         try {
             const token = localStorage.getItem('token');
             console.log('Токен для 2FA:', token);
             if (!token) {
-                setError('Токен отсутствует. Пожалуйста, войдите заново.');
+                setErrors({ ...errors, general: 'Токен отсутствует. Пожалуйста, войдите заново.' });
                 setIsAuthenticated(false);
                 setShowTwoFactorInput(false);
                 return;
@@ -170,7 +231,7 @@ const LoginPage = () => {
 
             if (res.ok) {
                 setIsVerified(true);
-                setError(null);
+                setErrors({ ...errors, code: "" });
                 alert('Код подтвержден!');
 
                 const user = JSON.parse(localStorage.getItem('user'));
@@ -178,20 +239,20 @@ const LoginPage = () => {
                 redirectBasedOnRole(role);
             } else {
                 if (data.message === 'Unauthenticated.') {
-                    setError('Не удалось аутентифицировать запрос. Пожалуйста, войдите заново.');
+                    setErrors({ ...errors, general: 'Не удалось аутентифицировать запрос. Пожалуйста, войдите заново.' });
                     setIsAuthenticated(false);
                     setShowTwoFactorInput(false);
                 } else if (data.error === 'Invalid two-factor code') {
-                    setError('Неверный код двухфакторной аутентификации. Попробуйте снова.');
+                    setErrors({ ...errors, code: 'Неверный код двухфакторной аутентификации. Попробуйте снова.' });
                 } else if (data.error === 'Two-factor authentication not enabled') {
-                    setError('Двухфакторная аутентификация не включена для этого пользователя.');
+                    setErrors({ ...errors, general: 'Двухфакторная аутентификация не включена для этого пользователя.' });
                 } else {
-                    setError(data.message || 'Не удалось подтвердить код. Попробуйте снова.');
+                    setErrors({ ...errors, code: data.message || 'Не удалось подтвердить код. Попробуйте снова.' });
                 }
             }
         } catch (error) {
             console.error('Ошибка при верификации кода:', error);
-            setError('Не удалось подключиться к серверу для проверки кода. Проверьте интернет-соединение.');
+            setErrors({ ...errors, code: 'Не удалось подключиться к серверу для проверки кода. Проверьте интернет-соединение.' });
         }
     };
 
@@ -226,7 +287,7 @@ const LoginPage = () => {
                     </button>
                 </div>
 
-                {error && <div className={styles.error}>{error}</div>}
+                {errors.general && <div className={styles.error}>{errors.general}</div>}
                 {successMessage && <div className={styles.success}>{successMessage}</div>}
 
                 {isLogin ? (
@@ -241,16 +302,27 @@ const LoginPage = () => {
                                 onChange={handleChange}
                                 placeholder="Введите ваш email"
                             />
+                            {errors.email && <div className={styles.fieldError}>{errors.email}</div>}
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Пароль</label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="Введите ваш пароль"
-                            />
+                            <div className={styles.passwordWrapper}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Введите ваш пароль"
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.eyeButton}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? '🙈' : '👁️'}
+                                </button>
+                            </div>
+                            {errors.password && <div className={styles.fieldError}>{errors.password}</div>}
                         </div>
                         <button type="submit" className={styles.submitButton} disabled={loading}>
                             {loading ? 'Загружается...' : 'Войти'}
@@ -274,6 +346,7 @@ const LoginPage = () => {
                                 onChange={handleChange}
                                 placeholder="Введите ваше имя"
                             />
+                            {errors.name && <div className={styles.fieldError}>{errors.name}</div>}
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Электронная почта</label>
@@ -284,26 +357,47 @@ const LoginPage = () => {
                                 onChange={handleChange}
                                 placeholder="Введите ваш email"
                             />
+                            {errors.email && <div className={styles.fieldError}>{errors.email}</div>}
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Пароль</label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="Введите ваш пароль"
-                            />
+                            <div className={styles.passwordWrapper}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Введите ваш пароль"
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.eyeButton}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? '🙈' : '👁️'}
+                                </button>
+                            </div>
+                            {errors.password && <div className={styles.fieldError}>{errors.password}</div>}
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Подтвердите пароль</label>
-                            <input
-                                type="password"
-                                name="password_confirmation"
-                                value={formData.password_confirmation}
-                                onChange={handleChange}
-                                placeholder="Подтвердите ваш пароль"
-                            />
+                            <div className={styles.passwordWrapper}>
+                                <input
+                                    type={showPasswordConfirmation ? "text" : "password"}
+                                    name="password_confirmation"
+                                    value={formData.password_confirmation}
+                                    onChange={handleChange}
+                                    placeholder="Подтвердите ваш пароль"
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.eyeButton}
+                                    onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                                >
+                                    {showPasswordConfirmation ? '🙈' : '👁️'}
+                                </button>
+                            </div>
+                            {errors.password_confirmation && <div className={styles.fieldError}>{errors.password_confirmation}</div>}
                         </div>
                         <button type="submit" className={styles.submitButton} disabled={loading}>
                             {loading ? 'Загружается...' : 'Зарегистрироваться'}
@@ -321,10 +415,10 @@ const LoginPage = () => {
             {isAuthenticated && !isVerified && (
                 <div className={styles.authContainer}>
                     <h2>Двухфакторная аутентификация</h2>
-                    {error && <div className={styles.error}>{error}</div>}
+                    {errors.general && <div className={styles.error}>{errors.general}</div>}
                     {!isLogin && twoFactorSecret && (
                         <div className={styles.qrCodeWrapper}>
-                            <p>Сканируйте QR-код в приложении Google Authenticator или введите ключ вручную:</p>
+                            <p>Сканируйте QR-код в п риложении Google Authenticator или введите ключ вручную:</p>
                             {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
                             <p><strong>Секретный ключ:</strong> {twoFactorSecret}</p>
                             <p>Сохраните этот ключ в надежном месте. Он потребуется для восстановления доступа.</p>
@@ -341,6 +435,7 @@ const LoginPage = () => {
                                 onChange={(e) => setCode(e.target.value)}
                                 placeholder="Введите код из Google Authenticator"
                             />
+                            {errors.code && <div className={styles.fieldError}>{errors.code}</div>}
                             <button onClick={handleVerifyCode} className={styles.verifyButton}>
                                 Подтвердить код
                             </button>
